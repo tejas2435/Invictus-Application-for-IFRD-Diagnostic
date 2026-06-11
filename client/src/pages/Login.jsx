@@ -1,30 +1,70 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
-import { v4 as uuidv4 } from 'uuid';
+import { supabase } from '../supabaseClient';
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     document.title = "Participant Login - Invictus";
   }, []);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!email) return;
-    
-    // Mock login by just setting the user id
-    // In reality this would verify against backend
-    let storedUserId = localStorage.getItem('invictus_userId');
-    if (!storedUserId) {
-       storedUserId = uuidv4();
-       localStorage.setItem('invictus_userId', storedUserId);
+
+    setLoading(true);
+    setError('');
+
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (authError) {
+      setError(authError.message);
+      setLoading(false);
+      return;
     }
-    
-    navigate('/diagnostic');
+
+    if (authData?.user) {
+      // Small delay to allow Supabase trigger to complete profile creation
+      await new Promise(r => setTimeout(r, 400));
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('custom_id, full_name, role')
+        .eq('id', authData.user.id)
+        .single();
+
+      console.log("Profile fetch result:", { profile, profileError });
+
+      if (profileError || !profile) {
+        setError(`Could not load profile: ${profileError?.message || 'Not found'}. Please check your Supabase RLS policies or try again.`);
+        await supabase.auth.signOut();
+        setLoading(false);
+        return;
+      }
+
+      if (profile.role === 'admin') {
+        setError("This portal is for participants. Administrators should use the Admin Portal.");
+        await supabase.auth.signOut();
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem('invictus_userId', profile.custom_id || authData.user.id);
+      localStorage.setItem('invictus_userUUID', authData.user.id);
+      localStorage.setItem('invictus_userName', profile.full_name || '');
+      localStorage.setItem('invictus_userEmail', authData.user.email || '');
+      navigate('/diagnostic');
+    }
+    setLoading(false);
   };
 
   return (
@@ -33,7 +73,9 @@ export default function Login() {
         <img src={logo} alt="Invictus Logo" style={{ height: '60px', marginBottom: '20px' }} />
         <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '20px'}}>Participant Login</h1>
         
-        <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
+        <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px', width: '100%'}}>
+          {error && <div style={{background: 'rgba(255, 23, 68, 0.1)', color: 'var(--error)', padding: '10px', borderRadius: '5px', textAlign: 'center'}}>{error}</div>}
+
           <div>
             <label style={{display: 'block', marginBottom: '8px', color: 'var(--text-secondary)'}}>Email Address</label>
             <input type="email" className="input-text" value={email} onChange={e => setEmail(e.target.value)} required placeholder="Enter your email" />
@@ -44,10 +86,12 @@ export default function Login() {
           </div>
           
           <div style={{textAlign: 'right', marginTop: '-10px'}}>
-            <a href="#" style={{color: 'var(--text-secondary)', fontSize: '0.9rem', textDecoration: 'none'}}>Forget password?</a>
+            <Link to="/forgot-password" style={{color: 'var(--text-secondary)', fontSize: '0.9rem', textDecoration: 'none'}}>Forget password?</Link>
           </div>
 
-          <button type="submit" className="btn btn-secondary" style={{marginTop: '10px', width: '100%', borderColor: '#fff', color: '#fff'}}>Login</button>
+          <button type="submit" disabled={loading} className="btn btn-secondary" style={{marginTop: '10px', width: '100%', borderColor: '#fff', color: '#fff', opacity: loading ? 0.7 : 1}}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
         </form>
 
         <p style={{textAlign: 'center', marginTop: '30px', color: 'var(--text-secondary)'}}>

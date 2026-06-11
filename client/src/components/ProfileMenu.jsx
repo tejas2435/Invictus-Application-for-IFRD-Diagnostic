@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function ProfileMenu({ userId }) {
+export default function ProfileMenu({ userId, userName, userEmail }) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -38,10 +38,24 @@ export default function ProfileMenu({ userId }) {
         }}>
           <h4 style={{ margin: '0 0 15px 0', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>Participant Profile</h4>
           
-          <div style={{ fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>ID:</div>
-          <div style={{ fontSize: '0.9rem', marginBottom: '15px' }}>{userId}</div>
+          <div style={{ fontSize: '0.85rem', marginBottom: '4px', color: 'var(--text-secondary)' }}>ID:</div>
+          <div style={{ fontSize: '0.9rem', marginBottom: '12px' }}>{userId}</div>
 
-          <div style={{ fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>Status:</div>
+          {userName && (
+            <>
+              <div style={{ fontSize: '0.85rem', marginBottom: '4px', color: 'var(--text-secondary)' }}>Name:</div>
+              <div style={{ fontSize: '0.9rem', marginBottom: '12px' }}>{userName}</div>
+            </>
+          )}
+
+          {userEmail && (
+            <>
+              <div style={{ fontSize: '0.85rem', marginBottom: '4px', color: 'var(--text-secondary)' }}>Email:</div>
+              <div style={{ fontSize: '0.9rem', marginBottom: '12px', wordBreak: 'break-all' }}>{userEmail}</div>
+            </>
+          )}
+
+          <div style={{ fontSize: '0.85rem', marginBottom: '4px', color: 'var(--text-secondary)' }}>Status:</div>
           <div style={{ fontSize: '0.9rem', marginBottom: '25px', color: 'var(--accent)' }}>Active</div>
 
           <button 

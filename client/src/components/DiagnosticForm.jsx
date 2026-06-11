@@ -11,7 +11,7 @@ import {
   CheckboxList, TextInput, CheckboxSingle, DateInput
 } from './FormInputs';
 
-const SERVER_URL = 'http://localhost:5000/api/save';
+import { supabase } from '../supabaseClient';
 
 function DiagnosticForm() {
   const navigate = useNavigate();
@@ -25,30 +25,66 @@ function DiagnosticForm() {
   const [validationError, setValidationError] = useState('');
   const [errorIds, setErrorIds] = useState([]);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [evaluationId, setEvaluationId] = useState(null);
+  const [userEmail, setUserEmail] = useState('');
+  const [adminReport, setAdminReport] = useState(null);
 
   useEffect(() => {
     document.title = "Participant Diagnostic - Invictus";
     const storedUserId = localStorage.getItem('invictus_userId');
+    const storedUUID = localStorage.getItem('invictus_userUUID');
     const storedName = localStorage.getItem('invictus_userName') || '';
-    if (!storedUserId) {
+    const storedEmail = localStorage.getItem('invictus_userEmail') || '';
+    if (!storedUserId || !storedUUID) {
       navigate('/');
       return;
     }
     setUserId(storedUserId);
     setUserName(storedName);
+    setUserEmail(storedEmail);
 
-    const savedResponses = localStorage.getItem('invictus_responses');
-    if (savedResponses) setResponses(JSON.parse(savedResponses));
+    const loadSupabaseData = async () => {
+      const { data, error } = await supabase
+        .from('evaluations')
+        .select('*')
+        .eq('user_id', storedUUID)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .single();
+        
+      if (data && !error) {
+        if (data.status === 'submitted') {
+          setSubmitSuccess(true);
+          const { data: reportData } = await supabase
+            .from('admin_reports')
+            .select('*')
+            .eq('participant_id', storedUUID)
+            .single();
+            
+          if (reportData) {
+            setAdminReport(reportData);
+          }
+          return;
+        }
+        setEvaluationId(data.id);
+        if (data.responses) setResponses(data.responses);
+        
+        const hIndex = data.highest_part_index || 0;
+        setHighestPartIndex(hIndex);
 
-    const savedPart = localStorage.getItem('invictus_currentPart');
-    if (savedPart !== null) setCurrentPartIndex(parseInt(savedPart, 10));
-
-    const savedHighest = localStorage.getItem('invictus_highestPart');
-    if (savedHighest !== null) {
-      setHighestPartIndex(parseInt(savedHighest, 10));
-    } else if (savedPart !== null) {
-      setHighestPartIndex(parseInt(savedPart, 10));
-    }
+        const savedPart = localStorage.getItem('invictus_currentPart');
+        if (savedPart !== null) {
+          setCurrentPartIndex(parseInt(savedPart, 10));
+        } else {
+          setCurrentPartIndex(hIndex);
+        }
+      } else {
+        // Fallback for new empty session
+        const savedPart = localStorage.getItem('invictus_currentPart');
+        if (savedPart !== null) setCurrentPartIndex(parseInt(savedPart, 10));
+      }
+    };
+    loadSupabaseData();
   }, [navigate]);
 
   const handleNavigateToPart = (index) => {
@@ -58,6 +94,35 @@ function DiagnosticForm() {
     setValidationError('');
     setErrorIds([]);
   };
+
+  useEffect(() => {
+    if (!userId || !questionnaireData[currentPartIndex]) return;
+    const part = questionnaireData[currentPartIndex];
+    const partResponses = responses[part.id] || {};
+    let updated = false;
+    let newAnswers = { ...partResponses };
+
+    part.questions.forEach(q => {
+      if (q.id === 'consent_name' && !newAnswers[q.id] && userName) {
+        newAnswers[q.id] = userName;
+        updated = true;
+      }
+      if (q.id === 'consent_date' && !newAnswers[q.id]) {
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear();
+        newAnswers[q.id] = `${dd}-${mm}-${yyyy}`;
+        updated = true;
+      }
+    });
+
+    if (updated) {
+      const newGlobal = { ...responses, [part.id]: newAnswers };
+      setResponses(newGlobal);
+      // Avoid overwriting local storage before Supabase resolves initially, but fine for now
+    }
+  }, [currentPartIndex, userName, userId, responses]);
 
   if (!userId) return null;
 
@@ -118,26 +183,41 @@ function DiagnosticForm() {
     setValidationError('');
     setErrorIds([]);
     setSaving(true);
+    
+    let newHighest = highestPartIndex;
+    let nextIndex = currentPartIndex;
+    
+    if (currentPartIndex < questionnaireData.length - 1) {
+      nextIndex = currentPartIndex + 1;
+      newHighest = Math.max(highestPartIndex, nextIndex);
+    }
+    
     try {
-      await fetch(SERVER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, partId: currentPart.id, data: partResponses })
-      });
+      const storedUUID = localStorage.getItem('invictus_userUUID');
+      if (evaluationId) {
+        await supabase.from('evaluations').update({
+          responses: responses,
+          highest_part_index: newHighest,
+          updated_at: new Date().toISOString()
+        }).eq('id', evaluationId);
+      } else {
+        const { data } = await supabase.from('evaluations').insert({
+          user_id: storedUUID,
+          responses: responses,
+          highest_part_index: newHighest,
+          status: 'in-progress'
+        }).select();
+        if (data && data.length > 0) setEvaluationId(data[0].id);
+      }
     } catch (_) {
-      // Server offline — continue anyway locally
+      // Offline fallback
     }
 
     if (currentPartIndex < questionnaireData.length - 1) {
-      const nextIndex = currentPartIndex + 1;
       setCurrentPartIndex(nextIndex);
       localStorage.setItem('invictus_currentPart', nextIndex);
-
-      setHighestPartIndex(prev => {
-        const newHighest = Math.max(prev, nextIndex);
-        localStorage.setItem('invictus_highestPart', newHighest);
-        return newHighest;
-      });
+      setHighestPartIndex(newHighest);
+      localStorage.setItem('invictus_highestPart', newHighest);
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setSaving(false);
@@ -147,8 +227,16 @@ function DiagnosticForm() {
     }
   };
 
-  const confirmAndSubmit = () => {
+  const confirmAndSubmit = async () => {
     setShowSubmitConfirm(false);
+    
+    if (evaluationId) {
+      await supabase.from('evaluations').update({
+        status: 'submitted',
+        submitted_at: new Date().toISOString()
+      }).eq('id', evaluationId);
+    }
+    
     setSubmitSuccess(true);
     localStorage.removeItem('invictus_currentPart');
     localStorage.removeItem('invictus_highestPart');
@@ -173,15 +261,32 @@ function DiagnosticForm() {
   if (submitSuccess) {
     return (
       <div className="app-container" style={{ textAlign: 'center', marginTop: '100px' }}>
-        <div className="question-card" style={{ borderColor: 'var(--accent)' }}>
+        <div className="question-card" style={{ borderColor: 'var(--accent)', maxWidth: '600px', margin: '0 auto', textAlign: 'center', padding: '40px' }}>
           <h1 style={{ marginBottom: '20px' }}>Diagnostic Complete ✓</h1>
-          <p>Thank you for completing the Invictus Future Readiness Diagnostic™ (IFRD™).</p>
-          <p style={{ marginTop: '10px', color: 'var(--text-secondary)' }}>
-            Your assessment has been submitted. Your organisation will review your responses and you will be notified by email.
-          </p>
+          
+          {!adminReport ? (
+            <>
+              <p>Thank you for completing the Invictus Future Readiness Diagnostic™ (IFRD™).</p>
+              <p style={{ marginTop: '10px', color: 'var(--text-secondary)' }}>
+                Your assessment has been submitted. Your organisation will review your responses and you will be notified by email.
+              </p>
+            </>
+          ) : (
+            <div style={{ textAlign: 'left', marginTop: '20px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', borderLeft: '4px solid var(--accent)' }}>
+              <h3 style={{ color: 'var(--accent)', marginBottom: '15px' }}>Organisation Feedback received</h3>
+              <p style={{ whiteSpace: 'pre-wrap', color: 'var(--text-primary)', lineHeight: '1.6', fontSize: '1.05rem' }}>{adminReport.summary_text}</p>
+              
+              {adminReport.report_file_url && (
+                <a href={adminReport.report_file_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ marginTop: '25px', display: 'inline-block', borderColor: 'var(--accent)', color: 'var(--accent)', textDecoration: 'none' }}>
+                  📄 Download Attached Report
+                </a>
+              )}
+            </div>
+          )}
+
           <button
             className="btn btn-secondary"
-            style={{ marginTop: '30px', borderColor: '#fff', color: '#fff' }}
+            style={{ marginTop: '30px', borderColor: '#fff', color: '#fff', width: '200px' }}
             onClick={() => { localStorage.removeItem('invictus_userId'); navigate('/'); }}
           >
             Logout
@@ -219,11 +324,6 @@ function DiagnosticForm() {
       }
     };
 
-    // Auto-fill name on consent form
-    if (q.id === 'consent_name' && !value && userName) {
-      handleAnswerChange(q.id, userName);
-    }
-
     switch (q.type) {
       case 'TextAreaInput': return <TextAreaInput {...props} />;
       case 'SelectDropdown': return <SelectDropdown {...props} />;
@@ -247,7 +347,7 @@ function DiagnosticForm() {
             Future Readiness Diagnostic™
           </h1>
         </div>
-        <ProfileMenu userId={userId} userName={userName} />
+        <ProfileMenu userId={userId} userName={userName} userEmail={userEmail} />
       </div>
 
       {/* Progress Bar */}

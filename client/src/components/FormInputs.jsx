@@ -30,8 +30,9 @@ export function DateInput({ question, value, onChange, hasError, isAnswered }) {
       {hasError && <div className="field-error-tag">⚠ Required</div>}
       <div className="question-text">{question.text}</div>
       <input
-        type="date"
+        type="text"
         className="input-text"
+        placeholder="DD-MM-YYYY"
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
       />
