@@ -1,0 +1,641 @@
+[
+  {
+    "userId": "bd61ad9d-07a5-4a20-944b-287ee2796abb",
+    "part_intro": {
+      "q_1": "Test 1"
+    },
+    "lastUpdated": "2026-06-10T09:32:23.896Z",
+    "part_14": {
+      "q_18": "8 – 15 Years",
+      "q_19": "5 – 10 Years",
+      "q_20": "Approve Decisions",
+      "q_16": {
+        "selected": "Other"
+      },
+      "q_17": {
+        "selected": "Other",
+        "other": "dascvdd"
+      }
+    },
+    "part_22": {
+      "q_21": "Slightly Familiar",
+      "q_34": "Global"
+    },
+    "part_37": {
+      "q_41": {
+        "selected": [
+          "New Regulations",
+          "Supply Chain Disruptions",
+          "Talent Shortages",
+          "Workforce Transformation",
+          "Cybersecurity"
+        ]
+      }
+    },
+    "part_45": {},
+    "part_50": {},
+    "consent_part": {
+      "q_54": true,
+      "q_53": true
+    },
+    "part_56": {
+      "q_58": "Agree"
+    },
+    "part_61": {},
+    "part_65": {},
+    "part_69": {},
+    "part_73": {},
+    "part_77": {},
+    "part_81": {},
+    "part_85": {},
+    "part_89": {},
+    "part_93": {},
+    "part_97": {},
+    "part_101": {},
+    "part_105": {
+      "q_106": {
+        "selected": [
+          "Revenue Growth",
+          "Risk Management",
+          "Market Expansion"
+        ]
+      }
+    }
+  },
+  {
+    "userId": "0cda3f0f-5266-438d-8a5b-e4c0f8a58e90",
+    "part_109": {},
+    "lastUpdated": "2026-06-10T09:35:38.843Z",
+    "part_113": {},
+    "part_117": {},
+    "part_121": {},
+    "part_125": {},
+    "part_129": {}
+  },
+  {
+    "userId": "aee5d31d-1868-4545-a480-3a1071b8e067",
+    "part_1": {
+      "q_7": "Make Final Decisions",
+      "q_6": "21 – 30 Years",
+      "q_5": "More than 15 Years",
+      "q_4": {
+        "selected": "Other",
+        "other": "rhrhrth"
+      },
+      "q_3": {
+        "selected": "Other",
+        "other": "rthrthrth"
+      },
+      "q_2": "banking"
+    },
+    "lastUpdated": "2026-06-10T09:47:37.404Z",
+    "part_9": {
+      "q_8": "Not Familiar",
+      "q_10": "beb",
+      "q_11": "bdsfbdsfbdbdb",
+      "q_12": "bdfbsdfbfds",
+      "q_13": "dbdfbdsfbd",
+      "q_14": "dbdsfbdsf",
+      "q_15": {
+        "selected": "South America"
+      },
+      "q_16": {
+        "selected": "Other",
+        "other": "dbdsfb"
+      },
+      "q_18": {
+        "selected": "10,000 – 49,999"
+      },
+      "q_17": {
+        "selected": "Other",
+        "other": "dfbdffb"
+      },
+      "q_19": {
+        "selected": "USD 501 Million – USD 1 Billion"
+      },
+      "q_20": "11 – 25 Countries",
+      "q_21": "Regional",
+      "q_22": "Growth"
+    }
+  },
+  {
+    "userId": "fdb9f48b-752b-4915-a3b5-930fd920f1c7",
+    "part_24": {
+      "q_25": {
+        "selected": "More than 10 Years"
+      },
+      "q_26": "Moderately Changing",
+      "q_27": {
+        "selected": "Other",
+        "other": "gefdbdf"
+      },
+      "q_28": {
+        "selected": [
+          "Automation",
+          "Economic Uncertainty",
+          "Demographic Changes"
+        ]
+      },
+      "q_29": "Often",
+      "q_30": "Sometimes",
+      "q_23": {
+        "selected": "Executive Leadership Team"
+      }
+    },
+    "lastUpdated": "2026-06-10T11:01:13.047Z",
+    "part_32": {
+      "q_31": "Yes",
+      "q_33": "Deploying AI in Selected Functions",
+      "q_34": "Initial Implementation",
+      "q_35": {
+        "selected": [
+          "Human Resources"
+        ]
+      }
+    },
+    "part_37": {
+      "q_36": {
+        "selected": "Cybersecurity"
+      },
+      "q_38": "cvbbf",
+      "q_39": "xzbzbdbfsgdb",
+      "q_45": "dfadfb",
+      "q_41": "dfbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "q_44": "Prepared",
+      "q_43": {
+        "selected": [
+          "Supply Chain Disruption"
+        ]
+      },
+      "q_42": "dbfbdf",
+      "q_40": "dfbbdf"
+    },
+    "part_1": {
+      "q_7": "Make Final Decisions",
+      "q_6": "21 – 30 Years",
+      "q_5": "More than 15 Years",
+      "q_4": {
+        "selected": "Other",
+        "other": "rhrhrth"
+      },
+      "q_3": {
+        "selected": "Other",
+        "other": "rthrthrth"
+      },
+      "q_2": "banking"
+    },
+    "part_9": {
+      "q_8": "Not Familiar",
+      "q_10": "beb",
+      "q_11": "bdsfbdsfbdbdb",
+      "q_12": "bdfbsdfbfds",
+      "q_13": "dbdfbdsfbd",
+      "q_14": "dbdsfbdsf",
+      "q_15": {
+        "selected": "South America"
+      },
+      "q_16": {
+        "selected": "Other",
+        "other": "dbdsfb"
+      },
+      "q_18": {
+        "selected": "10,000 – 49,999"
+      },
+      "q_17": {
+        "selected": "Other",
+        "other": "dfbdffb"
+      },
+      "q_19": {
+        "selected": "USD 501 Million – USD 1 Billion"
+      },
+      "q_20": "11 – 25 Countries",
+      "q_21": "Regional",
+      "q_22": "Growth"
+    }
+  },
+  {
+    "userId": "4d72fc38-c461-4bdc-a0a1-515f83c9278b",
+    "part_24": {
+      "q_25": {
+        "selected": "More than 10 Years"
+      },
+      "q_26": "Moderately Changing",
+      "q_27": {
+        "selected": "Other",
+        "other": "gefdbdf"
+      },
+      "q_28": {
+        "selected": [
+          "Automation",
+          "Economic Uncertainty",
+          "Demographic Changes"
+        ]
+      },
+      "q_29": "Often",
+      "q_30": "Sometimes",
+      "q_23": {
+        "selected": "Executive Leadership Team"
+      }
+    },
+    "lastUpdated": "2026-06-10T11:07:28.660Z",
+    "s1_partA": {
+      "A1": "f",
+      "A2": {
+        "main": "Government Administration",
+        "other": ""
+      },
+      "A3": {
+        "main": "Chairman / Chairwoman",
+        "other": ""
+      },
+      "A4": "Less than 1 Year",
+      "A5": "More than 30 Years",
+      "A6": "Contribute to Decisions",
+      "A7": "Not Familiar"
+    },
+    "s1_partB": {
+      "B1": "fdsf",
+      "B2": "fdsfsd",
+      "B3": "fsdfds",
+      "B4": "fsdf",
+      "B5": "sdfds",
+      "B6": {
+        "main": "South America",
+        "other": ""
+      },
+      "B7": {
+        "main": "Media & Communications",
+        "other": ""
+      },
+      "B8": {
+        "main": "Non-Governmental Organisation (NGO)",
+        "other": ""
+      },
+      "B9": {
+        "main": "200 – 499",
+        "other": ""
+      },
+      "B10": {
+        "main": "Prefer Not to Disclose",
+        "other": ""
+      },
+      "B11": "11 – 25 Countries",
+      "B12": "National",
+      "B13": "Startup",
+      "B14": {
+        "main": "Parent Company",
+        "other": ""
+      }
+    },
+    "s1_partC": {
+      "C1": {
+        "main": "3 Years",
+        "other": ""
+      },
+      "C2": "Slowly Evolving",
+      "C4": {
+        "items": [
+          "Automation"
+        ],
+        "other": ""
+      },
+      "C5": "Often",
+      "C6": "Often",
+      "C7": "Yes",
+      "C3": {
+        "main": "Regulation",
+        "other": ""
+      }
+    },
+    "s1_partD": {
+      "D1": "Deploying AI in Selected Functions",
+      "D2": "Managed",
+      "D3": {
+        "items": [
+          "Research",
+          "Innovation",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+          "Customer Service",
+          "Operations",
+          "Productivity",
+          "None Currently",
+          "Risk Management",
+          "Strategic Planning"
+        ],
+        "other": ""
+      },
+      "D4": {
+        "main": "Governance",
+        "other": ""
+      }
+    },
+    "s1_partE": {
+      "E1": " vvvvvvvvvvvvvvvvvvvvv",
+      "E2": "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvdfbddfbbd",
+      "E3": {
+        "items": [
+          "Geopolitics",
+          "Workforce Transformation",
+          "Customer Behaviour"
+        ],
+        "other": ""
+      },
+      "E4": "Neutral",
+      "E6": "1–3 Years",
+      "E5": "sdvsvsv"
+    },
+    "s1_partF": {
+      "F1": "Declined",
+      "F2": "vsdvdsvvsv",
+      "F3": "Moderate",
+      "F4": "svdsxss"
+    },
+    "s1_consent": {
+      "consent_1": true,
+      "consent_2": true
+    }
+  },
+  {
+    "userId": "6253ac70-7d8f-4742-8bc1-94f1add64f84",
+    "s2_domain1": {
+      "D1_Q1": "Disagree",
+      "D1_Q3": "Agree",
+      "D1_Q4": "Neutral / Unsure",
+      "D1_Q6": "Strongly Disagree",
+      "D1_Q5": "Agree",
+      "D1_Q7": "Agree",
+      "D1_Q10": "Agree",
+      "D1_evid": "No Formal Evidence",
+      "D1_Q2": "Neutral / Unsure",
+      "D1_Q8": "Neutral / Unsure",
+      "D1_Q9": "Neutral / Unsure",
+      "D1_Q11": "Neutral / Unsure",
+      "D1_conf": "Moderate Confidence"
+    },
+    "lastUpdated": "2026-06-10T11:15:12.641Z",
+    "s2_domain2": {
+      "D2_Q12": "Disagree",
+      "D2_Q13": "Strongly Disagree",
+      "D2_Q14": "Strongly Disagree",
+      "D2_Q15": "Neutral / Unsure",
+      "D2_Q16": "Agree",
+      "D2_Q17": "Disagree",
+      "D2_Q19": "Agree",
+      "D2_Q18": "Neutral / Unsure",
+      "D2_Q20": "Strongly Disagree",
+      "D2_Q21": "Strongly Disagree",
+      "D2_Q22": "Strongly Disagree",
+      "D2_conf": "Low Confidence",
+      "D2_evid": "Significant Evidence"
+    }
+  },
+  {
+    "userId": "c2f75b68-9c13-4841-a424-896cee8f355c",
+    "s1_consent": {
+      "consent_1": true,
+      "consent_2": true
+    },
+    "lastUpdated": "2026-06-10T11:34:24.957Z",
+    "s2_domain1": {
+      "D1_Q1": "Disagree",
+      "D1_Q3": "Agree",
+      "D1_Q4": "Neutral / Unsure",
+      "D1_Q6": "Strongly Disagree",
+      "D1_Q5": "Agree",
+      "D1_Q7": "Agree",
+      "D1_Q10": "Agree",
+      "D1_evid": "No Formal Evidence",
+      "D1_Q2": "Neutral / Unsure",
+      "D1_Q8": "Neutral / Unsure",
+      "D1_Q9": "Neutral / Unsure",
+      "D1_Q11": "Neutral / Unsure",
+      "D1_conf": "Moderate Confidence"
+    },
+    "s2_domain2": {
+      "D2_Q12": "Disagree",
+      "D2_Q13": "Strongly Disagree",
+      "D2_Q14": "Strongly Disagree",
+      "D2_Q15": "Neutral / Unsure",
+      "D2_Q16": "Agree",
+      "D2_Q17": "Disagree",
+      "D2_Q19": "Agree",
+      "D2_Q18": "Neutral / Unsure",
+      "D2_Q20": "Strongly Disagree",
+      "D2_Q21": "Strongly Disagree",
+      "D2_Q22": "Strongly Disagree",
+      "D2_conf": "Low Confidence",
+      "D2_evid": "Significant Evidence"
+    },
+    "s2_domain3": {
+      "D3_Q23": "Neutral / Unsure",
+      "D3_Q24": "Agree",
+      "D3_Q30": "Agree",
+      "D3_Q28": "Agree",
+      "D3_Q33": "Strongly Disagree",
+      "D3_evid": "Extensive Evidence",
+      "D3_Q25": "Disagree",
+      "D3_Q26": "Neutral / Unsure",
+      "D3_Q27": "Neutral / Unsure",
+      "D3_Q29": "Neutral / Unsure",
+      "D3_Q31": "Disagree",
+      "D3_Q32": "Disagree",
+      "D3_conf": "Moderate Confidence"
+    },
+    "s2_domain4": {
+      "D4_Q34": "Strongly Agree",
+      "D4_Q36": "Neutral / Unsure",
+      "D4_Q35": "Neutral / Unsure",
+      "D4_Q37": "Strongly Agree",
+      "D4_Q39": "Neutral / Unsure",
+      "D4_Q40": "Strongly Agree",
+      "D4_Q41": "Strongly Agree",
+      "D4_Q42": "Disagree",
+      "D4_Q43": "Strongly Disagree",
+      "D4_Q44": "Neutral / Unsure",
+      "D4_conf": "High Confidence",
+      "D4_evid": "Extensive Evidence",
+      "D4_Q38": "Disagree"
+    },
+    "s2_domain5": {
+      "D5_Q45": "Strongly Agree",
+      "D5_Q46": "Agree",
+      "D5_Q47": "Neutral / Unsure",
+      "D5_Q48": "Neutral / Unsure",
+      "D5_Q49": "Strongly Disagree",
+      "D5_Q50": "Strongly Disagree",
+      "D5_Q51": "Disagree",
+      "D5_Q52": "Neutral / Unsure",
+      "D5_Q53": "Strongly Disagree",
+      "D5_Q54": "Strongly Disagree",
+      "D5_Q55": "Strongly Disagree",
+      "D5_conf": "Low Confidence",
+      "D5_evid": "Limited Evidence"
+    },
+    "s2_domain6": {
+      "D6_Q56": "Neutral / Unsure",
+      "D6_Q57": "Strongly Disagree",
+      "D6_Q58": "Strongly Disagree",
+      "D6_Q59": "Strongly Disagree",
+      "D6_Q60": "Disagree",
+      "D6_Q61": "Disagree",
+      "D6_Q62": "Neutral / Unsure",
+      "D6_Q63": "Strongly Disagree",
+      "D6_Q64": "Strongly Disagree",
+      "D6_Q65": "Strongly Disagree",
+      "D6_Q66": "Disagree",
+      "D6_conf": "Moderate Confidence",
+      "D6_evid": "Significant Evidence"
+    },
+    "s2_domain7": {
+      "D7_Q67": "Strongly Disagree",
+      "D7_Q68": "Neutral / Unsure",
+      "D7_Q69": "Neutral / Unsure",
+      "D7_Q70": "Agree",
+      "D7_Q71": "Strongly Agree",
+      "D7_Q72": "Agree",
+      "D7_Q73": "Neutral / Unsure",
+      "D7_Q74": "Disagree",
+      "D7_Q75": "Strongly Disagree",
+      "D7_Q76": "Agree",
+      "D7_Q77": "Strongly Agree",
+      "D7_conf": "High Confidence",
+      "D7_evid": "Extensive Evidence"
+    },
+    "s2_domain8": {
+      "D8_Q78": "Strongly Disagree",
+      "D8_Q79": "Agree",
+      "D8_Q80": "Agree",
+      "D8_Q81": "Agree",
+      "D8_Q82": "Neutral / Unsure",
+      "D8_Q83": "Neutral / Unsure",
+      "D8_Q84": "Strongly Disagree",
+      "D8_Q85": "Strongly Disagree",
+      "D8_Q86": "Neutral / Unsure",
+      "D8_Q87": "Disagree",
+      "D8_Q88": "Disagree",
+      "D8_conf": "High Confidence",
+      "D8_evid": "Some Evidence"
+    },
+    "s2_domain9": {
+      "D9_Q89": "Neutral / Unsure",
+      "D9_Q90": "Agree",
+      "D9_Q91": "Agree",
+      "D9_Q92": "Disagree",
+      "D9_Q93": "Disagree",
+      "D9_Q94": "Disagree",
+      "D9_Q95": "Agree",
+      "D9_Q96": "Agree",
+      "D9_Q97": "Disagree",
+      "D9_Q98": "Disagree",
+      "D9_Q99": "Agree",
+      "D9_conf": "Moderate Confidence",
+      "D9_evid": "Some Evidence"
+    },
+    "s2_domain10": {
+      "D10_Q100": "Disagree",
+      "D10_Q101": "Disagree",
+      "D10_Q102": "Disagree",
+      "D10_Q103": "Disagree",
+      "D10_Q104": "Strongly Disagree",
+      "D10_Q105": "Strongly Agree",
+      "D10_Q106": "Strongly Agree",
+      "D10_Q107": "Agree",
+      "D10_Q108": "Agree",
+      "D10_Q109": "Agree",
+      "D10_Q110": "Strongly Agree",
+      "D10_conf": "Low Confidence",
+      "D10_evid": "Significant Evidence"
+    },
+    "s2_domain11": {
+      "D11_Q111": "Strongly Disagree",
+      "D11_Q112": "Strongly Disagree",
+      "D11_Q113": "Strongly Disagree",
+      "D11_Q114": "Strongly Disagree",
+      "D11_Q115": "Strongly Disagree",
+      "D11_Q116": "Strongly Disagree",
+      "D11_Q117": "Strongly Disagree",
+      "D11_Q118": "Strongly Disagree",
+      "D11_Q119": "Strongly Disagree",
+      "D11_Q120": "Strongly Disagree",
+      "D11_Q121": "Strongly Disagree",
+      "D11_conf": "Low Confidence",
+      "D11_evid": "No Formal Evidence"
+    },
+    "s2_domain12": {
+      "D12_Q122": "Strongly Disagree",
+      "D12_Q123": "Strongly Disagree",
+      "D12_Q124": "Neutral / Unsure",
+      "D12_Q125": "Agree",
+      "D12_Q126": "Agree",
+      "D12_Q127": "Agree",
+      "D12_Q128": "Neutral / Unsure",
+      "D12_Q129": "Strongly Agree",
+      "D12_Q130": "Strongly Agree",
+      "D12_Q131": "Disagree",
+      "D12_Q132": "Strongly Disagree",
+      "D12_conf": "Low Confidence",
+      "D12_evid": "No Formal Evidence"
+    }
+  },
+  {
+    "userId": "badcbf01-4b77-4c21-9cf9-99ab7570461a",
+    "s3_partA": {
+      "S3_A1": {
+        "items": [
+          "Cost Management",
+          "Other",
+          "Supply Chain Resilience"
+        ],
+        "other": ""
+      },
+      "S3_A2": "dfbsb",
+      "S3_A3": "bdfbdfb"
+    },
+    "lastUpdated": "2026-06-10T11:36:31.382Z",
+    "s3_partB": {
+      "S3_B4": {
+        "main": "Leadership Capability",
+        "other": ""
+      },
+      "S3_B5": "gegeg",
+      "S3_B6": "Well Prepared"
+    },
+    "s3_partC": {
+      "S3_C7": {
+        "main": "Other",
+        "other": ""
+      },
+      "S3_C8": "greegr",
+      "S3_C9": "Not Confident"
+    },
+    "s3_partD": {
+      "S3_D10": "Stable",
+      "S3_D11": "greege",
+      "S3_D12": "ergergeg"
+    },
+    "s3_partE": {
+      "S3_E13": {
+        "main": "Regulatory Change",
+        "other": ""
+      },
+      "S3_E14": "gerreg",
+      "S3_E15": "Rarely"
+    },
+    "s3_partF": {
+      "S3_F16": "More than 10 Years",
+      "S3_F17": "AI is integrated into core business operations.",
+      "S3_F18": {
+        "main": "Learning Agility",
+        "other": ""
+      }
+    },
+    "s3_partG": {
+      "S3_G1": "3",
+      "S3_G2": "Slightly Behind",
+      "S3_G3": "Moderate",
+      "S3_G4": "rgre"
+    }
+  }
+]

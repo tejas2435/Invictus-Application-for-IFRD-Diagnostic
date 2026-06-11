@@ -1,0 +1,425 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-dark: #0a0a0a;
+  --bg-card: rgba(25, 25, 25, 0.7);
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a0a0;
+  --accent: #00e676; /* Google form style but dark with neon green accent based on their green/red dots idea */
+  --accent-hover: #00c853;
+  --error: #ff1744;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --glass-effect: blur(10px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* App Container */
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  width: 100%;
+}
+
+/* Typography */
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #fff, #888);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+p {
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Info Panel */
+.info-panel {
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 4px solid var(--accent);
+  padding: 20px 24px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+.info-panel p {
+  color: var(--text-primary);
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+
+/* Key Question Panel */
+.key-question-panel {
+  background: rgba(0, 230, 118, 0.08);
+  border: 1px solid rgba(0, 230, 118, 0.35);
+  border-left: 5px solid var(--accent);
+  padding: 20px 24px;
+  border-radius: 8px;
+  margin-bottom: 28px;
+}
+.key-question-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+}
+.key-question-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary) !important;
+  font-style: italic;
+}
+
+/* Domain Info Panel */
+.domain-info-panel {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 20px 24px;
+  border-radius: 8px;
+  margin-bottom: 28px;
+}
+.domain-info-panel p {
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+/* Question hint */
+.question-hint {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  font-style: italic;
+}
+
+/* Progress bar wrapper */
+.progress-bar-wrapper {
+  margin-bottom: 36px;
+}
+.progress-section-labels {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 8px;
+}
+.section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  transition: color 0.3s;
+}
+.section-label.done {
+  color: var(--accent);
+}
+.section-label.active {
+  color: #fff;
+  font-weight: 700;
+}
+.progress-label {
+  margin-top: 10px;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* Progress Bar */
+.progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  position: relative;
+  background: var(--bg-card);
+  padding: 15px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  backdrop-filter: var(--glass-effect);
+}
+
+.progress-track {
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  right: 30px;
+  height: 2px;
+  background-color: var(--border-color);
+  z-index: 0;
+  transform: translateY(-50%);
+}
+
+.progress-track-fill {
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  height: 2px;
+  background-color: var(--accent);
+  z-index: 0;
+  transform: translateY(-50%);
+  transition: width 0.4s ease;
+}
+
+.progress-node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dot-node {
+  border-radius: 50%;
+  background-color: var(--error);
+  transition: all 0.3s ease;
+}
+
+.dot-big {
+  width: 24px;
+  height: 24px;
+  border: 4px solid var(--bg-dark);
+}
+
+.dot-small {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--bg-dark);
+}
+
+.dot-node.completed {
+  background-color: var(--accent);
+  box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+}
+
+.dot-node.active {
+  transform: scale(1.3);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  background-color: #fff;
+}
+
+/* We don't necessarily need small dots explicitly rendered if the line implies progress, but we can design part sub-steps if needed */
+
+/* Question Cards */
+.question-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 25px;
+  backdrop-filter: var(--glass-effect);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.question-card:focus-within {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Answered question — green border */
+.question-card.answered-card {
+  border-color: rgba(0, 230, 118, 0.5);
+  box-shadow: 0 0 0 1px rgba(0, 230, 118, 0.15);
+}
+
+/* Unanswered / error question — red border + subtle glow */
+.question-card.error-card {
+  border-color: var(--error);
+  box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.2), 0 0 20px rgba(255, 23, 68, 0.1);
+  animation: pulse-red 1.5s ease-in-out 2;
+}
+
+@keyframes pulse-red {
+  0%   { box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.2), 0 0 20px rgba(255, 23, 68, 0.08); }
+  50%  { box-shadow: 0 0 0 4px rgba(255, 23, 68, 0.35), 0 0 30px rgba(255, 23, 68, 0.2); }
+  100% { box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.2), 0 0 20px rgba(255, 23, 68, 0.08); }
+}
+
+/* Required tag shown inside error cards */
+.field-error-tag {
+  display: inline-block;
+  background: rgba(255, 23, 68, 0.15);
+  color: var(--error);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 23, 68, 0.4);
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+.question-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+/* Inputs */
+.input-text, .input-textarea, .input-select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 15px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.input-text:focus, .input-textarea:focus, .input-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0, 230, 118, 0.2);
+}
+
+.input-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Checkbox & Radio */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.option-item.selected {
+  border-color: var(--accent);
+  background: rgba(0, 230, 118, 0.05);
+}
+
+.option-input {
+  margin-right: 15px;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+/* Scrollable Container */
+.scrollable-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.scrollable-list::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollable-list::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 3px;
+}
+.scrollable-list::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+/* Buttons */
+.btn {
+  background: var(--accent);
+  color: var(--bg-dark);
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+/* Animations */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
+}
