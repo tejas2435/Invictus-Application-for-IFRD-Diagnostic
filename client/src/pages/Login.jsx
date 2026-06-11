@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import logo from '../assets/logo.png';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    document.title = "Participant Login - Invictus";
+  }, []);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -24,7 +29,8 @@ export default function Login() {
 
   return (
     <div className="app-container" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
-      <div className="question-card" style={{width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', padding: '40px'}}>
+      <div className="question-card" style={{width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center'}}>
+        <img src={logo} alt="Invictus Logo" style={{ height: '60px', marginBottom: '20px' }} />
         <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '20px'}}>Participant Login</h1>
         
         <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>

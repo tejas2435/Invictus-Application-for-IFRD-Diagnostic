@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../index.css';
+import logo from '../assets/logo.png';
 import { questionnaireData } from '../data/questionnaire';
 import ProgressBar from './ProgressBar';
 import { InfoPanel, KeyQuestionPanel, DomainInfoPanel } from './InfoPanel';
@@ -17,13 +18,16 @@ function DiagnosticForm() {
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState('');
   const [currentPartIndex, setCurrentPartIndex] = useState(0);
+  const [highestPartIndex, setHighestPartIndex] = useState(0);
   const [responses, setResponses] = useState({});
   const [saving, setSaving] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [errorIds, setErrorIds] = useState([]);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
   useEffect(() => {
+    document.title = "Participant Diagnostic - Invictus";
     const storedUserId = localStorage.getItem('invictus_userId');
     const storedName = localStorage.getItem('invictus_userName') || '';
     if (!storedUserId) {
@@ -38,7 +42,22 @@ function DiagnosticForm() {
 
     const savedPart = localStorage.getItem('invictus_currentPart');
     if (savedPart !== null) setCurrentPartIndex(parseInt(savedPart, 10));
+
+    const savedHighest = localStorage.getItem('invictus_highestPart');
+    if (savedHighest !== null) {
+      setHighestPartIndex(parseInt(savedHighest, 10));
+    } else if (savedPart !== null) {
+      setHighestPartIndex(parseInt(savedPart, 10));
+    }
   }, [navigate]);
+
+  const handleNavigateToPart = (index) => {
+    setCurrentPartIndex(index);
+    localStorage.setItem('invictus_currentPart', index);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setValidationError('');
+    setErrorIds([]);
+  };
 
   if (!userId) return null;
 
@@ -63,14 +82,25 @@ function DiagnosticForm() {
     const skipIds = ['consent_name', 'consent_date'];
     const partResponses = responses[currentPart.id] || {};
     const missing = [];
-    
+
     for (const q of currentPart.questions) {
       if (skipIds.includes(q.id) || q.type === 'CheckboxSingle') continue;
       const val = partResponses[q.id];
-      const isEmpty =
+      let isEmpty =
         val === undefined || val === null || val === '' ||
         (typeof val === 'object' && !Array.isArray(val) && (val.items ? val.items.length === 0 : !val.main)) ||
         (Array.isArray(val) && val.length === 0);
+
+      // New condition for "Other" field: require text if selected
+      if (!isEmpty && typeof val === 'object' && !Array.isArray(val)) {
+        if (val.main === 'Other' && (!val.other || val.other.trim() === '')) {
+          isEmpty = true;
+        }
+        if (val.items && val.items.includes('Other') && (!val.other || val.other.trim() === '')) {
+          isEmpty = true;
+        }
+      }
+
       if (isEmpty) missing.push(q.id);
     }
 
@@ -84,7 +114,7 @@ function DiagnosticForm() {
       }, 100);
       return;
     }
-    
+
     setValidationError('');
     setErrorIds([]);
     setSaving(true);
@@ -102,13 +132,31 @@ function DiagnosticForm() {
       const nextIndex = currentPartIndex + 1;
       setCurrentPartIndex(nextIndex);
       localStorage.setItem('invictus_currentPart', nextIndex);
+
+      setHighestPartIndex(prev => {
+        const newHighest = Math.max(prev, nextIndex);
+        localStorage.setItem('invictus_highestPart', newHighest);
+        return newHighest;
+      });
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      setSaving(false);
     } else {
-      setSubmitSuccess(true);
-      localStorage.removeItem('invictus_currentPart');
-      localStorage.removeItem('invictus_responses');
+      setShowSubmitConfirm(true);
+      setSaving(false);
     }
-    setSaving(false);
+  };
+
+  const confirmAndSubmit = () => {
+    setShowSubmitConfirm(false);
+    setSubmitSuccess(true);
+    localStorage.removeItem('invictus_currentPart');
+    localStorage.removeItem('invictus_highestPart');
+    localStorage.removeItem('invictus_responses');
+  };
+
+  const cancelSubmit = () => {
+    setShowSubmitConfirm(false);
   };
 
   const handleBack = () => {
@@ -170,7 +218,7 @@ function DiagnosticForm() {
         }
       }
     };
-    
+
     // Auto-fill name on consent form
     if (q.id === 'consent_name' && !value && userName) {
       handleAnswerChange(q.id, userName);
@@ -189,17 +237,21 @@ function DiagnosticForm() {
   };
 
   return (
-    <div className="app-container fade-enter-active">
-      {/* Header */}
+    <>
+      <div className="app-container fade-enter-active">
+        {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '0.02em' }}>
-          Invictus Future Readiness Diagnostic™
-        </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <img src={logo} alt="Invictus Logo" style={{ height: '35px' }} />
+          <h1 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '0.02em' }}>
+            Future Readiness Diagnostic™
+          </h1>
+        </div>
         <ProfileMenu userId={userId} userName={userName} />
       </div>
 
       {/* Progress Bar */}
-      <ProgressBar currentPartIndex={currentPartIndex} />
+      <ProgressBar currentPartIndex={currentPartIndex} highestPartIndex={highestPartIndex} onNavigate={handleNavigateToPart} />
 
       {/* Validation Error */}
       {validationError && (
@@ -259,7 +311,7 @@ function DiagnosticForm() {
         {currentPartIndex > 0 ? (
           <button
             className="btn btn-secondary"
-            style={{ borderColor: 'rgba(255,255,255,0.35)', color: 'rgba(255,255,255,0.6)' }}
+            style={{ borderColor: '#fff', color: '#fff' }}
             onClick={handleBack}
             disabled={saving}
           >
@@ -276,7 +328,32 @@ function DiagnosticForm() {
           {saving ? 'Saving...' : currentPartIndex === questionnaireData.length - 1 ? 'Submit Assessment' : 'Save & Next →'}
         </button>
       </div>
-    </div>
+      </div>
+
+      {/* Submit Confirmation Modal */}
+      {showSubmitConfirm && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+        }}>
+          <div className="question-card" style={{ maxWidth: '500px', width: '90%', textAlign: 'center', padding: '40px' }}>
+            <h2 style={{ marginBottom: '20px', color: '#fff' }}>Confirm Submission</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '30px', lineHeight: '1.6' }}>
+              Are you sure you want to submit your diagnostic? You will <strong>not</strong> be able to change your responses after submission.<br /><br />
+              If you want to review your answers, click <strong>Cancel</strong>.
+            </p>
+            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+              <button className="btn btn-secondary" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={cancelSubmit}>
+                Cancel
+              </button>
+              <button className="btn btn-secondary" style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }} onClick={confirmAndSubmit}>
+                Yes, Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

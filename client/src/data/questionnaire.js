@@ -57,29 +57,29 @@ Estimated Completion Time: 15 – 20 Minutes`,
       {
         id: "A2", text: "A2. Primary Leadership Responsibility", type: "SelectDropdown", allowOther: true,
         hint: "Please select one.",
-        options: ["Strategy","Operations","Human Resources","Finance","Technology","Innovation","Governance / Risk","Sales & Marketing","Research & Development","Education","Government Administration","Entrepreneurship","Consulting / Advisory","Other"]
+        options: ["Strategy", "Operations", "Human Resources", "Finance", "Technology", "Innovation", "Governance / Risk", "Sales & Marketing", "Research & Development", "Education", "Government Administration", "Entrepreneurship", "Consulting / Advisory", "Other"]
       },
       {
         id: "A3", text: "A3. Leadership Level", type: "SelectDropdown", allowOther: true,
-        options: ["Board Member","Chairman / Chairwoman","Chief Executive Officer (CEO)","Chief Operating Officer (COO)","Chief Financial Officer (CFO)","Chief Human Resources Officer (CHRO)","Chief Technology Officer (CTO)","Chief Information Officer (CIO)","Chief Strategy Officer (CSO)","General Manager","Senior Manager","Manager","Team Leader","Academic Leader","Government Official","Entrepreneur / Founder","Consultant","Other"]
+        options: ["Board Member", "Chairman / Chairwoman", "Chief Executive Officer (CEO)", "Chief Operating Officer (COO)", "Chief Financial Officer (CFO)", "Chief Human Resources Officer (CHRO)", "Chief Technology Officer (CTO)", "Chief Information Officer (CIO)", "Chief Strategy Officer (CSO)", "General Manager", "Senior Manager", "Manager", "Team Leader", "Academic Leader", "Government Official", "Entrepreneur / Founder", "Consultant", "Other"]
       },
       {
         id: "A4", text: "A4. Years in Current Role", type: "OptionSelection",
-        options: ["Less than 1 Year","1 – 3 Years","4 – 7 Years","8 – 15 Years","More than 15 Years"]
+        options: ["Less than 1 Year", "1 – 3 Years", "4 – 7 Years", "8 – 15 Years", "More than 15 Years"]
       },
       {
         id: "A5", text: "A5. Total Years of Professional Experience", type: "OptionSelection",
-        options: ["Less than 5 Years","5 – 10 Years","11 – 20 Years","21 – 30 Years","More than 30 Years"]
+        options: ["Less than 5 Years", "5 – 10 Years", "11 – 20 Years", "21 – 30 Years", "More than 30 Years"]
       },
       {
         id: "A6", text: "A6. Decision-Making Authority", type: "OptionSelection",
         hint: "Which best describes your level of influence?",
-        options: ["Primarily Recommend Decisions","Contribute to Decisions","Approve Decisions","Make Final Decisions","Influence External Decision Makers"]
+        options: ["Primarily Recommend Decisions", "Contribute to Decisions", "Approve Decisions", "Make Final Decisions", "Influence External Decision Makers"]
       },
       {
         id: "A7", text: "A7. Familiarity With Future Readiness Concepts", type: "OptionSelection",
         hint: "How familiar are you with concepts such as strategic foresight, scenario planning, AI transformation, future trends and organisational preparedness?",
-        options: ["Not Familiar","Slightly Familiar","Moderately Familiar","Familiar","Highly Familiar"]
+        options: ["Not Familiar", "Slightly Familiar", "Moderately Familiar", "Familiar", "Highly Familiar"]
       }
     ]
   },
@@ -101,41 +101,41 @@ Estimated Completion Time: 15 – 20 Minutes`,
       { id: "B5", text: "B5. Primary Country of Operation", type: "TextInput" },
       {
         id: "B6", text: "B6. Geographic Region", type: "SelectDropdown",
-        options: ["Africa","ASEAN","East Asia","South Asia","Middle East","Europe","North America","South America","Oceania","Global"]
+        options: ["Africa", "ASEAN", "East Asia", "South Asia", "Middle East", "Europe", "North America", "South America", "Oceania", "Global"]
       },
       {
         id: "B7", text: "B7. Industry Sector", type: "SelectDropdown", allowOther: true,
         hint: "Please select one.",
-        options: ["Agriculture","Automotive","Banking & Financial Services","Construction","Consulting & Professional Services","Consumer Goods (FMCG)","Education","Energy & Utilities","Engineering","Government","Healthcare","Hospitality & Tourism","Information Technology","Insurance","Logistics & Supply Chain","Manufacturing","Media & Communications","Mining & Resources","Non-Profit / NGO","Oil & Gas","Property & Real Estate","Retail","Telecommunications","Transportation","University / Higher Education","Financial Services","FinTech","Islamic Finance","Life Sciences","MedTech","Defence","Aerospace","Semiconductors","Data Centres","Energy Transition","Renewable Energy","Professional Services","Education Technology","Other"]
+        options: ["Agriculture", "Automotive", "Banking & Financial Services", "Construction", "Consulting & Professional Services", "Consumer Goods (FMCG)", "Education", "Energy & Utilities", "Engineering", "Government", "Healthcare", "Hospitality & Tourism", "Information Technology", "Insurance", "Logistics & Supply Chain", "Manufacturing", "Media & Communications", "Mining & Resources", "Non-Profit / NGO", "Oil & Gas", "Property & Real Estate", "Retail", "Telecommunications", "Transportation", "University / Higher Education", "Financial Services", "FinTech", "Islamic Finance", "Life Sciences", "MedTech", "Defence", "Aerospace", "Semiconductors", "Data Centres", "Energy Transition", "Renewable Energy", "Professional Services", "Education Technology", "Other"]
       },
       {
         id: "B8", text: "B8. Organisation Type", type: "SelectDropdown", allowOther: true,
-        options: ["Public Listed Company","Private Company","Government Agency","Government Linked Company (GLC)","Statutory Body","Multinational Corporation (MNC)","Family-Owned Business","Small & Medium Enterprise (SME)","Startup","Non-Governmental Organisation (NGO)","Cooperative","University / Academic Institution","Other"]
+        options: ["Public Listed Company", "Private Company", "Government Agency", "Government Linked Company (GLC)", "Statutory Body", "Multinational Corporation (MNC)", "Family-Owned Business", "Small & Medium Enterprise (SME)", "Startup", "Non-Governmental Organisation (NGO)", "Cooperative", "University / Academic Institution", "Other"]
       },
       {
         id: "B9", text: "B9. Number of Employees Worldwide", type: "SelectDropdown",
-        options: ["Less than 10","10 – 49","50 – 199","200 – 499","500 – 999","1,000 – 4,999","5,000 – 9,999","10,000 – 49,999","More than 50,000"]
+        options: ["Less than 10", "10 – 49", "50 – 199", "200 – 499", "500 – 999", "1,000 – 4,999", "5,000 – 9,999", "10,000 – 49,999", "More than 50,000"]
       },
       {
         id: "B10", text: "B10. Annual Revenue / Operating Budget", type: "SelectDropdown",
-        options: ["Less than USD 1 Million","USD 1 Million – USD 10 Million","USD 11 Million – USD 50 Million","USD 51 Million – USD 100 Million","USD 101 Million – USD 500 Million","USD 501 Million – USD 1 Billion","More than USD 1 Billion","Prefer Not to Disclose"]
+        options: ["Less than USD 1 Million", "USD 1 Million – USD 10 Million", "USD 11 Million – USD 50 Million", "USD 51 Million – USD 100 Million", "USD 101 Million – USD 500 Million", "USD 501 Million – USD 1 Billion", "More than USD 1 Billion", "Prefer Not to Disclose"]
       },
       {
         id: "B11", text: "B11. Number of Countries in Which Your Organisation Operates", type: "OptionSelection",
-        options: ["1 Country","2 – 5 Countries","6 – 10 Countries","11 – 25 Countries","26 – 50 Countries","More than 50 Countries"]
+        options: ["1 Country", "2 – 5 Countries", "6 – 10 Countries", "11 – 25 Countries", "26 – 50 Countries", "More than 50 Countries"]
       },
       {
         id: "B12", text: "B12. Primary Market Served", type: "OptionSelection",
-        options: ["Local","National","Regional","International","Global"]
+        options: ["Local", "National", "Regional", "International", "Global"]
       },
       {
         id: "B13", text: "B13. Organisation Life Cycle", type: "OptionSelection",
-        options: ["Startup","Growth","Expansion","Mature","Transformation","Turnaround","Renewal"]
+        options: ["Startup", "Growth", "Expansion", "Mature", "Transformation", "Turnaround", "Renewal"]
       },
       {
         id: "B14", text: "B14. Ownership Influence", type: "SelectDropdown",
         hint: "Who has the greatest influence on strategic direction?",
-        options: ["Founder / Owner","Board","Executive Leadership Team","Government","Shareholders","Parent Company","Multiple Stakeholders"]
+        options: ["Founder / Owner", "Board", "Executive Leadership Team", "Government", "Shareholders", "Parent Company", "Multiple Stakeholders"]
       }
     ]
   },
@@ -152,32 +152,32 @@ Estimated Completion Time: 15 – 20 Minutes`,
     questions: [
       {
         id: "C1", text: "C1. How far ahead does your organisation typically plan?", type: "SelectDropdown",
-        options: ["Less than 1 Year","1 Year","2 Years","3 Years","5 Years","10 Years","More than 10 Years"]
+        options: ["Less than 1 Year", "1 Year", "2 Years", "3 Years", "5 Years", "10 Years", "More than 10 Years"]
       },
       {
         id: "C2", text: "C2. Which statement best describes your industry today?", type: "OptionSelection",
-        options: ["Stable","Slowly Evolving","Moderately Changing","Rapidly Changing","Highly Disrupted","Constantly Disrupted"]
+        options: ["Stable", "Slowly Evolving", "Moderately Changing", "Rapidly Changing", "Highly Disrupted", "Constantly Disrupted"]
       },
       {
         id: "C3", text: "C3. What is currently the greatest source of uncertainty facing your organisation?", type: "SelectDropdown", allowOther: true,
-        options: ["Artificial Intelligence","Economic Conditions","Geopolitics","Workforce Availability","Competition","Regulation","Climate & Environment","Customer Behaviour","Supply Chain","Technology","Other"]
+        options: ["Artificial Intelligence", "Economic Conditions", "Geopolitics", "Workforce Availability", "Competition", "Regulation", "Climate & Environment", "Customer Behaviour", "Supply Chain", "Technology", "Other"]
       },
       {
         id: "C4", text: "C4. Which external developments are currently receiving significant leadership attention?", type: "CheckboxList", limit: 5, allowOther: true,
         hint: "Select up to five.",
-        options: ["Artificial Intelligence","Automation","Climate Change","Cybersecurity","Demographic Changes","Economic Uncertainty","Energy Transition","Geopolitical Risks","New Competitors","New Regulations","Supply Chain Disruptions","Talent Shortages","Workforce Transformation","Other"]
+        options: ["Artificial Intelligence", "Automation", "Climate Change", "Cybersecurity", "Demographic Changes", "Economic Uncertainty", "Energy Transition", "Geopolitical Risks", "New Competitors", "New Regulations", "Supply Chain Disruptions", "Talent Shortages", "Workforce Transformation", "Other"]
       },
       {
         id: "C5", text: "C5. How often does leadership discuss developments beyond the next three years?", type: "OptionSelection",
-        options: ["Never","Rarely","Sometimes","Often","Consistently"]
+        options: ["Never", "Rarely", "Sometimes", "Often", "Consistently"]
       },
       {
         id: "C6", text: "C6. Does your Board regularly discuss developments beyond the next three years?", type: "OptionSelection",
-        options: ["Never","Rarely","Sometimes","Often","Consistently"]
+        options: ["Never", "Rarely", "Sometimes", "Often", "Consistently"]
       },
       {
         id: "C7", text: "C7. Does your organisation have a dedicated strategy, risk, innovation or future-focused committee?", type: "OptionSelection",
-        options: ["Yes","No"]
+        options: ["Yes", "No"]
       }
     ]
   },
@@ -194,20 +194,20 @@ Estimated Completion Time: 15 – 20 Minutes`,
     questions: [
       {
         id: "D1", text: "D1. Which statement best describes your organisation's AI maturity?", type: "OptionSelection",
-        options: ["AI Not Yet Discussed","Exploring AI Opportunities","Piloting AI Initiatives","Deploying AI in Selected Functions","AI Integrated Across Multiple Functions","AI Integrated Into Core Operations","AI Driving Business Model Transformation"]
+        options: ["AI Not Yet Discussed", "Exploring AI Opportunities", "Piloting AI Initiatives", "Deploying AI in Selected Functions", "AI Integrated Across Multiple Functions", "AI Integrated Into Core Operations", "AI Driving Business Model Transformation"]
       },
       {
         id: "D2", text: "D2. Which statement best describes your organisation's AI Governance maturity?", type: "OptionSelection",
-        options: ["AI Governance Not Discussed","Early Discussions","Policy Development","Initial Implementation","Managed","Optimised"]
+        options: ["AI Governance Not Discussed", "Early Discussions", "Policy Development", "Initial Implementation", "Managed", "Optimised"]
       },
       {
         id: "D3", text: "D3. Primary AI Use Cases", type: "CheckboxList",
         hint: "Select all applicable.",
-        options: ["Productivity","Operations","Customer Service","Human Resources","Finance","Marketing","Research","Innovation","Strategic Planning","Risk Management","None Currently"]
+        options: ["Productivity", "Operations", "Customer Service", "Human Resources", "Finance", "Marketing", "Research", "Innovation", "Strategic Planning", "Risk Management", "None Currently"]
       },
       {
         id: "D4", text: "D4. What is the biggest concern regarding AI?", type: "SelectDropdown", allowOther: true,
-        options: ["Workforce Impact","Skills Gap","Ethics","Data Privacy","Cybersecurity","Compliance","Return on Investment","Governance","Other"]
+        options: ["Workforce Impact", "Skills Gap", "Ethics", "Data Privacy", "Cybersecurity", "Compliance", "Return on Investment", "Governance", "Other"]
       }
     ]
   },
@@ -226,16 +226,16 @@ Estimated Completion Time: 15 – 20 Minutes`,
       { id: "E2", text: "E2. What do you believe will be the biggest opportunity facing your organisation over the next five years?", type: "TextAreaInput" },
       {
         id: "E3", text: "E3. Which three developments are most likely to shape your organisation's future?", type: "CheckboxList", limit: 3, allowOther: true,
-        options: ["Artificial Intelligence","Geopolitics","Economic Conditions","Workforce Transformation","Climate Change","Technology","Regulation","Customer Behaviour","Demographic Change","Supply Chain Disruption","Other"]
+        options: ["Artificial Intelligence", "Geopolitics", "Economic Conditions", "Workforce Transformation", "Climate Change", "Technology", "Regulation", "Customer Behaviour", "Demographic Change", "Supply Chain Disruption", "Other"]
       },
       {
         id: "E4", text: "E4. How prepared do you believe your organisation is for the future?", type: "OptionSelection",
-        options: ["Very Unprepared","Unprepared","Neutral","Prepared","Highly Prepared"]
+        options: ["Very Unprepared", "Unprepared", "Neutral", "Prepared", "Highly Prepared"]
       },
       { id: "E5", text: "E5. What may be the single biggest blind spot your organisation is overlooking today?", type: "TextAreaInput" },
       {
         id: "E6", text: "E6. Which future time horizon concerns leadership most?", type: "OptionSelection",
-        options: ["Next 12 Months","1–3 Years","3–5 Years","5–10 Years","Beyond 10 Years"]
+        options: ["Next 12 Months", "1–3 Years", "3–5 Years", "5–10 Years", "Beyond 10 Years"]
       }
     ]
   },
@@ -253,7 +253,7 @@ Estimated Completion Time: 15 – 20 Minutes`,
       {
         id: "F1", text: "F1. Revenue Growth", type: "OptionSelection",
         hint: "Past 3 years:",
-        options: ["Declined","Stable","Moderate Growth","High Growth"]
+        options: ["Declined", "Stable", "Moderate Growth", "High Growth"]
       },
       {
         id: "F2", text: "F2. Innovation", type: "TextAreaInput",
@@ -262,7 +262,7 @@ Estimated Completion Time: 15 – 20 Minutes`,
       {
         id: "F3", text: "F3. Workforce Stability", type: "OptionSelection",
         hint: "Voluntary turnover:",
-        options: ["Low","Moderate","High"]
+        options: ["Low", "Moderate", "High"]
       },
       {
         id: "F4", text: "F4. Strategic Execution", type: "TextAreaInput",
@@ -310,11 +310,11 @@ Respond honestly. There are no right or wrong answers.
 The objective is to understand organisational preparedness rather than organisational aspiration.
 
 SCORING SCALE
-1 — Strongly Disagree
-2 — Disagree
-3 — Neutral / Unsure
-4 — Agree
-5 — Strongly Agree`,
+— Strongly Disagree
+— Disagree
+— Neutral / Unsure
+— Agree
+— Strongly Agree`,
     domainInfo: `STRATEGIC READINESS™
 Definition
 Strategic Readiness™ measures an organisation's ability to maintain a clear long-term direction, adapt strategy as circumstances change, align resources with future priorities, and prepare for opportunities and risks before they become urgent.
@@ -689,7 +689,7 @@ Please answer based on your current observations and professional judgement.`,
         id: "S3_A1", text: "1. Which THREE areas currently require the greatest leadership attention within your organisation?",
         type: "CheckboxList", limit: 3, allowOther: true,
         hint: "Select up to three.",
-        options: ["Revenue Growth","Profitability","Cost Management","Talent Attraction","Talent Retention","Leadership Development","Succession Planning","Innovation","Customer Experience","Digital Transformation","Artificial Intelligence","Cybersecurity","Operational Excellence","Regulatory Compliance","Sustainability / Regenerative Growth","Supply Chain Resilience","Market Expansion","Governance","Risk Management","Other"]
+        options: ["Revenue Growth", "Profitability", "Cost Management", "Talent Attraction", "Talent Retention", "Leadership Development", "Succession Planning", "Innovation", "Customer Experience", "Digital Transformation", "Artificial Intelligence", "Cybersecurity", "Operational Excellence", "Regulatory Compliance", "Sustainability / Regenerative Growth", "Supply Chain Resilience", "Market Expansion", "Governance", "Risk Management", "Other"]
       },
       { id: "S3_A2", text: "2. Which ONE of the above is currently the highest priority?", type: "TextAreaInput" },
       { id: "S3_A3", text: "3. Why is this your highest priority?", type: "TextAreaInput" }
@@ -708,13 +708,13 @@ Please answer based on your current observations and professional judgement.`,
         id: "S3_B4", text: "4. Which area presents the greatest potential risk to your organisation over the next 3–5 years?",
         type: "SelectDropdown", allowOther: true,
         hint: "Select one.",
-        options: ["Artificial Intelligence","Talent Availability","Leadership Capability","Geopolitical Tensions","Regulatory Changes","Economic Uncertainty","Cybersecurity","New Competitors","Business Model Disruption","Climate & Environmental Factors","Supply Chain Disruptions","Customer Behaviour Changes","Technology Disruption","Other"]
+        options: ["Artificial Intelligence", "Talent Availability", "Leadership Capability", "Geopolitical Tensions", "Regulatory Changes", "Economic Uncertainty", "Cybersecurity", "New Competitors", "Business Model Disruption", "Climate & Environmental Factors", "Supply Chain Disruptions", "Customer Behaviour Changes", "Technology Disruption", "Other"]
       },
       { id: "S3_B5", text: "5. Please explain why you selected this risk.", type: "TextAreaInput" },
       {
         id: "S3_B6", text: "6. How prepared do you believe your organisation is to manage this risk?",
         type: "OptionSelection",
-        options: ["Not Prepared","Slightly Prepared","Moderately Prepared","Well Prepared","Highly Prepared"]
+        options: ["Not Prepared", "Slightly Prepared", "Moderately Prepared", "Well Prepared", "Highly Prepared"]
       }
     ]
   },
@@ -731,13 +731,13 @@ Please answer based on your current observations and professional judgement.`,
         id: "S3_C7", text: "7. Which area presents the greatest opportunity for your organisation over the next 3–5 years?",
         type: "SelectDropdown", allowOther: true,
         hint: "Select one.",
-        options: ["Artificial Intelligence","New Markets","New Products or Services","Strategic Partnerships","Workforce Capability Development","Digital Transformation","Automation","Customer Experience","Research & Innovation","Sustainability / Regenerative Growth","Geographic Expansion","Data & Analytics","Other"]
+        options: ["Artificial Intelligence", "New Markets", "New Products or Services", "Strategic Partnerships", "Workforce Capability Development", "Digital Transformation", "Automation", "Customer Experience", "Research & Innovation", "Sustainability / Regenerative Growth", "Geographic Expansion", "Data & Analytics", "Other"]
       },
       { id: "S3_C8", text: "8. Please explain why you selected this opportunity.", type: "TextAreaInput" },
       {
         id: "S3_C9", text: "9. How confident are you that your organisation is positioned to capture this opportunity?",
         type: "OptionSelection",
-        options: ["Not Confident","Slightly Confident","Moderately Confident","Very Confident","Highly Confident"]
+        options: ["Not Confident", "Slightly Confident", "Moderately Confident", "Very Confident", "Highly Confident"]
       }
     ]
   },
@@ -753,7 +753,7 @@ Please answer based on your current observations and professional judgement.`,
       {
         id: "S3_D10", text: "10. Which statement best describes your industry's current situation?",
         type: "OptionSelection",
-        options: ["Stable","Gradually Evolving","Rapidly Changing","Highly Disrupted","Undergoing Fundamental Transformation"]
+        options: ["Stable", "Gradually Evolving", "Rapidly Changing", "Highly Disrupted", "Undergoing Fundamental Transformation"]
       },
       { id: "S3_D11", text: "11. Which commonly accepted assumption within your industry do you believe is most likely to be challenged over the next five years?", type: "TextAreaInput" },
       { id: "S3_D12", text: "12. What development could fundamentally change your industry faster than most people expect?", type: "TextAreaInput" }
@@ -772,13 +772,13 @@ Please answer based on your current observations and professional judgement.`,
         id: "S3_E13", text: "13. Which emerging development deserves significantly more attention from leaders?",
         type: "SelectDropdown", allowOther: true,
         hint: "Select one.",
-        options: ["Artificial Intelligence","Demographic Change","Workforce Transformation","Climate Change","Geopolitical Change","Education & Skills","Cybersecurity","Consumer Behaviour","Energy Transition","Health & Wellbeing","Regulatory Change","Other"]
+        options: ["Artificial Intelligence", "Demographic Change", "Workforce Transformation", "Climate Change", "Geopolitical Change", "Education & Skills", "Cybersecurity", "Consumer Behaviour", "Energy Transition", "Health & Wellbeing", "Regulatory Change", "Other"]
       },
       { id: "S3_E14", text: "14. Why do you believe this deserves more attention?", type: "TextAreaInput" },
       {
         id: "S3_E15", text: "15. How frequently does your organisation discuss emerging developments before they become immediate issues?",
         type: "OptionSelection",
-        options: ["Never","Rarely","Occasionally","Frequently","Systematically"]
+        options: ["Never", "Rarely", "Occasionally", "Frequently", "Systematically"]
       }
     ]
   },
@@ -794,18 +794,18 @@ Please answer based on your current observations and professional judgement.`,
       {
         id: "S3_F16", text: "16. Which statement best describes your organisation's planning horizon?",
         type: "OptionSelection",
-        options: ["Less than 12 Months","1–2 Years","3–5 Years","6–10 Years","More than 10 Years"]
+        options: ["Less than 12 Months", "1–2 Years", "3–5 Years", "6–10 Years", "More than 10 Years"]
       },
       {
         id: "S3_F17", text: "17. Which statement best describes your organisation's current use of Artificial Intelligence?",
         type: "OptionSelection",
-        options: ["AI is not currently being discussed.","AI is being explored but no formal initiatives exist.","AI pilots are being tested in selected areas.","AI has been implemented in one or more business functions.","AI is integrated across multiple business functions.","AI is integrated into core business operations.","AI is influencing business model transformation and strategic decision-making."]
+        options: ["AI is not currently being discussed.", "AI is being explored but no formal initiatives exist.", "AI pilots are being tested in selected areas.", "AI has been implemented in one or more business functions.", "AI is integrated across multiple business functions.", "AI is integrated into core business operations.", "AI is influencing business model transformation and strategic decision-making."]
       },
       {
         id: "S3_F18", text: "18. Which capability will be most important for organisational success over the next decade?",
         type: "SelectDropdown", allowOther: true,
         hint: "Select one.",
-        options: ["Leadership","Adaptability","Decision-Making","Innovation","Artificial Intelligence","Learning Agility","Strategic Thinking","Governance","Workforce Capability","Other"]
+        options: ["Leadership", "Adaptability", "Decision-Making", "Innovation", "Artificial Intelligence", "Learning Agility", "Strategic Thinking", "Governance", "Workforce Capability", "Other"]
       }
     ]
   },
@@ -830,17 +830,17 @@ Preparedness is not about predicting the future. It is about developing the capa
       {
         id: "S3_G1", text: "G1. On a scale of 1–10, how future-ready do you believe your organisation is today?",
         type: "OptionSelection",
-        options: ["1 – Not Future Ready","2","3","4","5","6","7","8","9","10 – Highly Future Ready"]
+        options: ["1 – Not Future Ready", "2", "3", "4", "5", "6", "7", "8", "9", "10 – Highly Future Ready"]
       },
       {
         id: "S3_G2", text: "G2. Compared with your competitors, how prepared is your organisation for future disruption?",
         type: "OptionSelection",
-        options: ["Significantly Behind","Slightly Behind","About The Same","Slightly Ahead","Significantly Ahead"]
+        options: ["Significantly Behind", "Slightly Behind", "About The Same", "Slightly Ahead", "Significantly Ahead"]
       },
       {
         id: "S3_G3", text: "G3. How confident are you in your answer?",
         type: "OptionSelection",
-        options: ["Low","Moderate","High"]
+        options: ["Low", "Moderate", "High"]
       },
       { id: "S3_G4", text: "G4. What may be the single biggest blind spot your organisation is overlooking today?", type: "TextAreaInput" }
     ]

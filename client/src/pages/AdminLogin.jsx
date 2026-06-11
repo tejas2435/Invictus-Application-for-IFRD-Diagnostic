@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    document.title = "Admin Login - Invictus";
+  }, []);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -15,7 +20,8 @@ export default function AdminLogin() {
 
   return (
     <div className="app-container" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
-      <div className="question-card" style={{width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', padding: '40px', borderTop: '4px solid #fff'}}>
+      <div className="question-card" style={{width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', padding: '40px', borderTop: '4px solid #fff', alignItems: 'center'}}>
+        <img src={logo} alt="Invictus Logo" style={{ height: '60px', marginBottom: '20px' }} />
         <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '20px'}}>ADMIN PORTAL</h1>
         
         <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>

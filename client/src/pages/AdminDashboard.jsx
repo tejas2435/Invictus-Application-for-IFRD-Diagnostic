@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [stats, setStats] = useState({ totalActive: 0, completed: 0 });
 
   useEffect(() => {
+    document.title = "Admin Dashboard - Invictus";
     const auth = localStorage.getItem('invictus_adminAuth');
     if (!auth) {
       navigate('/admin/login');
@@ -15,7 +17,10 @@ export default function AdminDashboard() {
   return (
     <div className="app-container">
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px'}}>
-        <h1 style={{margin: 0}}>Admin Dashboard</h1>
+        <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
+          <img src={logo} alt="Invictus Logo" style={{ height: '40px' }} />
+          <h1 style={{margin: 0}}>Admin Dashboard</h1>
+        </div>
         <button className="btn btn-secondary" onClick={() => { localStorage.removeItem('invictus_adminAuth'); navigate('/admin/login'); }}>Logout</button>
       </div>
 
