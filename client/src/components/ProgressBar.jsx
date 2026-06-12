@@ -26,9 +26,9 @@ export default function ProgressBar({ currentPartIndex, highestPartIndex, onNavi
       </div>
 
       {/* Progress track */}
-      <div className="progress-container" style={{ overflowX: 'auto', paddingBottom: '14px' }}>
-        <div className="progress-track" style={{ left: '20px', right: '20px' }} />
-        <div className="progress-track-fill" style={{ left: '20px', width: `${percentage}%` }} />
+      <div className="progress-container" style={{ overflowX: 'auto', paddingBottom: '14px', '--total-nodes': total }}>
+        <div className="progress-track" />
+        <div className="progress-track-fill" style={{ width: `calc(${percentage}% * ${(total - 1) / total})` }} />
 
         {questionnaireData.map((part, index) => {
           // Big dot = first part of each section (section boundary)

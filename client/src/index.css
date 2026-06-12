@@ -158,7 +158,6 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 40px;
   position: relative;
   background: var(--bg-card);
   padding: 15px 20px;
@@ -170,23 +169,25 @@ p {
 .progress-track {
   position: absolute;
   top: 50%;
-  left: 30px;
-  right: 30px;
+  left: 0;
+  right: 0;
   height: 2px;
   background-color: var(--border-color);
   z-index: 0;
   transform: translateY(-50%);
+  margin: 0 calc(50% / var(--total-nodes, 1));
 }
 
 .progress-track-fill {
   position: absolute;
   top: 50%;
-  left: 30px;
+  left: 0;
   height: 2px;
   background-color: var(--accent);
   z-index: 0;
   transform: translateY(-50%);
   transition: width 0.4s ease;
+  margin-left: calc(50% / var(--total-nodes, 1));
 }
 
 .progress-node {

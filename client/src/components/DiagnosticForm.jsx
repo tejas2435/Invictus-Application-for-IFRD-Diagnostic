@@ -15,7 +15,9 @@ import { supabase } from '../supabaseClient';
 
 function DiagnosticForm() {
   const navigate = useNavigate();
+  const [isInitializing, setIsInitializing] = useState(true);
   const [userId, setUserId] = useState(null);
+  const [userUUID, setUserUUID] = useState(null);
   const [userName, setUserName] = useState('');
   const [currentPartIndex, setCurrentPartIndex] = useState(0);
   const [highestPartIndex, setHighestPartIndex] = useState(0);
@@ -28,6 +30,7 @@ function DiagnosticForm() {
   const [evaluationId, setEvaluationId] = useState(null);
   const [userEmail, setUserEmail] = useState('');
   const [adminReport, setAdminReport] = useState(null);
+  const [adminId, setAdminId] = useState('Pending Assignment');
 
   useEffect(() => {
     document.title = "Participant Diagnostic - Invictus";
@@ -35,15 +38,23 @@ function DiagnosticForm() {
     const storedUUID = localStorage.getItem('invictus_userUUID');
     const storedName = localStorage.getItem('invictus_userName') || '';
     const storedEmail = localStorage.getItem('invictus_userEmail') || '';
+    
     if (!storedUserId || !storedUUID) {
       navigate('/');
       return;
     }
+    
     setUserId(storedUserId);
+    setUserUUID(storedUUID);
     setUserName(storedName);
     setUserEmail(storedEmail);
 
     const loadSupabaseData = async () => {
+      // 1. Fetch First Admin dynamically for the UI block
+      const { data: adminData } = await supabase.from('profiles').select('custom_id').eq('role', 'admin').limit(1);
+      if (adminData && adminData.length > 0) setAdminId(adminData[0].custom_id);
+
+      // 2. Fetch User Evaluation state
       const { data, error } = await supabase
         .from('evaluations')
         .select('*')
@@ -55,41 +66,46 @@ function DiagnosticForm() {
       if (data && !error) {
         if (data.status === 'submitted') {
           setSubmitSuccess(true);
-          const { data: reportData } = await supabase
+          const { data: reportDataArray } = await supabase
             .from('admin_reports')
             .select('*')
             .eq('participant_id', storedUUID)
-            .single();
+            .order('created_at', { ascending: false })
+            .limit(1);
             
-          if (reportData) {
-            setAdminReport(reportData);
+          if (reportDataArray && reportDataArray.length > 0) {
+            setAdminReport(reportDataArray[0]);
           }
+          setIsInitializing(false);
           return;
         }
+        
         setEvaluationId(data.id);
         if (data.responses) setResponses(data.responses);
         
         const hIndex = data.highest_part_index || 0;
         setHighestPartIndex(hIndex);
 
-        const savedPart = localStorage.getItem('invictus_currentPart');
+        const savedPart = localStorage.getItem(`invictus_currentPart_${storedUUID}`);
         if (savedPart !== null) {
           setCurrentPartIndex(parseInt(savedPart, 10));
         } else {
           setCurrentPartIndex(hIndex);
         }
       } else {
-        // Fallback for new empty session
-        const savedPart = localStorage.getItem('invictus_currentPart');
+        // Fallback for new empty session - isolated to user_id
+        const savedPart = localStorage.getItem(`invictus_currentPart_${storedUUID}`);
         if (savedPart !== null) setCurrentPartIndex(parseInt(savedPart, 10));
       }
+      setIsInitializing(false);
     };
+    
     loadSupabaseData();
   }, [navigate]);
 
   const handleNavigateToPart = (index) => {
     setCurrentPartIndex(index);
-    localStorage.setItem('invictus_currentPart', index);
+    localStorage.setItem(`invictus_currentPart_${userUUID}`, index);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setValidationError('');
     setErrorIds([]);
@@ -120,9 +136,16 @@ function DiagnosticForm() {
     if (updated) {
       const newGlobal = { ...responses, [part.id]: newAnswers };
       setResponses(newGlobal);
-      // Avoid overwriting local storage before Supabase resolves initially, but fine for now
     }
   }, [currentPartIndex, userName, userId, responses]);
+
+  if (isInitializing) {
+    return (
+      <div className="app-container" style={{ textAlign: 'center', marginTop: '100px', color: 'var(--text-secondary)' }}>
+        <h2>Loading Assessment...</h2>
+      </div>
+    );
+  }
 
   if (!userId) return null;
 
@@ -137,32 +160,39 @@ function DiagnosticForm() {
       }
     };
     setResponses(updatedResponses);
-    localStorage.setItem('invictus_responses', JSON.stringify(updatedResponses));
+    localStorage.setItem(`invictus_responses_${userUUID}`, JSON.stringify(updatedResponses));
     setValidationError('');
     setErrorIds([]);
   };
 
   const handleSaveAndNext = async () => {
-    // Validation — skip internal/consent meta questions
+    // Validation — skip only strictly internal/name variables
     const skipIds = ['consent_name', 'consent_date'];
     const partResponses = responses[currentPart.id] || {};
     const missing = [];
 
     for (const q of currentPart.questions) {
-      if (skipIds.includes(q.id) || q.type === 'CheckboxSingle') continue;
+      if (skipIds.includes(q.id)) continue;
       const val = partResponses[q.id];
-      let isEmpty =
-        val === undefined || val === null || val === '' ||
-        (typeof val === 'object' && !Array.isArray(val) && (val.items ? val.items.length === 0 : !val.main)) ||
-        (Array.isArray(val) && val.length === 0);
+      let isEmpty = false;
 
-      // New condition for "Other" field: require text if selected
-      if (!isEmpty && typeof val === 'object' && !Array.isArray(val)) {
-        if (val.main === 'Other' && (!val.other || val.other.trim() === '')) {
-          isEmpty = true;
-        }
-        if (val.items && val.items.includes('Other') && (!val.other || val.other.trim() === '')) {
-          isEmpty = true;
+      if (q.type === 'CheckboxSingle') {
+         // Mandates CheckboxSingle is explicitly checked
+         isEmpty = val !== true;
+      } else {
+         isEmpty =
+          val === undefined || val === null || val === '' ||
+          (typeof val === 'object' && !Array.isArray(val) && (val.items ? val.items.length === 0 : !val.main)) ||
+          (Array.isArray(val) && val.length === 0);
+
+        // Required text for "Other" field
+        if (!isEmpty && typeof val === 'object' && !Array.isArray(val)) {
+          if (val.main === 'Other' && (!val.other || val.other.trim() === '')) {
+            isEmpty = true;
+          }
+          if (val.items && val.items.includes('Other') && (!val.other || val.other.trim() === '')) {
+            isEmpty = true;
+          }
         }
       }
 
@@ -193,7 +223,6 @@ function DiagnosticForm() {
     }
     
     try {
-      const storedUUID = localStorage.getItem('invictus_userUUID');
       if (evaluationId) {
         await supabase.from('evaluations').update({
           responses: responses,
@@ -202,7 +231,7 @@ function DiagnosticForm() {
         }).eq('id', evaluationId);
       } else {
         const { data } = await supabase.from('evaluations').insert({
-          user_id: storedUUID,
+          user_id: userUUID,
           responses: responses,
           highest_part_index: newHighest,
           status: 'in-progress'
@@ -215,9 +244,9 @@ function DiagnosticForm() {
 
     if (currentPartIndex < questionnaireData.length - 1) {
       setCurrentPartIndex(nextIndex);
-      localStorage.setItem('invictus_currentPart', nextIndex);
+      localStorage.setItem(`invictus_currentPart_${userUUID}`, nextIndex);
       setHighestPartIndex(newHighest);
-      localStorage.setItem('invictus_highestPart', newHighest);
+      localStorage.setItem(`invictus_highestPart_${userUUID}`, newHighest);
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setSaving(false);
@@ -238,9 +267,9 @@ function DiagnosticForm() {
     }
     
     setSubmitSuccess(true);
-    localStorage.removeItem('invictus_currentPart');
-    localStorage.removeItem('invictus_highestPart');
-    localStorage.removeItem('invictus_responses');
+    localStorage.removeItem(`invictus_currentPart_${userUUID}`);
+    localStorage.removeItem(`invictus_highestPart_${userUUID}`);
+    localStorage.removeItem(`invictus_responses_${userUUID}`);
   };
 
   const cancelSubmit = () => {
@@ -251,7 +280,7 @@ function DiagnosticForm() {
     if (currentPartIndex > 0) {
       const prevIndex = currentPartIndex - 1;
       setCurrentPartIndex(prevIndex);
-      localStorage.setItem('invictus_currentPart', prevIndex);
+      localStorage.setItem(`invictus_currentPart_${userUUID}`, prevIndex);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setValidationError('');
       setErrorIds([]);
@@ -262,6 +291,7 @@ function DiagnosticForm() {
     return (
       <div className="app-container" style={{ textAlign: 'center', marginTop: '100px' }}>
         <div className="question-card" style={{ borderColor: 'var(--accent)', maxWidth: '600px', margin: '0 auto', textAlign: 'center', padding: '40px' }}>
+          <img src={logo} alt="Invictus Logo" style={{ height: '50px', marginBottom: '20px' }} />
           <h1 style={{ marginBottom: '20px' }}>Diagnostic Complete ✓</h1>
           
           {!adminReport ? (
@@ -272,9 +302,9 @@ function DiagnosticForm() {
               </p>
             </>
           ) : (
-            <div style={{ textAlign: 'left', marginTop: '20px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', borderLeft: '4px solid var(--accent)' }}>
+            <div style={{ textAlign: 'left', marginTop: '20px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', borderLeft: '4px solid var(--accent)', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
               <h3 style={{ color: 'var(--accent)', marginBottom: '15px' }}>Organisation Feedback received</h3>
-              <p style={{ whiteSpace: 'pre-wrap', color: 'var(--text-primary)', lineHeight: '1.6', fontSize: '1.05rem' }}>{adminReport.summary_text}</p>
+              <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere', width: '100%', color: 'var(--text-primary)', lineHeight: '1.6', fontSize: '1.05rem', margin: 0 }}>{adminReport.summary_text}</p>
               
               {adminReport.report_file_url && (
                 <a href={adminReport.report_file_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ marginTop: '25px', display: 'inline-block', borderColor: 'var(--accent)', color: 'var(--accent)', textDecoration: 'none' }}>
@@ -401,7 +431,7 @@ function DiagnosticForm() {
         <div className="info-panel" style={{ marginTop: '20px', background: 'rgba(0,230,118,0.07)', borderColor: 'rgba(0,230,118,0.4)' }}>
           <h3 style={{ color: 'var(--accent)', marginBottom: '12px', fontSize: '0.9rem', letterSpacing: '0.1em' }}>INTERNAL USE ONLY</h3>
           <p><strong>Participant ID:</strong> {userId}</p>
-          <p><strong>Organisation ID:</strong> {userId.substring(0, 8).toUpperCase()}</p>
+          <p><strong>Admin ID:</strong> {adminId}</p>
           <p><strong>Assessment Date:</strong> {new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
       )}

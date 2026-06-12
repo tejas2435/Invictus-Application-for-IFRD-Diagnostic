@@ -18,7 +18,6 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [awaitingOTP, setAwaitingOTP] = useState(false);
   const [otp, setOtp] = useState('');
-  const [serverOtp, setServerOtp] = useState('');
 
   useEffect(() => {
     document.title = "Participant Sign Up - Invictus";
@@ -33,56 +32,6 @@ export default function Signup() {
       return setError("Passwords do not match.");
     }
     setLoading(true);
-
-    // 1. Generate 6-digit OTP
-    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    setServerOtp(generatedOtp);
-
-    // 2. Send via EmailJS
-    try {
-      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          service_id: 'YOUR_SERVICE_ID', // Replace with EmailJS Service ID
-          template_id: 'YOUR_TEMPLATE_ID', // Replace with EmailJS Template ID
-          user_id: 'YOUR_PUBLIC_KEY', // Replace with EmailJS Public Key
-          template_params: {
-            to_email: formData.email,
-            to_name: formData.fullName,
-            otp_code: generatedOtp
-          }
-        })
-      });
-      
-      if (!response.ok) {
-        // Technically it might fail if keys aren't set, we log it but continue for testing if needed.
-        console.error("EmailJS failed to send OTP.");
-      } else {
-        console.log("OTP Sent via EmailJS!");
-      }
-    } catch (err) {
-      console.error("Error calling EmailJS:", err);
-    }
-
-    setAwaitingOTP(true);
-    setLoading(false);
-  };
-
-  const handleVerifyOTP = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    
-    // 3. Verify OTP locally
-    if (otp !== serverOtp) {
-      setError("Invalid or incorrect OTP. Please try again.");
-      setLoading(false);
-      return;
-    }
-
-    // 4. OTP matches! Now we officially create the user in Supabase.
-    // (Ensure you turned OFF 'Confirm Email' in Supabase!)
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
@@ -99,23 +48,56 @@ export default function Signup() {
     if (signUpError) {
       setError(signUpError.message);
       setLoading(false);
-    } else if (data?.user) {
-      // Wait briefly for the trigger to insert the profile
-      await new Promise(r => setTimeout(r, 600));
+    } else if (data?.session) {
+      if (data?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('custom_id')
+          .eq('id', data.user.id)
+          .single();
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('custom_id')
-        .eq('id', data.user.id)
-        .single();
-
-      localStorage.setItem('invictus_userId', profile?.custom_id || data.user.id);
-      localStorage.setItem('invictus_userUUID', data.user.id);
-      localStorage.setItem('invictus_userName', formData.fullName);
-      localStorage.setItem('invictus_userEmail', data.user.email || '');
-      navigate('/diagnostic');
+        localStorage.setItem('invictus_userId', profile?.custom_id || data.user.id);
+        localStorage.setItem('invictus_userUUID', data.user.id);
+        localStorage.setItem('invictus_userName', formData.fullName);
+        localStorage.setItem('invictus_userEmail', data.user.email || '');
+        navigate('/diagnostic');
+      }
     } else {
+      setAwaitingOTP(true);
       setLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    const { data, error: verifyError } = await supabase.auth.verifyOtp({
+      email: formData.email,
+      token: otp,
+      type: 'signup'
+    });
+
+    if (verifyError) {
+      setError(verifyError.message);
+      setLoading(false);
+    } else {
+      if (data?.user) {
+        await new Promise(r => setTimeout(r, 600));
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('custom_id')
+          .eq('id', data.user.id)
+          .single();
+
+        localStorage.setItem('invictus_userId', profile?.custom_id || data.user.id);
+        localStorage.setItem('invictus_userUUID', data.user.id);
+        localStorage.setItem('invictus_userName', formData.fullName);
+        localStorage.setItem('invictus_userEmail', data.user.email || '');
+        navigate('/diagnostic');
+      }
     }
   };
 
@@ -136,21 +118,18 @@ export default function Signup() {
               <div>
                 <label className="question-text" style={{fontSize: '0.9rem'}}>4. Mobile Number</label>
                 <div style={{display: 'flex', gap: '10px'}}>
-                  <select name="phoneCode" value={formData.phoneCode} onChange={handleChange} className="input-text" style={{flex: '0 0 110px', padding: '0 10px'}} required>
-                    <option value="">Code</option>
-                    <option value="+1">+1 (US/CA)</option>
+                  <select name="phoneCode" value={formData.phoneCode} onChange={handleChange} className="input-text" style={{flex: '0 0 110px', padding: '10px 5px', cursor: 'pointer', appearance: 'auto'}} required>
+                    <option value="" disabled>Code</option>
+                    <option value="+1">+1 (US)</option>
                     <option value="+44">+44 (UK)</option>
-                    <option value="+91">+91 (IN)</option>
                     <option value="+61">+61 (AU)</option>
-                    <option value="+81">+81 (JP)</option>
                     <option value="+65">+65 (SG)</option>
-                    <option value="+971">+971 (UAE)</option>
-                    <option value="+49">+49 (DE)</option>
-                    <option value="+33">+33 (FR)</option>
+                    <option value="+91">+91 (IN)</option>
+                    <option value="+971">+971 (AE)</option>
+                    <option value="+60">+60 (MY)</option>
+                    <option value="+62">+62 (ID)</option>
+                    <option value="+353">+353 (IE)</option>
                     <option value="+86">+86 (CN)</option>
-                    <option value="+27">+27 (ZA)</option>
-                    <option value="+55">+55 (BR)</option>
-                    <option value="+7">+7 (RU)</option>
                   </select>
                   <input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} type="text" className="input-text" placeholder="Number" style={{flex: 1}} required />
                 </div>

@@ -46,6 +46,56 @@ app.post('/api/save', (req, res) => {
   }
 });
 
+const https = require('https');
+
+app.post('/api/send-email', (req, res) => {
+  const { to, subject, html, apiKey } = req.body;
+  if (!to || !subject || !html || !apiKey) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const data = JSON.stringify({
+    from: 'Invictus Diagnostics <onboarding@resend.dev>',
+    to,
+    subject,
+    html
+  });
+
+  const options = {
+    hostname: 'api.resend.com',
+    port: 443,
+    path: '/emails',
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(data)
+    }
+  };
+
+  const emailReq = https.request(options, (emailRes) => {
+    let responseData = '';
+    
+    emailRes.on('data', (chunk) => { responseData += chunk; });
+
+    emailRes.on('end', () => {
+      if (emailRes.statusCode >= 200 && emailRes.statusCode < 300) {
+        res.json({ success: true, data: JSON.parse(responseData) });
+      } else {
+        res.status(emailRes.statusCode).json({ success: false, message: responseData });
+      }
+    });
+  });
+
+  emailReq.on('error', (error) => {
+    console.error('Email request error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  });
+
+  emailReq.write(data);
+  emailReq.end();
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
