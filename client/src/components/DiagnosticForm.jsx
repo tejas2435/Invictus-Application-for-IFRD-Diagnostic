@@ -13,6 +13,8 @@ import {
 
 import { supabase } from '../supabaseClient';
 
+
+
 function DiagnosticForm() {
   const navigate = useNavigate();
   const [isInitializing, setIsInitializing] = useState(true);
@@ -38,12 +40,12 @@ function DiagnosticForm() {
     const storedUUID = localStorage.getItem('invictus_userUUID');
     const storedName = localStorage.getItem('invictus_userName') || '';
     const storedEmail = localStorage.getItem('invictus_userEmail') || '';
-    
+
     if (!storedUserId || !storedUUID) {
       navigate('/');
       return;
     }
-    
+
     setUserId(storedUserId);
     setUserUUID(storedUUID);
     setUserName(storedName);
@@ -62,7 +64,7 @@ function DiagnosticForm() {
         .order('updated_at', { ascending: false })
         .limit(1)
         .single();
-        
+
       if (data && !error) {
         if (data.status === 'submitted') {
           setSubmitSuccess(true);
@@ -72,17 +74,17 @@ function DiagnosticForm() {
             .eq('participant_id', storedUUID)
             .order('created_at', { ascending: false })
             .limit(1);
-            
+
           if (reportDataArray && reportDataArray.length > 0) {
             setAdminReport(reportDataArray[0]);
           }
           setIsInitializing(false);
           return;
         }
-        
+
         setEvaluationId(data.id);
         if (data.responses) setResponses(data.responses);
-        
+
         const hIndex = data.highest_part_index || 0;
         setHighestPartIndex(hIndex);
 
@@ -99,7 +101,7 @@ function DiagnosticForm() {
       }
       setIsInitializing(false);
     };
-    
+
     loadSupabaseData();
   }, [navigate]);
 
@@ -177,10 +179,10 @@ function DiagnosticForm() {
       let isEmpty = false;
 
       if (q.type === 'CheckboxSingle') {
-         // Mandates CheckboxSingle is explicitly checked
-         isEmpty = val !== true;
+        // Mandates CheckboxSingle is explicitly checked
+        isEmpty = val !== true;
       } else {
-         isEmpty =
+        isEmpty =
           val === undefined || val === null || val === '' ||
           (typeof val === 'object' && !Array.isArray(val) && (val.items ? val.items.length === 0 : !val.main)) ||
           (Array.isArray(val) && val.length === 0);
@@ -213,15 +215,15 @@ function DiagnosticForm() {
     setValidationError('');
     setErrorIds([]);
     setSaving(true);
-    
+
     let newHighest = highestPartIndex;
     let nextIndex = currentPartIndex;
-    
+
     if (currentPartIndex < questionnaireData.length - 1) {
       nextIndex = currentPartIndex + 1;
       newHighest = Math.max(highestPartIndex, nextIndex);
     }
-    
+
     try {
       if (evaluationId) {
         await supabase.from('evaluations').update({
@@ -258,14 +260,14 @@ function DiagnosticForm() {
 
   const confirmAndSubmit = async () => {
     setShowSubmitConfirm(false);
-    
+
     if (evaluationId) {
       await supabase.from('evaluations').update({
         status: 'submitted',
         submitted_at: new Date().toISOString()
       }).eq('id', evaluationId);
     }
-    
+
     setSubmitSuccess(true);
     localStorage.removeItem(`invictus_currentPart_${userUUID}`);
     localStorage.removeItem(`invictus_highestPart_${userUUID}`);
@@ -293,7 +295,7 @@ function DiagnosticForm() {
         <div className="question-card" style={{ borderColor: 'var(--accent)', maxWidth: '600px', margin: '0 auto', textAlign: 'center', padding: '40px' }}>
           <img src={logo} alt="Invictus Logo" style={{ height: '50px', marginBottom: '20px' }} />
           <h1 style={{ marginBottom: '20px' }}>Diagnostic Complete ✓</h1>
-          
+
           {!adminReport ? (
             <>
               <p>Thank you for completing the Invictus Future Readiness Diagnostic™ (IFRD™).</p>
@@ -305,7 +307,7 @@ function DiagnosticForm() {
             <div style={{ textAlign: 'left', marginTop: '20px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', borderLeft: '4px solid var(--accent)', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
               <h3 style={{ color: 'var(--accent)', marginBottom: '15px' }}>Organisation Feedback received</h3>
               <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere', width: '100%', color: 'var(--text-primary)', lineHeight: '1.6', fontSize: '1.05rem', margin: 0 }}>{adminReport.summary_text}</p>
-              
+
               {adminReport.report_file_url && (
                 <a href={adminReport.report_file_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ marginTop: '25px', display: 'inline-block', borderColor: 'var(--accent)', color: 'var(--accent)', textDecoration: 'none' }}>
                   📄 Download Attached Report
@@ -370,94 +372,94 @@ function DiagnosticForm() {
     <>
       <div className="app-container fade-enter-active">
         {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <img src={logo} alt="Invictus Logo" style={{ height: '35px' }} />
-          <h1 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '0.02em' }}>
-            Future Readiness Diagnostic™
-          </h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <img src={logo} alt="Invictus Logo" style={{ height: '35px' }} />
+            <h1 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '0.02em' }}>
+              Future Readiness Diagnostic™
+            </h1>
+          </div>
+          <ProfileMenu userId={userId} userName={userName} userEmail={userEmail} />
         </div>
-        <ProfileMenu userId={userId} userName={userName} userEmail={userEmail} />
-      </div>
 
-      {/* Progress Bar */}
-      <ProgressBar currentPartIndex={currentPartIndex} highestPartIndex={highestPartIndex} onNavigate={handleNavigateToPart} />
+        {/* Progress Bar */}
+        <ProgressBar currentPartIndex={currentPartIndex} highestPartIndex={highestPartIndex} onNavigate={handleNavigateToPart} />
 
-      {/* Validation Error */}
-      {validationError && (
-        <div style={{
-          background: 'rgba(255, 65, 54, 0.15)',
-          border: '1px solid var(--error)',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px',
-          color: 'var(--error)',
-          fontSize: '0.9rem'
-        }}>
-          ⚠ {validationError}
-        </div>
-      )}
-
-      {/* Section header */}
-      <div className="part-header" style={{ marginBottom: '20px' }}>
-        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-          {currentPart.sectionLabel}
-        </div>
-        <h2 style={{ margin: 0 }}>{currentPart.title}</h2>
-        {currentPart.subtitle && (
-          <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>{currentPart.subtitle}</p>
+        {/* Validation Error */}
+        {validationError && (
+          <div style={{
+            background: 'rgba(255, 65, 54, 0.15)',
+            border: '1px solid var(--error)',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            marginBottom: '20px',
+            color: 'var(--error)',
+            fontSize: '0.9rem'
+          }}>
+            ⚠ {validationError}
+          </div>
         )}
-      </div>
 
-      {/* Info before questions */}
-      {currentPart.infoBefore && <InfoPanel text={currentPart.infoBefore} />}
-
-      {/* Domain definition panel */}
-      {currentPart.domainInfo && <DomainInfoPanel text={currentPart.domainInfo} />}
-
-      {/* Key Question panel */}
-      {currentPart.keyQuestion && <KeyQuestionPanel text={currentPart.keyQuestion} />}
-
-      {/* Questions */}
-      <div className="questions-container">
-        {currentPart.questions.map(q => renderQuestion(q))}
-      </div>
-
-      {/* Info after questions */}
-      {currentPart.infoAfter && <InfoPanel text={currentPart.infoAfter} />}
-
-      {/* Consent internal use block */}
-      {currentPart.type === 'consent' && (
-        <div className="info-panel" style={{ marginTop: '20px', background: 'rgba(0,230,118,0.07)', borderColor: 'rgba(0,230,118,0.4)' }}>
-          <h3 style={{ color: 'var(--accent)', marginBottom: '12px', fontSize: '0.9rem', letterSpacing: '0.1em' }}>INTERNAL USE ONLY</h3>
-          <p><strong>Participant ID:</strong> {userId}</p>
-          <p><strong>Admin ID:</strong> {adminId}</p>
-          <p><strong>Assessment Date:</strong> {new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        {/* Section header */}
+        <div className="part-header" style={{ marginBottom: '20px' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            {currentPart.sectionLabel}
+          </div>
+          <h2 style={{ margin: 0 }}>{currentPart.title}</h2>
+          {currentPart.subtitle && (
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>{currentPart.subtitle}</p>
+          )}
         </div>
-      )}
 
-      {/* Footer Nav */}
-      <div className="form-footer">
-        {currentPartIndex > 0 ? (
+        {/* Info before questions */}
+        {currentPart.infoBefore && <InfoPanel text={currentPart.infoBefore} />}
+
+        {/* Domain definition panel */}
+        {currentPart.domainInfo && <DomainInfoPanel text={currentPart.domainInfo} />}
+
+        {/* Key Question panel */}
+        {currentPart.keyQuestion && <KeyQuestionPanel text={currentPart.keyQuestion} />}
+
+        {/* Questions */}
+        <div className="questions-container">
+          {currentPart.questions.map(q => renderQuestion(q))}
+        </div>
+
+        {/* Info after questions */}
+        {currentPart.infoAfter && <InfoPanel text={currentPart.infoAfter} />}
+
+        {/* Consent internal use block */}
+        {currentPart.type === 'consent' && (
+          <div className="info-panel" style={{ marginTop: '20px', background: 'rgba(0,230,118,0.07)', borderColor: 'rgba(0,230,118,0.4)' }}>
+            <h3 style={{ color: 'var(--accent)', marginBottom: '12px', fontSize: '0.9rem', letterSpacing: '0.1em' }}>INTERNAL USE ONLY</h3>
+            <p><strong>Participant ID:</strong> {userId}</p>
+            <p><strong>Admin ID:</strong> {adminId}</p>
+            <p><strong>Assessment Date:</strong> {new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+        )}
+
+        {/* Footer Nav */}
+        <div className="form-footer">
+          {currentPartIndex > 0 ? (
+            <button
+              className="btn btn-secondary"
+              style={{ borderColor: '#fff', color: '#fff' }}
+              onClick={handleBack}
+              disabled={saving}
+            >
+              ← Back
+            </button>
+          ) : <div />}
+
           <button
             className="btn btn-secondary"
             style={{ borderColor: '#fff', color: '#fff' }}
-            onClick={handleBack}
+            onClick={handleSaveAndNext}
             disabled={saving}
           >
-            ← Back
+            {saving ? 'Saving...' : currentPartIndex === questionnaireData.length - 1 ? 'Submit Assessment' : 'Save & Next →'}
           </button>
-        ) : <div />}
-
-        <button
-          className="btn btn-secondary"
-          style={{ borderColor: '#fff', color: '#fff' }}
-          onClick={handleSaveAndNext}
-          disabled={saving}
-        >
-          {saving ? 'Saving...' : currentPartIndex === questionnaireData.length - 1 ? 'Submit Assessment' : 'Save & Next →'}
-        </button>
-      </div>
+        </div>
       </div>
 
       {/* Submit Confirmation Modal */}
