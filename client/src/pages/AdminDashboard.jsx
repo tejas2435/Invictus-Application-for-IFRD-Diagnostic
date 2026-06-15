@@ -18,10 +18,14 @@ function EvaluationsTab() {
   useEffect(() => { fetchEvaluations(); }, []);
 
   const fetchEvaluations = async () => {
-    const { data: evals, error } = await supabase
+    const { data: participants, error: profErr } = await supabase
+      .from('profiles')
+      .select('id, custom_id, full_name, preferred_name, phone_number, email, created_at')
+      .eq('role', 'participant');
+
+    const { data: evals, error: evalErr } = await supabase
       .from('evaluations')
-      .select(`*, profiles (custom_id, full_name, preferred_name, phone_number, email)`)
-      .order('updated_at', { ascending: false });
+      .select('*');
 
     const { data: reports } = await supabase
       .from('admin_reports')
@@ -33,7 +37,29 @@ function EvaluationsTab() {
     }
     setRespondedMap(rMap);
 
-    if (!error && evals) setEvaluations(evals);
+    if (!profErr && participants) {
+      const formattedEvals = participants.map(p => {
+        const evalData = evals?.find(e => e.user_id === p.id);
+        
+        return {
+          id: evalData ? evalData.id : `no-eval-${p.id}`,
+          user_id: p.id,
+          status: evalData ? evalData.status : 'not-started',
+          updated_at: evalData ? evalData.updated_at : p.created_at,
+          responses: evalData ? evalData.responses : {},
+          profiles: {
+            custom_id: p.custom_id,
+            full_name: p.full_name,
+            preferred_name: p.preferred_name,
+            phone_number: p.phone_number,
+            email: p.email
+          }
+        };
+      });
+
+      formattedEvals.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+      setEvaluations(formattedEvals);
+    }
     setLoading(false);
   };
 
@@ -318,12 +344,33 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   const fetchStats = async () => {
-    const { data } = await supabase.from('evaluations').select('status');
-    if (data) {
+    const { data: participants } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('role', 'participant');
+      
+    const { data: evals } = await supabase
+      .from('evaluations')
+      .select('user_id, status');
+
+    if (participants) {
+      let active = 0;
+      let completed = 0;
+      let total = participants.length;
+
+      participants.forEach(p => {
+        const evalData = evals?.find(e => e.user_id === p.id);
+        if (evalData && evalData.status === 'submitted') {
+          completed++;
+        } else {
+          active++;
+        }
+      });
+
       setStats({
-        active: data.filter(d => d.status === 'in-progress').length,
-        completed: data.filter(d => d.status === 'submitted').length,
-        total: data.length
+        active,
+        completed,
+        total
       });
     }
   };
