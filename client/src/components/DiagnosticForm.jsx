@@ -433,7 +433,7 @@ function DiagnosticForm() {
           <div className="info-panel" style={{ marginTop: '20px', background: 'rgba(0,230,118,0.07)', borderColor: 'rgba(0,230,118,0.4)' }}>
             <h3 style={{ color: 'var(--accent)', marginBottom: '12px', fontSize: '0.9rem', letterSpacing: '0.1em' }}>INTERNAL USE ONLY</h3>
             <p><strong>Participant ID:</strong> {userId}</p>
-            <p><strong>Admin ID:</strong> {adminId}</p>
+            <p><strong>Organization ID:</strong> {adminId}</p>
             <p><strong>Assessment Date:</strong> {new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
         )}
