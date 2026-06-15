@@ -158,6 +158,7 @@ function EvaluationsTab() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               apiKey: RESEND_API_KEY,
+              from: import.meta.env.VITE_RESEND_FROM_EMAIL,
               to: pEmail,
               subject: 'Your Invictus Assessment has been Reviewed',
               html: `<p>Hello ${selectedRespondEval.profiles?.full_name},</p><p>An admin has responded to your assessment. Please log in to your Invictus dashboard to see your personalized response and download your report.</p><p>Best regards,<br/>Invictus Diagnostics Team</p>`
