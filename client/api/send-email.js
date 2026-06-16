@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: req.body.from || process.env.VITE_RESEND_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'Invictus Diagnostics <onboarding@resend.dev>',
+        from: req.body.from || process.env.VITE_RESEND_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'Invictus Diagnostics <info@invictusleader.com>',
         to,
         subject,
         html

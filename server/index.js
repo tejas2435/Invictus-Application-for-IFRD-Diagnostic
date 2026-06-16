@@ -55,7 +55,7 @@ app.post('/api/send-email', (req, res) => {
   }
 
   const data = JSON.stringify({
-    from: 'Invictus Diagnostics <onboarding@resend.dev>',
+    from: 'Invictus Diagnostics <info@invictusleader.com>',
     to,
     subject,
     html

@@ -5,7 +5,8 @@
   --bg-card: rgba(25, 25, 25, 0.7);
   --text-primary: #f0f0f0;
   --text-secondary: #a0a0a0;
-  --accent: #00e676; /* Google form style but dark with neon green accent based on their green/red dots idea */
+  --accent: #00e676;
+  /* Google form style but dark with neon green accent based on their green/red dots idea */
   --accent-hover: #00c853;
   --error: #ff1744;
   --border-color: rgba(255, 255, 255, 0.1);
@@ -29,7 +30,7 @@ body {
 
 /* App Container */
 .app-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 40px 20px;
   width: 100%;
@@ -43,6 +44,15 @@ h1 {
   background: linear-gradient(90deg, #fff, #888);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Global Logo */
+.main-logo {
+  display: block;
+  margin: 0 auto 30px auto;
+  height: 100px;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 h2 {
@@ -70,6 +80,7 @@ p {
   border-radius: 8px;
   margin-bottom: 30px;
 }
+
 .info-panel p {
   color: var(--text-primary);
   font-weight: 400;
@@ -85,6 +96,7 @@ p {
   border-radius: 8px;
   margin-bottom: 28px;
 }
+
 .key-question-label {
   font-size: 0.7rem;
   text-transform: uppercase;
@@ -94,6 +106,7 @@ p {
   display: block;
   margin-bottom: 8px;
 }
+
 .key-question-text {
   font-size: 1.15rem;
   font-weight: 600;
@@ -103,12 +116,13 @@ p {
 
 /* Domain Info Panel */
 .domain-info-panel {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 20px 24px;
   border-radius: 8px;
   margin-bottom: 28px;
 }
+
 .domain-info-panel p {
   color: var(--text-secondary);
   margin-bottom: 4px;
@@ -127,11 +141,13 @@ p {
 .progress-bar-wrapper {
   margin-bottom: 36px;
 }
+
 .progress-section-labels {
   display: flex;
   justify-content: space-around;
   margin-bottom: 8px;
 }
+
 .section-label {
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -139,13 +155,16 @@ p {
   color: var(--text-secondary);
   transition: color 0.3s;
 }
+
 .section-label.done {
   color: var(--accent);
 }
+
 .section-label.active {
   color: #fff;
   font-weight: 700;
 }
+
 .progress-label {
   margin-top: 10px;
   font-size: 0.88rem;
@@ -261,9 +280,17 @@ p {
 }
 
 @keyframes pulse-red {
-  0%   { box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.2), 0 0 20px rgba(255, 23, 68, 0.08); }
-  50%  { box-shadow: 0 0 0 4px rgba(255, 23, 68, 0.35), 0 0 30px rgba(255, 23, 68, 0.2); }
-  100% { box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.2), 0 0 20px rgba(255, 23, 68, 0.08); }
+  0% {
+    box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.2), 0 0 20px rgba(255, 23, 68, 0.08);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px rgba(255, 23, 68, 0.35), 0 0 30px rgba(255, 23, 68, 0.2);
+  }
+
+  100% {
+    box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.2), 0 0 20px rgba(255, 23, 68, 0.08);
+  }
 }
 
 /* Required tag shown inside error cards */
@@ -288,7 +315,9 @@ p {
 }
 
 /* Inputs */
-.input-text, .input-textarea, .input-select {
+.input-text,
+.input-textarea,
+.input-select {
   width: 100%;
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid var(--border-color);
@@ -300,7 +329,9 @@ p {
   transition: all 0.2s ease;
 }
 
-.input-text:focus, .input-textarea:focus, .input-select:focus {
+.input-text:focus,
+.input-textarea:focus,
+.input-select:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(0, 230, 118, 0.2);
@@ -356,10 +387,12 @@ p {
 .scrollable-list::-webkit-scrollbar {
   width: 6px;
 }
+
 .scrollable-list::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 3px;
 }
+
 .scrollable-list::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: 3px;
@@ -412,14 +445,17 @@ p {
   opacity: 0;
   transform: translateY(10px);
 }
+
 .fade-enter-active {
   opacity: 1;
   transform: translateY(0);
   transition: opacity 300ms, transform 300ms;
 }
+
 .fade-exit {
   opacity: 1;
 }
+
 .fade-exit-active {
   opacity: 0;
   transition: opacity 300ms;

@@ -33,6 +33,8 @@ function DiagnosticForm() {
   const [userEmail, setUserEmail] = useState('');
   const [adminReport, setAdminReport] = useState(null);
   const [adminId, setAdminId] = useState('Pending Assignment');
+  const [organization, setOrganization] = useState('General');
+  const [preferredName, setPreferredName] = useState('');
 
   useEffect(() => {
     document.title = "Participant Diagnostic - Invictus";
@@ -55,6 +57,12 @@ function DiagnosticForm() {
       // 1. Fetch First Admin dynamically for the UI block
       const { data: adminData } = await supabase.from('profiles').select('custom_id').eq('role', 'admin').limit(1);
       if (adminData && adminData.length > 0) setAdminId(adminData[0].custom_id);
+
+      const { data: profileData } = await supabase.from('profiles').select('organization, preferred_name').eq('id', storedUUID).single();
+      if (profileData) {
+        if (profileData.organization) setOrganization(profileData.organization);
+        if (profileData.preferred_name) setPreferredName(profileData.preferred_name);
+      }
 
       // 2. Fetch User Evaluation state
       const { data, error } = await supabase
@@ -293,14 +301,14 @@ function DiagnosticForm() {
     return (
       <div className="app-container" style={{ textAlign: 'center', marginTop: '100px' }}>
         <div className="question-card" style={{ borderColor: 'var(--accent)', maxWidth: '600px', margin: '0 auto', textAlign: 'center', padding: '40px' }}>
-          <img src={logo} alt="Invictus Logo" style={{ height: '50px', marginBottom: '20px' }} />
+          <img src={logo} alt="Invictus Logo" className="main-logo" />
           <h1 style={{ marginBottom: '20px' }}>Diagnostic Complete ✓</h1>
 
           {!adminReport ? (
             <>
               <p>Thank you for completing the Invictus Future Readiness Diagnostic™ (IFRD™).</p>
               <p style={{ marginTop: '10px', color: 'var(--text-secondary)' }}>
-                Your assessment has been submitted. Your organisation will review your responses and you will be notified by email.
+                Your assessment has been submitted. Invictus Leader will review your responses and you will be notified by email.
               </p>
             </>
           ) : (
@@ -372,14 +380,17 @@ function DiagnosticForm() {
     <>
       <div className="app-container fade-enter-active">
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <img src={logo} alt="Invictus Logo" style={{ height: '35px' }} />
-            <h1 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '0.02em' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
+          <div style={{ flex: 1 }}></div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 2 }}>
+            <img src={logo} alt="Invictus Logo" className="main-logo" style={{ marginBottom: '10px' }} />
+            <h1 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '0.02em', textAlign: 'center' }}>
               Future Readiness Diagnostic™
             </h1>
           </div>
-          <ProfileMenu userId={userId} userName={userName} userEmail={userEmail} />
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            <ProfileMenu userId={userId} userName={preferredName ? `${userName} (${preferredName})` : userName} userEmail={userEmail} />
+          </div>
         </div>
 
         {/* Progress Bar */}
@@ -433,7 +444,7 @@ function DiagnosticForm() {
           <div className="info-panel" style={{ marginTop: '20px', background: 'rgba(0,230,118,0.07)', borderColor: 'rgba(0,230,118,0.4)' }}>
             <h3 style={{ color: 'var(--accent)', marginBottom: '12px', fontSize: '0.9rem', letterSpacing: '0.1em' }}>INTERNAL USE ONLY</h3>
             <p><strong>Participant ID:</strong> {userId}</p>
-            <p><strong>Organization ID:</strong> {adminId}</p>
+            <p><strong>Organization Name:</strong> {organization}</p>
             <p><strong>Assessment Date:</strong> {new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
         )}

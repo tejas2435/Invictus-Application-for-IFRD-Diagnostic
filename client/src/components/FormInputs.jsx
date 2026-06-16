@@ -1,4 +1,5 @@
 import React from 'react';
+import Select from 'react-select';
 
 // Helper to get card class based on answered/error state
 function cardClass(hasError, isAnswered) {
@@ -79,22 +80,36 @@ export function SelectDropdown({ question, value, onChange, hasError, isAnswered
   const otherText = value?.other || '';
   const showOther = question.allowOther && selected === 'Other';
 
+  const selectOptions = question.options.map(opt => ({ value: opt, label: opt }));
+  const currentValue = selectOptions.find(o => o.value === selected) || null;
+
   return (
     <div id={`q-${question.id}`} className={cardClass(hasError, isAnswered)}>
       {hasError && <div className="field-error-tag">⚠ Required</div>}
       <div className="question-text">{question.text}</div>
       {question.hint && <div className="question-hint">{question.hint}</div>}
-      <select
-        className="input-text"
-        value={selected}
-        onChange={(e) => onChange({ main: e.target.value, other: '' })}
-        style={{ cursor: 'pointer' }}
-      >
-        <option value="">— Select an option —</option>
-        {question.options.map((opt) => (
-          <option key={opt} value={opt}>{opt}</option>
-        ))}
-      </select>
+      
+      <Select
+        options={selectOptions}
+        value={currentValue}
+        onChange={(opt) => onChange({ main: opt ? opt.value : '', other: '' })}
+        placeholder="— Select an option —"
+        isClearable
+        menuPortalTarget={document.body}
+        menuPosition="fixed"
+        className="react-select-container"
+        classNamePrefix="react-select"
+        styles={{
+          control: (base) => ({ ...base, background: 'rgba(0,0,0,0.5)', borderColor: 'var(--border-color)', minHeight: '44px' }),
+          singleValue: (base) => ({ ...base, color: 'var(--text-primary)' }),
+          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+          menuList: (base) => ({...base, background: '#1a1a1a'}),
+          menu: (base) => ({...base, background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.15)'}),
+          option: (base, state) => ({...base, background: state.isFocused ? 'var(--accent)' : 'transparent', color: state.isFocused ? '#000' : 'var(--text-primary)'}),
+          input: (base) => ({ ...base, color: 'var(--text-primary)' })
+        }}
+      />
+
       {showOther && (
         <input
           type="text"

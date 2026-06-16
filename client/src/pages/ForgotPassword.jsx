@@ -35,7 +35,7 @@ export default function ForgotPassword() {
   return (
     <div className="app-container" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
       <div className="question-card" style={{width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center'}}>
-        <img src={logo} alt="Invictus Logo" style={{ height: '60px', marginBottom: '20px' }} />
+        <img src={logo} alt="Invictus Logo" className="main-logo" />
         <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '20px'}}>Reset Password</h1>
         
         <form onSubmit={handleReset} style={{display: 'flex', flexDirection: 'column', gap: '20px', width: '100%'}}>

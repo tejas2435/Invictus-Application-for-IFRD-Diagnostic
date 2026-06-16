@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { supabase } from '../supabaseClient';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -70,7 +72,7 @@ export default function Login() {
   return (
     <div className="app-container" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
       <div className="question-card" style={{width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center'}}>
-        <img src={logo} alt="Invictus Logo" style={{ height: '60px', marginBottom: '20px' }} />
+        <img src={logo} alt="Invictus Logo" className="main-logo" />
         <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '20px'}}>Participant Login</h1>
         
         <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px', width: '100%'}}>
@@ -82,7 +84,12 @@ export default function Login() {
           </div>
           <div>
             <label style={{display: 'block', marginBottom: '8px', color: 'var(--text-secondary)'}}>Password</label>
-            <input type="password" className="input-text" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Enter password" />
+            <div style={{position: 'relative'}}>
+               <input type={showPassword ? 'text' : 'password'} className="input-text" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Enter password" />
+               <div style={{position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)'}} onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+               </div>
+            </div>
           </div>
           
           <div style={{textAlign: 'right', marginTop: '-10px'}}>

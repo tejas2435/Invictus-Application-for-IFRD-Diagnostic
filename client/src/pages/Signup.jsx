@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { supabase } from '../supabaseClient';
+import Select from 'react-select';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { countryOptions } from '../data/countries';
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { orgName } = useParams();
   const [formData, setFormData] = useState({
     fullName: '',
     preferredName: '',
     email: '',
-    phoneCode: '',
+    phoneCode: '+1',
     phoneNumber: '',
     password: '',
     confirmPassword: ''
@@ -18,6 +22,8 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [awaitingOTP, setAwaitingOTP] = useState(false);
   const [otp, setOtp] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     document.title = "Participant Sign Up - Invictus";
@@ -50,9 +56,12 @@ export default function Signup() {
       setLoading(false);
     } else if (data?.session) {
       if (data?.user) {
+        if (orgName) {
+           await supabase.from('profiles').update({ organization: orgName }).eq('id', data.user.id);
+        }
         const { data: profile } = await supabase
           .from('profiles')
-          .select('custom_id')
+          .select('custom_id, organization')
           .eq('id', data.user.id)
           .single();
 
@@ -85,10 +94,14 @@ export default function Signup() {
     } else {
       if (data?.user) {
         await new Promise(r => setTimeout(r, 600));
+        
+        if (orgName) {
+           await supabase.from('profiles').update({ organization: orgName }).eq('id', data.user.id);
+        }
 
         const { data: profile } = await supabase
           .from('profiles')
-          .select('custom_id')
+          .select('custom_id, organization')
           .eq('id', data.user.id)
           .single();
 
@@ -104,8 +117,8 @@ export default function Signup() {
   return (
     <div className="app-container" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
       <div className="question-card" style={{width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center'}}>
-        <img src={logo} alt="Invictus Logo" style={{ height: '60px', marginBottom: '20px' }} />
-        <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '30px'}}>Sign Up for Participant</h1>
+        <img src={logo} alt="Invictus Logo" className="main-logo" />
+        <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '30px'}}>Sign Up for Participant {orgName ? <div style={{fontSize:'0.9rem', color:'var(--accent)'}}>{orgName}</div> : null}</h1>
         
         {!awaitingOTP ? (
           <>
@@ -118,24 +131,41 @@ export default function Signup() {
               <div>
                 <label className="question-text" style={{fontSize: '0.9rem'}}>4. Mobile Number</label>
                 <div style={{display: 'flex', gap: '10px'}}>
-                  <select name="phoneCode" value={formData.phoneCode} onChange={handleChange} className="input-text" style={{flex: '0 0 110px', padding: '10px 5px', cursor: 'pointer', appearance: 'auto'}} required>
-                    <option value="" disabled>Code</option>
-                    <option value="+1">+1 (US)</option>
-                    <option value="+44">+44 (UK)</option>
-                    <option value="+61">+61 (AU)</option>
-                    <option value="+65">+65 (SG)</option>
-                    <option value="+91">+91 (IN)</option>
-                    <option value="+971">+971 (AE)</option>
-                    <option value="+60">+60 (MY)</option>
-                    <option value="+62">+62 (ID)</option>
-                    <option value="+353">+353 (IE)</option>
-                    <option value="+86">+86 (CN)</option>
-                  </select>
+                  <Select
+                    options={countryOptions}
+                    value={countryOptions.find(o => o.value === formData.phoneCode)}
+                    onChange={(selected) => setFormData({...formData, phoneCode: selected.value})}
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                    styles={{
+                      control: (base) => ({ ...base, background: 'rgba(0,0,0,0.5)', borderColor: 'var(--border-color)', minWidth: '130px', minHeight: '44px' }),
+                      singleValue: (base) => ({ ...base, color: 'var(--text-primary)' }),
+                      menuList: (base) => ({...base, background: 'var(--bg-dark)'}),
+                      option: (base, state) => ({...base, background: state.isFocused ? 'var(--accent)' : 'transparent', color: state.isFocused ? '#000' : 'var(--text-primary)'}),
+                      input: (base) => ({ ...base, color: 'var(--text-primary)' })
+                    }}
+                  />
                   <input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} type="text" className="input-text" placeholder="Number" style={{flex: 1}} required />
                 </div>
               </div>
-              <div><label className="question-text" style={{fontSize: '0.9rem'}}>5. Set Password</label><input name="password" value={formData.password} onChange={handleChange} type="password" className="input-text" required /></div>
-              <div><label className="question-text" style={{fontSize: '0.9rem'}}>6. Confirm Password</label><input name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} type="password" className="input-text" required /></div>
+              <div>
+                <label className="question-text" style={{fontSize: '0.9rem'}}>5. Set Password</label>
+                <div style={{position: 'relative'}}>
+                   <input name="password" value={formData.password} onChange={handleChange} type={showPassword ? 'text' : 'password'} className="input-text" required />
+                   <div style={{position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)'}} onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                   </div>
+                </div>
+              </div>
+              <div>
+                <label className="question-text" style={{fontSize: '0.9rem'}}>6. Confirm Password</label>
+                <div style={{position: 'relative'}}>
+                   <input name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} type={showConfirmPassword ? 'text' : 'password'} className="input-text" required />
+                   <div style={{position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)'}} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                      {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                   </div>
+                </div>
+              </div>
 
               <button type="submit" disabled={loading} className="btn btn-secondary" style={{marginTop: '20px', width: '100%', borderColor: '#fff', color: '#fff', opacity: loading ? 0.7 : 1}}>
                 {loading ? 'Registering...' : 'Register & Verify Email'}

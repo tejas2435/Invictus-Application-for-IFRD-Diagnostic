@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { supabase } from '../supabaseClient';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -45,7 +47,7 @@ export default function ResetPassword() {
   return (
     <div className="app-container" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
       <div className="question-card" style={{width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center'}}>
-        <img src={logo} alt="Invictus Logo" style={{ height: '60px', marginBottom: '20px' }} />
+        <img src={logo} alt="Invictus Logo" className="main-logo" />
         <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '20px'}}>Update Password</h1>
         
         <form onSubmit={handleUpdate} style={{display: 'flex', flexDirection: 'column', gap: '20px', width: '100%'}}>
@@ -54,7 +56,12 @@ export default function ResetPassword() {
 
           <div>
             <label style={{display: 'block', marginBottom: '8px', color: 'var(--text-secondary)'}}>New Password</label>
-            <input type="password" className="input-text" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Enter new password" />
+            <div style={{position: 'relative'}}>
+               <input type={showPassword ? 'text' : 'password'} className="input-text" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Enter new password" />
+               <div style={{position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)'}} onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+               </div>
+            </div>
           </div>
 
           <button type="submit" disabled={loading} className="btn btn-secondary" style={{marginTop: '10px', width: '100%', borderColor: '#fff', color: '#fff', opacity: loading ? 0.7 : 1}}>

@@ -4,26 +4,40 @@ import logo from '../assets/logo.png';
 import { supabase } from '../supabaseClient';
 import { questionnaireData } from '../data/questionnaire';
 
-function EvaluationsTab() {
-  const [evaluations, setEvaluations] = useState([]);
-  const [loading, setLoading] = useState(true);
+function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respondedMap: propRespondedMap, onDataLoaded }) {
+  const [evaluations, setEvaluations] = useState(propEvaluations || []);
+  const [loading, setLoading] = useState(!propEvaluations);
   const [selectedViewEval, setSelectedViewEval] = useState(null);
   const [selectedRespondEval, setSelectedRespondEval] = useState(null);
   const [reportSummary, setReportSummary] = useState('');
   const [reportFile, setReportFile] = useState(null);
   const [sendingRecord, setSendingRecord] = useState(false);
-  const [respondedMap, setRespondedMap] = useState({});
+  const [respondedMap, setRespondedMap] = useState(propRespondedMap || {});
 
+  // Sync if parent provides data
+  useEffect(() => {
+    if (propEvaluations) {
+      setEvaluations(propEvaluations);
+      setLoading(false);
+    }
+  }, [propEvaluations]);
 
-  useEffect(() => { fetchEvaluations(); }, []);
+  useEffect(() => {
+    if (propRespondedMap) setRespondedMap(propRespondedMap);
+  }, [propRespondedMap]);
+
+  // Only self-fetch if used standalone (inside org accordion with no parent data)
+  useEffect(() => {
+    if (!propEvaluations) fetchEvaluations();
+  }, []);
 
   const fetchEvaluations = async () => {
     const { data: participants, error: profErr } = await supabase
       .from('profiles')
-      .select('id, custom_id, full_name, preferred_name, phone_number, email, created_at')
+      .select('id, custom_id, full_name, preferred_name, phone_number, email, created_at, organization')
       .eq('role', 'participant');
 
-    const { data: evals, error: evalErr } = await supabase
+    const { data: evals } = await supabase
       .from('evaluations')
       .select('*');
 
@@ -40,7 +54,6 @@ function EvaluationsTab() {
     if (!profErr && participants) {
       const formattedEvals = participants.map(p => {
         const evalData = evals?.find(e => e.user_id === p.id);
-        
         return {
           id: evalData ? evalData.id : `no-eval-${p.id}`,
           user_id: p.id,
@@ -52,13 +65,14 @@ function EvaluationsTab() {
             full_name: p.full_name,
             preferred_name: p.preferred_name,
             phone_number: p.phone_number,
-            email: p.email
+            email: p.email,
+            organization: p.organization
           }
         };
       });
-
       formattedEvals.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
       setEvaluations(formattedEvals);
+      if (onDataLoaded) onDataLoaded(formattedEvals, rMap);
     }
     setLoading(false);
   };
@@ -75,7 +89,7 @@ function EvaluationsTab() {
         .eq('participant_id', ev.user_id)
         .order('created_at', { ascending: false })
         .limit(1);
-      
+
       const existingReport = existingReports && existingReports.length > 0 ? existingReports[0] : null;
       setReportSummary(existingReport?.summary_text || '');
     } else {
@@ -93,13 +107,13 @@ function EvaluationsTab() {
         const fileName = `${selectedRespondEval.user_id}-${Date.now()}.${fileExt}`;
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('reports').upload(fileName, reportFile);
-          
+
         if (uploadError) {
           alert("Failed to upload the report file: " + uploadError.message + ".\nPlease ensure the 'reports' storage bucket exists and is public in your Supabase dashboard.");
           setSendingRecord(false);
           return;
         }
-        
+
         if (uploadData) {
           const { data: urlData } = supabase.storage.from('reports').getPublicUrl(fileName);
           fileUrl = urlData.publicUrl;
@@ -122,12 +136,12 @@ function EvaluationsTab() {
           admin_id: localStorage.getItem('invictus_adminUUID'),
           created_at: new Date().toISOString()
         }).eq('id', existingReport.id);
-        
+
         if (updateError) {
-            console.error("Update Error:", updateError);
-            alert("Database Error updating report: " + updateError.message);
-            setSendingRecord(false);
-            return;
+          console.error("Update Error:", updateError);
+          alert("Database Error updating report: " + updateError.message);
+          setSendingRecord(false);
+          return;
         }
       } else {
         const { error: insertError } = await supabase.from('admin_reports').insert({
@@ -136,12 +150,12 @@ function EvaluationsTab() {
           summary_text: reportSummary,
           report_file_url: fileUrl
         });
-        
+
         if (insertError) {
-            console.error("Insert Error:", insertError);
-            alert("Database Error inserting report: " + insertError.message);
-            setSendingRecord(false);
-            return;
+          console.error("Insert Error:", insertError);
+          alert("Database Error inserting report: " + insertError.message);
+          setSendingRecord(false);
+          return;
         }
       }
 
@@ -150,7 +164,7 @@ function EvaluationsTab() {
       const pEmail = selectedRespondEval.profiles?.email;
       let emailSent = false;
       let emailError = '';
-      
+
       if (RESEND_API_KEY && pEmail) {
         try {
           const res = await fetch('/api/send-email', {
@@ -184,18 +198,18 @@ function EvaluationsTab() {
       setSelectedRespondEval(null);
       setReportSummary('');
       setReportFile(null);
-      
+
       let alertMessage = 'Report saved successfully!';
       if (!RESEND_API_KEY) {
-          alertMessage += '\n(Email skipped: VITE_RESEND_API_KEY is missing in .env)';
+        alertMessage += '\n(Email skipped: VITE_RESEND_API_KEY is missing in .env)';
       } else if (!pEmail) {
-          alertMessage += '\n(Email skipped: Participant has no email recorded)';
+        alertMessage += '\n(Email skipped: Participant has no email recorded)';
       } else if (!emailSent) {
-          alertMessage += `\n(Email failed to send: ${emailError})`;
+        alertMessage += `\n(Email failed to send: ${emailError})`;
       } else {
-          alertMessage += '\nNotification email sent to participant!';
+        alertMessage += '\nNotification email sent to participant!';
       }
-      
+
       alert(alertMessage);
     } catch (_) { alert('Error saving report data.'); }
     setSendingRecord(false);
@@ -203,17 +217,23 @@ function EvaluationsTab() {
 
   if (loading) return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Loading...</div>;
 
+  const filteredEvaluations = evaluations.filter(ev => {
+    if (filter === 'general') return !ev.profiles.organization || ev.profiles.organization.trim() === '';
+    if (filter === 'org') return ev.profiles.organization === orgName;
+    return true; // 'all'
+  });
+
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        {evaluations.length === 0
+        {filteredEvaluations.length === 0
           ? <div className="question-card" style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No evaluations found.</div>
-          : evaluations.map(ev => {
+          : filteredEvaluations.map(ev => {
             const hasResponded = respondedMap[ev.user_id] !== undefined;
             return (
               <div key={ev.id} className="question-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderColor: ev.status === 'submitted' ? 'rgba(0,230,118,0.4)' : 'var(--border-color)' }}>
                 <div>
-                  <h3 style={{ margin: '0 0 5px 0', fontSize: '1.2rem', color: '#fff' }}>{ev.profiles?.full_name}</h3>
+                  <h3 style={{ margin: '0 0 5px 0', fontSize: '1.2rem', color: '#fff' }}>{ev.profiles?.full_name} {ev.profiles?.preferred_name ? `(${ev.profiles.preferred_name})` : ''} {ev.profiles?.organization && <span style={{ fontSize: '0.8rem', color: 'var(--accent)', marginLeft: '10px' }}>[{ev.profiles.organization}]</span>}</h3>
                   <div style={{ display: 'flex', gap: '15px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                     <span><strong>ID:</strong> {ev.profiles?.custom_id}</span>
                     <span><strong>Status:</strong> <span style={{ color: ev.status === 'submitted' ? 'var(--accent)' : 'inherit' }}>{ev.status}</span></span>
@@ -224,6 +244,7 @@ function EvaluationsTab() {
                   <button onClick={() => setSelectedViewEval(ev)} className="btn btn-secondary" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }}>
                     View Assessment
                   </button>
+                  <button className="btn btn-secondary" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={(e) => { e.stopPropagation(); alert('Domain Report Summary is coming soon.'); }}>Domain Report Summary </button>
                   <button disabled={ev.status !== 'submitted'} onClick={() => handleSelectRespond(ev, hasResponded)} className="btn btn-secondary"
                     style={{ borderColor: ev.status === 'submitted' ? 'var(--accent)' : 'var(--border-color)', color: ev.status === 'submitted' ? 'var(--accent)' : 'var(--border-color)', opacity: ev.status === 'submitted' ? 1 : 0.5 }}>
                     {hasResponded ? 'Edit Response' : 'Respond'}
@@ -247,7 +268,7 @@ function EvaluationsTab() {
             <div style={{ marginBottom: '40px', background: 'rgba(255,255,255,0.03)', padding: '25px', borderRadius: '8px', borderLeft: '4px solid var(--accent)' }}>
               <h3 style={{ marginTop: 0, marginBottom: '15px', color: 'var(--accent)' }}>Participant Details</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '1.05rem', color: 'var(--text-secondary)' }}>
-                <div><strong style={{ color: '#fff' }}>Full Name:</strong> {selectedViewEval.profiles?.full_name}</div>
+                <div><strong style={{ color: '#fff' }}>Full Name:</strong> {selectedViewEval.profiles?.full_name} {selectedViewEval.profiles?.preferred_name ? `(${selectedViewEval.profiles.preferred_name})` : ''}</div>
                 <div><strong style={{ color: '#fff' }}>Preferred Name:</strong> {selectedViewEval.profiles?.preferred_name || 'N/A'}</div>
                 <div><strong style={{ color: '#fff' }}>PID:</strong> {selectedViewEval.profiles?.custom_id}</div>
                 <div><strong style={{ color: '#fff' }}>Email:</strong> {selectedViewEval.profiles?.email || 'N/A'}</div>
@@ -302,7 +323,7 @@ function EvaluationsTab() {
       {selectedRespondEval && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
           <div className="question-card" style={{ maxWidth: '700px', width: '100%', padding: '40px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ marginBottom: '10px', color: '#fff' }}>{respondedMap[selectedRespondEval.user_id] ? 'Edit Response for' : 'Respond to'} {selectedRespondEval.profiles?.full_name}</h2>
+            <h2 style={{ marginBottom: '10px', color: '#fff' }}>{respondedMap[selectedRespondEval.user_id] ? 'Edit Response for' : 'Respond to'} {selectedRespondEval.profiles?.full_name} {selectedRespondEval.profiles?.preferred_name ? `(${selectedRespondEval.profiles.preferred_name})` : ''}</h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>ID: {selectedRespondEval.profiles?.custom_id}</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -332,49 +353,153 @@ function EvaluationsTab() {
   );
 }
 
+function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespondedMap }) {
+  const [orgs, setOrgs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAdd, setShowAdd] = useState(false);
+  const [newOrgName, setNewOrgName] = useState('');
+  const [openOrgs, setOpenOrgs] = useState({});
+
+  useEffect(() => { fetchOrgs(); }, []);
+
+  const fetchOrgs = async () => {
+    const { data } = await supabase.from('organizations').select('*').order('created_at', { ascending: false });
+    if (data) setOrgs(data);
+    setLoading(false);
+  };
+
+  const handleCreate = async () => {
+    if (!newOrgName) return;
+    const { error } = await supabase.from('organizations').insert({ name: newOrgName });
+    if (error) alert("Error creating organization (ensure you've run the SQL migration or wait a moment): " + error.message);
+    else {
+      setNewOrgName('');
+      setShowAdd(false);
+      fetchOrgs();
+    }
+  };
+
+  const toggleOrg = (orgId, orgName) => {
+    const isOpening = !openOrgs[orgId];
+    setOpenOrgs(prev => ({ ...prev, [orgId]: !prev[orgId] }));
+    // Notify parent which org is selected so stats update
+    if (isOpening) {
+      if (onOrgSelect) onOrgSelect(orgName);
+    } else {
+      // closing — if it was the selected one, deselect
+      if (selectedOrg === orgName && onOrgSelect) onOrgSelect(null);
+    }
+  };
+
+  const copyLink = (orgName) => {
+    const url = `${window.location.origin}/${encodeURIComponent(orgName)}/signup`;
+    navigator.clipboard.writeText(url);
+    alert("Signup link copied to clipboard: " + url);
+  };
+
+  if (loading) return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Loading organizations...</div>;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+        <button className="btn" onClick={() => setShowAdd(true)}>+ Add Organization</button>
+      </div>
+
+      {showAdd && (
+        <div style={{ marginBottom: '20px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+          <h3 style={{ marginTop: 0 }}>Create New Organization</h3>
+          <input type="text" className="input-text" value={newOrgName} onChange={e => setNewOrgName(e.target.value)} placeholder="Organization Name" style={{ marginBottom: '15px' }} />
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>
+            <button className="btn" onClick={handleCreate}>Create</button>
+          </div>
+        </div>
+      )}
+
+      {orgs.map(org => {
+        const isOpen = !!openOrgs[org.id];
+        const isSelected = selectedOrg === org.name;
+        // Filter shared evaluations for this org
+        const orgEvals = allEvaluations.filter(ev => ev.profiles?.organization === org.name);
+        const orgTotal = orgEvals.length;
+        const orgCompleted = orgEvals.filter(e => e.status === 'submitted').length;
+        const orgActive = orgTotal - orgCompleted;
+
+        return (
+          <div key={org.id} style={{ marginBottom: '15px', border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--border-color)'}`, borderRadius: '8px', overflow: 'hidden', transition: 'border-color 0.2s' }}>
+            <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }} onClick={() => toggleOrg(org.id, org.name)}>
+              <div>
+                <h3 style={{ margin: 0, color: '#fff' }}>{org.name}</h3>
+                <div style={{ display: 'flex', gap: '20px', marginTop: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <span>Total: <strong style={{ color: '#fff' }}>{orgTotal}</strong></span>
+                  <span style={{ color: '#ffc800' }}>In Progress: <strong>{orgActive}</strong></span>
+                  <span style={{ color: 'var(--accent)' }}>Completed: <strong>{orgCompleted}</strong></span>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); copyLink(org.name); }}>Copy Link</button>
+                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); alert('Aggregate report averaging is coming soon.'); }}>View Average Report</button>
+                <span style={{ fontSize: '1.2rem', userSelect: 'none', color: isSelected ? 'var(--accent)' : 'inherit' }}>{isOpen ? '▲' : '▼'}</span>
+              </div>
+            </div>
+            {isOpen && (
+              <div style={{ padding: '20px', borderTop: '1px solid var(--border-color)' }}>
+                <EvaluationsTab
+                  filter="org"
+                  orgName={org.name}
+                  evaluations={allEvaluations.length > 0 ? allEvaluations : undefined}
+                  respondedMap={allEvaluations.length > 0 ? allRespondedMap : undefined}
+                />
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {orgs.length === 0 && !showAdd && (
+        <div className="question-card" style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No organizations found. Add one above.</div>
+      )}
+    </div>
+  )
+}
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({ active: 0, completed: 0, total: 0 });
+  const [tab, setTab] = useState('all');
+  const [selectedOrg, setSelectedOrg] = useState(null); // for org accordion selection
+  const [allEvaluations, setAllEvaluations] = useState([]);
+  const [allRespondedMap, setAllRespondedMap] = useState({});
   const adminName = localStorage.getItem('invictus_adminName') || 'Admin';
 
   useEffect(() => {
     document.title = "Admin Dashboard - Invictus";
     const auth = localStorage.getItem('invictus_adminAuth');
     if (!auth) { navigate('/admin/login'); return; }
-    fetchStats();
   }, [navigate]);
 
-  const fetchStats = async () => {
-    const { data: participants } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('role', 'participant');
-      
-    const { data: evals } = await supabase
-      .from('evaluations')
-      .select('user_id, status');
-
-    if (participants) {
-      let active = 0;
-      let completed = 0;
-      let total = participants.length;
-
-      participants.forEach(p => {
-        const evalData = evals?.find(e => e.user_id === p.id);
-        if (evalData && evalData.status === 'submitted') {
-          completed++;
-        } else {
-          active++;
-        }
-      });
-
-      setStats({
-        active,
-        completed,
-        total
-      });
-    }
+  // Compute stats dynamically based on tab + selectedOrg
+  const computeStats = (evList) => {
+    const total = evList.length;
+    const completed = evList.filter(e => e.status === 'submitted').length;
+    const active = total - completed;
+    return { total, completed, active };
   };
+
+  const statsSource = () => {
+    if (tab === 'general') {
+      return allEvaluations.filter(ev => !ev.profiles?.organization || ev.profiles.organization.trim() === '');
+    }
+    if (tab === 'organization') {
+      if (selectedOrg) {
+        return allEvaluations.filter(ev => ev.profiles?.organization === selectedOrg);
+      }
+      // No specific org selected — show totals across all org participants
+      return allEvaluations.filter(ev => ev.profiles?.organization && ev.profiles.organization.trim() !== '');
+    }
+    return allEvaluations; // 'all'
+  };
+
+  const stats = computeStats(statsSource());
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -389,21 +514,32 @@ export default function AdminDashboard() {
     <div className="app-container">
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <img src={logo} alt="Invictus Logo" style={{ height: '40px' }} />
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.6rem' }}>Admin Dashboard</h1>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '2px' }}>Welcome, {adminName}</div>
-          </div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <h1 style={{ margin: 0, fontSize: '1.6rem' }}>Admin Dashboard</h1>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '2px' }}>Welcome, {adminName}</div>
         </div>
-        <button className="btn btn-secondary" onClick={handleLogout} style={{ borderColor: 'var(--error)', color: 'var(--error)' }}>Logout</button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 2 }}>
+          <img src={logo} alt="Invictus Logo" className="main-logo" />
+        </div>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+          <button className="btn btn-secondary" onClick={handleLogout} style={{ borderColor: 'var(--error)', color: 'var(--error)' }}>Logout</button>
+        </div>
       </div>
 
-      {/* Stats */}
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
+        <button className="btn" style={{ flex: 1, background: tab === 'all' ? 'var(--accent)' : 'transparent', color: tab === 'all' ? '#000' : 'var(--text-primary)', border: '1px solid var(--border-color)' }} onClick={() => { setTab('all'); setSelectedOrg(null); }}>All</button>
+        <button className="btn" style={{ flex: 1, background: tab === 'general' ? 'var(--accent)' : 'transparent', color: tab === 'general' ? '#000' : 'var(--text-primary)', border: '1px solid var(--border-color)' }} onClick={() => { setTab('general'); setSelectedOrg(null); }}>General</button>
+        <button className="btn" style={{ flex: 1, background: tab === 'organization' ? 'var(--accent)' : 'transparent', color: tab === 'organization' ? '#000' : 'var(--text-primary)', border: '1px solid var(--border-color)' }} onClick={() => { setTab('organization'); setSelectedOrg(null); }}>Organization</button>
+      </div>
+
+      {/* Stats — dynamic based on active tab + selected org */}
       <div style={{ display: 'flex', gap: '20px', marginBottom: '35px' }}>
         <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px' }}>
           <div style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stats.total}</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Total Participants</div>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            {tab === 'organization' && selectedOrg ? `${selectedOrg} — Total` : 'Total Participants'}
+          </div>
         </div>
         <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px', borderColor: 'rgba(255,200,0,0.4)' }}>
           <div style={{ fontSize: '2.5rem', fontWeight: 700, color: '#ffc800' }}>{stats.active}</div>
@@ -415,7 +551,20 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <EvaluationsTab />
+      {tab === 'organization'
+        ? <OrganizationsTab
+          onOrgSelect={(orgName) => setSelectedOrg(orgName)}
+          selectedOrg={selectedOrg}
+          allEvaluations={allEvaluations}
+          allRespondedMap={allRespondedMap}
+        />
+        : <EvaluationsTab
+          filter={tab}
+          evaluations={allEvaluations.length > 0 ? allEvaluations : undefined}
+          respondedMap={allEvaluations.length > 0 ? allRespondedMap : undefined}
+          onDataLoaded={(evs, rmap) => { setAllEvaluations(evs); setAllRespondedMap(rmap); }}
+        />
+      }
     </div>
   );
 }
