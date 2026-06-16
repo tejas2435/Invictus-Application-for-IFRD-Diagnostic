@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { supabase } from '../supabaseClient';
 import { questionnaireData } from '../data/questionnaire';
+import DomainReportModal from '../components/DomainReportModal';
 
 function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respondedMap: propRespondedMap, onDataLoaded }) {
   const [evaluations, setEvaluations] = useState(propEvaluations || []);
   const [loading, setLoading] = useState(!propEvaluations);
   const [selectedViewEval, setSelectedViewEval] = useState(null);
   const [selectedRespondEval, setSelectedRespondEval] = useState(null);
+  const [selectedDomainEval, setSelectedDomainEval] = useState(null);
   const [reportSummary, setReportSummary] = useState('');
   const [reportFile, setReportFile] = useState(null);
   const [sendingRecord, setSendingRecord] = useState(false);
@@ -18,13 +20,22 @@ function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respond
   useEffect(() => {
     if (propEvaluations) {
       setEvaluations(propEvaluations);
-      setLoading(false);
     }
-  }, [propEvaluations]);
+    if (propRespondedMap) {
+      setRespondedMap(propRespondedMap);
+    }
+    setLoading(false);
+  }, [propEvaluations, propRespondedMap]);
 
+  // Prevent body scroll when evaluating a modal
   useEffect(() => {
-    if (propRespondedMap) setRespondedMap(propRespondedMap);
-  }, [propRespondedMap]);
+    if (selectedViewEval || selectedRespondEval || selectedDomainEval) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedViewEval, selectedRespondEval, selectedDomainEval]);
 
   // Only self-fetch if used standalone (inside org accordion with no parent data)
   useEffect(() => {
@@ -172,13 +183,15 @@ function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respond
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               apiKey: RESEND_API_KEY,
-              from: import.meta.env.VITE_RESEND_FROM_EMAIL,
+              from: import.meta.env.VITE_RESEND_FROM_EMAIL || 'Invictus Diagnostics <info@invictusleader.com>',
               to: pEmail,
               subject: 'Your Invictus Assessment has been Reviewed',
               html: `<p>Hello ${selectedRespondEval.profiles?.full_name},</p><p>An admin has responded to your assessment. Please log in to your Invictus dashboard to see your personalized response and download your report.</p><p>Best regards,<br/>Invictus Diagnostics Team</p>`
             })
           });
-          const result = await res.json();
+          const resText = await res.text();
+          let result;
+          try { result = JSON.parse(resText); } catch(e) { result = { success: res.ok, message: resText || 'No response details' }; }
           console.log('Backend Email Proxy response:', result);
           if (res.ok && result.success) emailSent = true;
           else emailError = result.message || 'Unknown backend error';
@@ -240,13 +253,25 @@ function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respond
                     <span><strong>Updated:</strong> {new Date(ev.updated_at).toLocaleDateString()}</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button onClick={() => setSelectedViewEval(ev)} className="btn btn-secondary" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <button onClick={() => setSelectedViewEval(ev)} className="btn btn-secondary" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 400 }}>
                     View Assessment
                   </button>
-                  <button className="btn btn-secondary" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={(e) => { e.stopPropagation(); alert('Domain Report Summary is coming soon.'); }}>Domain Report Summary </button>
+                  <button
+                    disabled={ev.status !== 'submitted'}
+                    onClick={() => setSelectedDomainEval(ev)}
+                    className="btn btn-secondary"
+                    style={{
+                      borderColor: ev.status === 'submitted' ? '#a78bfa' : 'var(--border-color)',
+                      color: ev.status === 'submitted' ? '#a78bfa' : 'var(--border-color)',
+                      opacity: ev.status === 'submitted' ? 1 : 0.4,
+                      padding: '6px 12px', fontSize: '0.85rem', fontWeight: 400
+                    }}
+                  >
+                    Domain Report
+                  </button>
                   <button disabled={ev.status !== 'submitted'} onClick={() => handleSelectRespond(ev, hasResponded)} className="btn btn-secondary"
-                    style={{ borderColor: ev.status === 'submitted' ? 'var(--accent)' : 'var(--border-color)', color: ev.status === 'submitted' ? 'var(--accent)' : 'var(--border-color)', opacity: ev.status === 'submitted' ? 1 : 0.5 }}>
+                    style={{ borderColor: ev.status === 'submitted' ? 'var(--accent)' : 'var(--border-color)', color: ev.status === 'submitted' ? 'var(--accent)' : 'var(--border-color)', opacity: ev.status === 'submitted' ? 1 : 0.5, padding: '6px 12px', fontSize: '0.85rem', fontWeight: 400 }}>
                     {hasResponded ? 'Edit Response' : 'Respond'}
                   </button>
                 </div>
@@ -348,6 +373,14 @@ function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respond
             </div>
           </div>
         </div>
+      )}
+
+      {/* DOMAIN REPORT MODAL */}
+      {selectedDomainEval && (
+        <DomainReportModal
+          evaluation={selectedDomainEval}
+          onClose={() => setSelectedDomainEval(null)}
+        />
       )}
     </>
   );

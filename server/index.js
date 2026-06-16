@@ -49,13 +49,13 @@ app.post('/api/save', (req, res) => {
 const https = require('https');
 
 app.post('/api/send-email', (req, res) => {
-  const { to, subject, html, apiKey } = req.body;
-  if (!to || !subject || !html || !apiKey) {
+  const { to, subject, html, apiKey, from } = req.body;
+  if (!to || !subject || !html || !apiKey || !from) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   const data = JSON.stringify({
-    from: 'Invictus Diagnostics <info@invictusleader.com>',
+    from,
     to,
     subject,
     html
@@ -79,8 +79,12 @@ app.post('/api/send-email', (req, res) => {
     emailRes.on('data', (chunk) => { responseData += chunk; });
 
     emailRes.on('end', () => {
+      let parsedData = {};
+      try { parsedData = responseData ? JSON.parse(responseData) : {}; }
+      catch (e) { parsedData = { text: responseData }; }
+      
       if (emailRes.statusCode >= 200 && emailRes.statusCode < 300) {
-        res.json({ success: true, data: JSON.parse(responseData) });
+        res.json({ success: true, data: parsedData });
       } else {
         res.status(emailRes.statusCode).json({ success: false, message: responseData });
       }

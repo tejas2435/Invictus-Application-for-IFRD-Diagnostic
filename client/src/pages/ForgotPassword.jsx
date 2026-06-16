@@ -20,6 +20,19 @@ export default function ForgotPassword() {
     setError('');
     setMessage('');
 
+    const { data: profileCheck } = await supabase
+      .from('profiles')
+      .select('email')
+      .ilike('email', email)
+      .limit(1)
+      .maybeSingle();
+
+    if (!profileCheck) {
+      setError('Account does not exist. Please check the email address or sign up.');
+      setLoading(false);
+      return;
+    }
+
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + '/reset-password',
     });

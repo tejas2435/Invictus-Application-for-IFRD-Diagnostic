@@ -70,43 +70,43 @@ export default function Login() {
   };
 
   return (
-    <div className="app-container" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
-      <div className="question-card" style={{width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center'}}>
+    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+      <div className="question-card" style={{ width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center' }}>
         <img src={logo} alt="Invictus Logo" className="main-logo" />
-        <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '20px'}}>Participant Login</h1>
-        
-        <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px', width: '100%'}}>
-          {error && <div style={{background: 'rgba(255, 23, 68, 0.1)', color: 'var(--error)', padding: '10px', borderRadius: '5px', textAlign: 'center'}}>{error}</div>}
+        <h1 style={{ textAlign: 'center', fontSize: '1.8rem', marginBottom: '20px' }}>Participant Login</h1>
+
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+          {error && <div style={{ background: 'rgba(255, 23, 68, 0.1)', color: 'var(--error)', padding: '10px', borderRadius: '5px', textAlign: 'center' }}>{error}</div>}
 
           <div>
-            <label style={{display: 'block', marginBottom: '8px', color: 'var(--text-secondary)'}}>Email Address</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Email Address</label>
             <input type="email" className="input-text" value={email} onChange={e => setEmail(e.target.value)} required placeholder="Enter your email" />
           </div>
           <div>
-            <label style={{display: 'block', marginBottom: '8px', color: 'var(--text-secondary)'}}>Password</label>
-            <div style={{position: 'relative'}}>
-               <input type={showPassword ? 'text' : 'password'} className="input-text" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Enter password" />
-               <div style={{position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)'}} onClick={() => setShowPassword(!showPassword)}>
-                  {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-               </div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Password</label>
+            <div style={{ position: 'relative' }}>
+              <input type={showPassword ? 'text' : 'password'} className="input-text" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Enter password" />
+              <div style={{ position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)' }} onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </div>
             </div>
           </div>
-          
-          <div style={{textAlign: 'right', marginTop: '-10px'}}>
-            <Link to="/forgot-password" style={{color: 'var(--text-secondary)', fontSize: '0.9rem', textDecoration: 'none'}}>Forget password?</Link>
+
+          <div style={{ textAlign: 'right', marginTop: '-10px' }}>
+            <Link to="/forgot-password" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textDecoration: 'none' }}>Forgot password?</Link>
           </div>
 
-          <button type="submit" disabled={loading} className="btn btn-secondary" style={{marginTop: '10px', width: '100%', borderColor: '#fff', color: '#fff', opacity: loading ? 0.7 : 1}}>
+          <button type="submit" disabled={loading} className="btn btn-secondary" style={{ marginTop: '10px', width: '100%', borderColor: '#fff', color: '#fff', opacity: loading ? 0.7 : 1 }}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
-        <p style={{textAlign: 'center', marginTop: '30px', color: 'var(--text-secondary)'}}>
-          New user? <Link to="/signup" style={{color: 'var(--accent)', textDecoration: 'none', fontWeight: 600}}>Sign up here</Link>
+        <p style={{ textAlign: 'center', marginTop: '30px', color: 'var(--text-secondary)' }}>
+          New user? <Link to="/signup" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>Sign up here</Link>
         </p>
 
-        <p style={{textAlign: 'center', marginTop: '50px', fontSize: '0.8rem'}}>
-          <Link to="/admin/login" style={{color: 'rgba(255,255,255,0.3)', textDecoration: 'none'}}>Admin Login Portal</Link>
+        <p style={{ textAlign: 'center', marginTop: '50px', fontSize: '0.8rem' }}>
+          <Link to="/admin/login" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>Admin Login Portal</Link>
         </p>
       </div>
     </div>
