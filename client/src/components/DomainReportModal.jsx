@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import {
   Chart, RadarController, RadialLinearScale,
   PointElement, LineElement, Filler, Tooltip, Legend
@@ -85,6 +86,8 @@ function computeDomainScores(responses) {
 export default function DomainReportModal({ evaluation, onClose }) {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
+  const radarDivRef = useRef(null);
+  const breakdownDivRef = useRef(null);
 
   const domainScores = computeDomainScores(evaluation.responses);
   const overallAvg = parseFloat(
@@ -141,7 +144,8 @@ export default function DomainReportModal({ evaluation, onClose }) {
         },
         plugins: {
           legend: {
-            labels: { color: '#f0f0f0', font: { size: 12 } }
+            labels: { color: '#f0f0f0', font: { size: 12 } },
+            onClick: null
           },
           tooltip: {
             callbacks: {
@@ -166,6 +170,22 @@ export default function DomainReportModal({ evaluation, onClose }) {
   };
 
   const overall = scoreToBand(overallAvg);
+
+  const exportElement = async (elementRef, filename) => {
+    if (!elementRef.current) return;
+    try {
+      const canvas = await html2canvas(elementRef.current, { backgroundColor: '#0f0f0f' });
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/jpeg', 0.9);
+      link.click();
+    } catch (err) {
+      console.error('Export failed:', err);
+      alert('Failed to export. Please try again.');
+    }
+  };
+
+  const participantName = evaluation.profiles?.full_name || 'Participant';
 
   return (
     <div style={{
@@ -192,46 +212,72 @@ export default function DomainReportModal({ evaluation, onClose }) {
           }}>×</button>
         </div>
 
-        {/* Overall Score Banner */}
-        <div style={{
-          background: 'rgba(255,255,255,0.04)', border: `1px solid ${overall.color}40`,
-          borderLeft: `4px solid ${overall.color}`, borderRadius: '8px',
-          padding: '20px 25px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '30px'
-        }}>
-          <div>
-            <div style={{ fontSize: '3rem', fontWeight: 800, color: overall.color, lineHeight: 1 }}>
-              {overallAvg}
-            </div>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>Overall / 5.00</div>
-          </div>
-          <div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: overall.color }}>{overall.label}</div>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '2px' }}>
-              Invictus Future Readiness Index™ — Based on 12 domains, 132 questions
-            </div>
-          </div>
-        </div>
-
-        {/* Radar Chart */}
-        <div style={{
-          background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: '12px', padding: '30px', marginBottom: '30px'
-        }}>
-          <h3 style={{ color: '#fff', margin: '0 0 20px 0', fontSize: '1rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+        {/* ── EXPORT 1: banner + radar ── */}
+        <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ color: '#fff', margin: 0, fontSize: '1rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             Radar — Future Readiness Profile™
           </h3>
+          <button className="btn btn-secondary" style={{ padding: '6px 14px', fontSize: '0.8rem' }}
+            onClick={() => exportElement(radarDivRef, `${participantName}_Radar.jpg`)}>
+            Export Graph to JPG
+          </button>
+        </div>
+
+        <div ref={radarDivRef} style={{ background: '#111', padding: '24px', borderRadius: '12px', marginBottom: '30px' }}>
+          {/* Overall Score Banner */}
+          <div style={{
+            background: 'rgba(255,255,255,0.04)', border: `1px solid ${overall.color}40`,
+            borderLeft: `4px solid ${overall.color}`, borderRadius: '8px',
+            padding: '20px 25px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '30px'
+          }}>
+            <div>
+              <div style={{ fontSize: '3rem', fontWeight: 800, color: overall.color, lineHeight: 1 }}>{overallAvg}</div>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginTop: '4px' }}>Overall / 5.00</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 700, color: overall.color }}>{overall.label}</div>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginTop: '2px' }}>
+                Invictus Future Readiness Index™ — Based on 12 domains, 132 questions
+              </div>
+            </div>
+          </div>
+
+          {/* Radar Chart */}
           <canvas ref={chartRef} style={{ maxHeight: '480px' }} />
         </div>
 
-        {/* Domain Breakdown Table */}
-        <div style={{
-          background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: '12px', padding: '25px', marginBottom: '30px'
-        }}>
-          <h3 style={{ color: '#fff', margin: '0 0 20px 0', fontSize: '1rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+        {/* ── EXPORT 2: banner + breakdown + legend ── */}
+        <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ color: '#fff', margin: 0, fontSize: '1rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             Domain Breakdown
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button className="btn btn-secondary" style={{ padding: '6px 14px', fontSize: '0.8rem' }}
+            onClick={() => exportElement(breakdownDivRef, `${participantName}_Breakdown.jpg`)}>
+            Export Details to JPG
+          </button>
+        </div>
+
+        <div ref={breakdownDivRef} style={{ background: '#111', padding: '24px', borderRadius: '12px', marginBottom: '30px' }}>
+          {/* Overall Score Banner (repeated for context) */}
+          <div style={{
+            background: 'rgba(255,255,255,0.04)', border: `1px solid ${overall.color}40`,
+            borderLeft: `4px solid ${overall.color}`, borderRadius: '8px',
+            padding: '20px 25px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '30px'
+          }}>
+            <div>
+              <div style={{ fontSize: '3rem', fontWeight: 800, color: overall.color, lineHeight: 1 }}>{overallAvg}</div>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginTop: '4px' }}>Overall / 5.00</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 700, color: overall.color }}>{overall.label}</div>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginTop: '2px' }}>
+                {participantName} — Invictus Future Readiness Index™
+              </div>
+            </div>
+          </div>
+
+          {/* Domain Breakdown bars */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
             {domainScores.map((d, i) => {
               const band = scoreToBand(d.avg);
               const pct = (d.avg / 5) * 100;
@@ -239,7 +285,7 @@ export default function DomainReportModal({ evaluation, onClose }) {
                 <div key={i}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
                     <div style={{ fontSize: '0.9rem', color: '#f0f0f0' }}>
-                      <span style={{ color: 'var(--text-secondary)', marginRight: '8px', fontSize: '0.8rem' }}>D{i + 1}</span>
+                      <span style={{ color: 'rgba(255,255,255,0.4)', marginRight: '8px', fontSize: '0.8rem' }}>D{i + 1}</span>
                       {d.name}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -252,10 +298,7 @@ export default function DomainReportModal({ evaluation, onClose }) {
                     </div>
                   </div>
                   <div style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%', width: `${pct}%`, background: band.color,
-                      borderRadius: '3px', transition: 'width 0.6s ease'
-                    }} />
+                    <div style={{ height: '100%', width: `${pct}%`, background: band.color, borderRadius: '3px' }} />
                   </div>
                   {d.answered < d.total && (
                     <div style={{ fontSize: '0.75rem', color: 'rgba(255,200,0,0.7)', marginTop: '3px' }}>
@@ -266,28 +309,28 @@ export default function DomainReportModal({ evaluation, onClose }) {
               );
             })}
           </div>
-        </div>
 
-        {/* Score Legend */}
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
-          {[
-            { range: '4.5 – 5.0', label: 'Highly Ready', color: '#00e676' },
-            { range: '3.5 – 4.4', label: 'Ready', color: '#69f0ae' },
-            { range: '2.5 – 3.4', label: 'Developing', color: '#ffc800' },
-            { range: '1.5 – 2.4', label: 'At Risk', color: '#ff9800' },
-            { range: '1.0 – 1.4', label: 'Critical Gap', color: '#ff1744' }
-          ].map(b => (
-            <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: b.color, flexShrink: 0 }} />
-              <span style={{ color: b.color }}>{b.label}</span>
-              <span>{b.range}</span>
-            </div>
-          ))}
+          {/* Score Legend */}
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            {[
+              { range: '4.5 – 5.0', label: 'Highly Ready', color: '#00e676' },
+              { range: '3.5 – 4.4', label: 'Ready', color: '#69f0ae' },
+              { range: '2.5 – 3.4', label: 'Developing', color: '#ffc800' },
+              { range: '1.5 – 2.4', label: 'At Risk', color: '#ff9800' },
+              { range: '1.0 – 1.4', label: 'Critical Gap', color: '#ff1744' }
+            ].map(b => (
+              <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: b.color, flexShrink: 0 }} />
+                <span style={{ color: b.color }}>{b.label}</span>
+                <span>{b.range}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <button onClick={onClose} style={{
           width: '100%', padding: '14px', background: 'transparent',
-          border: '1px solid rgba(255,255,255,0.2)', color: 'var(--text-secondary)',
+          border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.5)',
           borderRadius: '8px', cursor: 'pointer', fontSize: '0.95rem'
         }}>
           Close Report

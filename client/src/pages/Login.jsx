@@ -105,9 +105,11 @@ export default function Login() {
           New user? <Link to="/signup" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>Sign up here</Link>
         </p>
 
-        <p style={{ textAlign: 'center', marginTop: '50px', fontSize: '0.8rem' }}>
-          <Link to="/admin/login" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>Admin Login Portal</Link>
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '50px', fontSize: '0.8rem' }}>
+          <Link to="/supervisor/login" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>Supervisor Portal</Link>
+          <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
+          <Link to="/admin/login" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>Admin Portal</Link>
+        </div>
       </div>
     </div>
   );

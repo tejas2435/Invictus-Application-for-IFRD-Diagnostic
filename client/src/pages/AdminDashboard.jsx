@@ -4,6 +4,7 @@ import logo from '../assets/logo.png';
 import { supabase } from '../supabaseClient';
 import { questionnaireData } from '../data/questionnaire';
 import DomainReportModal from '../components/DomainReportModal';
+import OrgAverageReportModal from '../components/OrgAverageReportModal';
 
 function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respondedMap: propRespondedMap, onDataLoaded }) {
   const [evaluations, setEvaluations] = useState(propEvaluations || []);
@@ -390,8 +391,10 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
   const [orgs, setOrgs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
-  const [newOrgName, setNewOrgName] = useState('');
+  const [newOrgData, setNewOrgData] = useState({ name: '', supervisorName: '', supervisorEmail: '', password: '', maxParticipants: '' });
   const [openOrgs, setOpenOrgs] = useState({});
+  const [createLoading, setCreateLoading] = useState(false);
+  const [showOrgAvgReport, setShowOrgAvgReport] = useState(null);
 
   useEffect(() => { fetchOrgs(); }, []);
 
@@ -402,14 +405,41 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
   };
 
   const handleCreate = async () => {
-    if (!newOrgName) return;
-    const { error } = await supabase.from('organizations').insert({ name: newOrgName });
-    if (error) alert("Error creating organization (ensure you've run the SQL migration or wait a moment): " + error.message);
-    else {
-      setNewOrgName('');
-      setShowAdd(false);
-      fetchOrgs();
+    if (!newOrgData.name || !newOrgData.supervisorName || !newOrgData.supervisorEmail || !newOrgData.password || !newOrgData.maxParticipants) {
+      alert("Please fill out all fields.");
+      return;
     }
+    setCreateLoading(true);
+    try {
+      const res = await fetch('/api/create-org', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newOrgData)
+      });
+
+      let data;
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(
+          `API not available locally. Deploy to Vercel to use this feature.\n\nServer response: ${text.substring(0, 100)}...`
+        );
+      }
+      
+      if (data.success) {
+        setNewOrgData({ name: '', supervisorName: '', supervisorEmail: '', password: '', maxParticipants: '' });
+        setShowAdd(false);
+        fetchOrgs();
+        alert(`✓ Organization "${data.data?.name}" created!\nOrg ID: ${data.data?.custom_id}\nSignup Token: ${data.data?.signup_token}`);
+      } else {
+        alert("Error creating organization: " + data.message);
+      }
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
+    setCreateLoading(false);
   };
 
   const toggleOrg = (orgId, orgName) => {
@@ -424,10 +454,42 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
     }
   };
 
-  const copyLink = (orgName) => {
-    const url = `${window.location.origin}/${encodeURIComponent(orgName)}/signup`;
+  const copyLink = (signupToken) => {
+    if (!signupToken) {
+       alert("No signup token found for this organization. You may need to update the database schema.");
+       return;
+    }
+    const url = `${window.location.origin}/${encodeURIComponent(signupToken)}/signup`;
     navigator.clipboard.writeText(url);
     alert("Signup link copied to clipboard: " + url);
+  };
+
+  const handleViewAvg = async (e, orgName) => {
+    e.stopPropagation();
+    try {
+      const { data: participants, error } = await supabase
+        .from('profiles')
+        .select(`
+          id, custom_id, full_name, preferred_name, role, created_at,
+          evaluations (id, responses, status, created_at)
+        `)
+        .eq('organization', orgName)
+        .eq('role', 'participant');
+        
+      if (error) throw error;
+
+      const evals = [];
+      if (participants) {
+        participants.forEach(p => {
+          if (p.evaluations && p.evaluations.length > 0) {
+            evals.push({ ...p.evaluations[0], profiles: p });
+          }
+        });
+      }
+      setShowOrgAvgReport({ orgName, evaluations: evals });
+    } catch(err) {
+      alert("Error generating report: " + err.message);
+    }
   };
 
   if (loading) return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Loading organizations...</div>;
@@ -439,12 +501,17 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
       </div>
 
       {showAdd && (
-        <div style={{ marginBottom: '20px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+        <div style={{ marginBottom: '20px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
           <h3 style={{ marginTop: 0 }}>Create New Organization</h3>
-          <input type="text" className="input-text" value={newOrgName} onChange={e => setNewOrgName(e.target.value)} placeholder="Organization Name" style={{ marginBottom: '15px' }} />
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <input type="text" className="input-text" value={newOrgData.name} onChange={e => setNewOrgData({...newOrgData, name: e.target.value})} placeholder="Organization Name" />
+          <input type="text" className="input-text" value={newOrgData.supervisorName} onChange={e => setNewOrgData({...newOrgData, supervisorName: e.target.value})} placeholder="Supervisor Name" />
+          <input type="email" className="input-text" value={newOrgData.supervisorEmail} onChange={e => setNewOrgData({...newOrgData, supervisorEmail: e.target.value})} placeholder="Supervisor Email Address" />
+          <input type="password" className="input-text" value={newOrgData.password} onChange={e => setNewOrgData({...newOrgData, password: e.target.value})} placeholder="Supervisor Password" />
+          <input type="number" className="input-text" value={newOrgData.maxParticipants} onChange={e => setNewOrgData({...newOrgData, maxParticipants: e.target.value})} placeholder="Total Participants Limit" min="1" />
+          
+          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
             <button className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>
-            <button className="btn" onClick={handleCreate}>Create</button>
+            <button className="btn" onClick={handleCreate} disabled={createLoading}>{createLoading ? 'Creating...' : 'Create'}</button>
           </div>
         </div>
       )}
@@ -470,8 +537,8 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); copyLink(org.name); }}>Copy Link</button>
-                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); alert('Aggregate report averaging is coming soon.'); }}>View Average Report</button>
+                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); copyLink(org.signup_token); }}>Copy Link</button>
+                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => handleViewAvg(e, org.name)}>View Average Report</button>
                 <span style={{ fontSize: '1.2rem', userSelect: 'none', color: isSelected ? 'var(--accent)' : 'inherit' }}>{isOpen ? '▲' : '▼'}</span>
               </div>
             </div>
@@ -491,6 +558,14 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
 
       {orgs.length === 0 && !showAdd && (
         <div className="question-card" style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No organizations found. Add one above.</div>
+      )}
+
+      {showOrgAvgReport && (
+        <OrgAverageReportModal
+          orgName={showOrgAvgReport.orgName}
+          evaluations={showOrgAvgReport.evaluations}
+          onClose={() => setShowOrgAvgReport(null)}
+        />
       )}
     </div>
   )

@@ -216,3 +216,33 @@ export function CheckboxList({ question, value, onChange, hasError, isAnswered }
     </div>
   );
 }
+
+// RadioOptions — single-select radio list (alias-like OptionSelection, used in Section 0)
+export function RadioOptions({ question, value, onChange, hasError, isAnswered }) {
+  return (
+    <div id={`q-${question.id}`} className={cardClass(hasError, isAnswered)}>
+      {hasError && <div className="field-error-tag">⚠ Required</div>}
+      <div className="question-text">{question.text}</div>
+      {question.hint && <div className="question-hint">{question.hint}</div>}
+      <div className="options-list">
+        {question.options.map((opt) => (
+          <label
+            key={opt}
+            className={`option-item ${value === opt ? 'selected' : ''}`}
+            style={{ cursor: 'pointer' }}
+          >
+            <input
+              type="radio"
+              className="option-input"
+              name={question.id}
+              value={opt}
+              checked={value === opt}
+              onChange={() => onChange(opt)}
+            />
+            <span>{opt}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}

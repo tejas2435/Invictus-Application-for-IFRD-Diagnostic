@@ -8,7 +8,7 @@ import { countryOptions } from '../data/countries';
 
 export default function Signup() {
   const navigate = useNavigate();
-  const { orgName } = useParams();
+  const { signupToken } = useParams();
   const [formData, setFormData] = useState({
     fullName: '',
     preferredName: '',
@@ -18,12 +18,55 @@ export default function Signup() {
     password: '',
     confirmPassword: ''
   });
+  const [orgData, setOrgData] = useState(null);
+  const [orgError, setOrgError] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [awaitingOTP, setAwaitingOTP] = useState(false);
   const [otp, setOtp] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    document.title = "Participant Sign Up - Invictus";
+    if (signupToken) {
+      checkOrganization();
+    }
+  }, [signupToken]);
+
+  const checkOrganization = async () => {
+    setLoading(true);
+    // Fetch Organization By token
+    const { data: orgs, error: fetchErr } = await supabase
+      .from('organizations')
+      .select('*')
+      .eq('signup_token', signupToken)
+      .limit(1);
+
+    if (fetchErr || !orgs || orgs.length === 0) {
+      setOrgError("Invalid or expired organization signup link.");
+      setLoading(false);
+      return;
+    }
+    
+    const org = orgs[0];
+    
+    // Check participant count
+    const { count, error: countErr } = await supabase
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization', org.name)
+      .eq('role', 'participant');
+
+    if (countErr) {
+       setOrgError("Error verifying organization capabilities.");
+    } else if (org.max_participants > 0 && count >= org.max_participants) {
+       setOrgError("This organization has reached its maximum participant limit.");
+    } else {
+       setOrgData(org);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     document.title = "Participant Sign Up - Invictus";
@@ -56,8 +99,8 @@ export default function Signup() {
       setLoading(false);
     } else if (data?.session) {
       if (data?.user) {
-        if (orgName) {
-           await supabase.from('profiles').update({ organization: orgName }).eq('id', data.user.id);
+        if (orgData) {
+           await supabase.from('profiles').update({ organization: orgData.name }).eq('id', data.user.id);
         }
         const { data: profile } = await supabase
           .from('profiles')
@@ -95,8 +138,8 @@ export default function Signup() {
       if (data?.user) {
         await new Promise(r => setTimeout(r, 600));
         
-        if (orgName) {
-           await supabase.from('profiles').update({ organization: orgName }).eq('id', data.user.id);
+        if (orgData) {
+           await supabase.from('profiles').update({ organization: orgData.name }).eq('id', data.user.id);
         }
 
         const { data: profile } = await supabase
@@ -118,9 +161,16 @@ export default function Signup() {
     <div className="app-container" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
       <div className="question-card" style={{width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center'}}>
         <img src={logo} alt="Invictus Logo" className="main-logo" />
-        <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '30px'}}>Sign Up for Participant {orgName ? <div style={{fontSize:'0.9rem', color:'var(--accent)'}}>{orgName}</div> : null}</h1>
-        
-        {!awaitingOTP ? (
+        {orgError ? (
+          <div style={{ textAlign: 'center', color: 'var(--error)', marginTop: '20px' }}>
+            <h2 style={{ color: '#fff' }}>Access Denied</h2>
+            <p>{orgError}</p>
+          </div>
+        ) : (
+          <>
+            <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '30px'}}>Sign Up for Participant {orgData ? <div style={{fontSize:'0.9rem', color:'var(--accent)'}}>{orgData.name}</div> : (signupToken && 'Loading Org...')}</h1>
+            
+            {!awaitingOTP ? (
           <>
             <form onSubmit={handleSignup} style={{display: 'flex', flexDirection: 'column', gap: '20px', width: '100%'}}>
               {error && <div style={{background: 'rgba(255, 23, 68, 0.1)', color: 'var(--error)', padding: '10px', borderRadius: '5px', textAlign: 'center'}}>{error}</div>}
@@ -195,6 +245,8 @@ export default function Signup() {
             </button>
           </form>
         )}
+        </>
+      )}
       </div>
     </div>
   );

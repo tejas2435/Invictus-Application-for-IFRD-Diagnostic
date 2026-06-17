@@ -8,7 +8,7 @@ import { InfoPanel, KeyQuestionPanel, DomainInfoPanel } from './InfoPanel';
 import ProfileMenu from './ProfileMenu';
 import {
   TextAreaInput, SelectDropdown, OptionSelection,
-  CheckboxList, TextInput, CheckboxSingle, DateInput
+  CheckboxList, TextInput, CheckboxSingle, DateInput, RadioOptions
 } from './FormInputs';
 
 import { supabase } from '../supabaseClient';
@@ -368,6 +368,7 @@ function DiagnosticForm() {
       case 'TextAreaInput': return <TextAreaInput {...props} />;
       case 'SelectDropdown': return <SelectDropdown {...props} />;
       case 'OptionSelection': return <OptionSelection {...props} />;
+      case 'RadioOptions': return <RadioOptions {...props} />;
       case 'CheckboxList': return <CheckboxList {...props} />;
       case 'TextInput': return <TextInput {...props} />;
       case 'CheckboxSingle': return <CheckboxSingle {...props} />;

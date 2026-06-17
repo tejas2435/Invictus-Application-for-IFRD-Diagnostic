@@ -7,6 +7,8 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import SupervisorLogin from './pages/SupervisorLogin';
+import SupervisorDashboard from './pages/SupervisorDashboard';
 import './index.css';
 
 function App() {
@@ -15,13 +17,16 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/:orgName/signup" element={<Signup />} />
+        <Route path="/:signupToken/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/diagnostic" element={<DiagnosticForm />} />
         
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminDashboard />} />
+
+        <Route path="/supervisor/login" element={<SupervisorLogin />} />
+        <Route path="/supervisor" element={<SupervisorDashboard />} />
       </Routes>
     </Router>
   );
