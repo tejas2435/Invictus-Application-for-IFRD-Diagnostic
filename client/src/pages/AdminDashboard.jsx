@@ -7,29 +7,15 @@ import { questionnaireData } from '../data/questionnaire';
 import DomainReportModal from '../components/DomainReportModal';
 import OrgAverageReportModal from '../components/OrgAverageReportModal';
 
-function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respondedMap: propRespondedMap, onDataLoaded }) {
-  const [evaluations, setEvaluations] = useState(propEvaluations || []);
-  const [loading, setLoading] = useState(!propEvaluations);
+function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
   const [selectedViewEval, setSelectedViewEval] = useState(null);
   const [selectedRespondEval, setSelectedRespondEval] = useState(null);
   const [selectedDomainEval, setSelectedDomainEval] = useState(null);
   const [reportSummary, setReportSummary] = useState('');
   const [reportFile, setReportFile] = useState(null);
   const [sendingRecord, setSendingRecord] = useState(false);
-  const [respondedMap, setRespondedMap] = useState(propRespondedMap || {});
+  const [localRespondedMap, setLocalRespondedMap] = useState({});
 
-  // Sync if parent provides data
-  useEffect(() => {
-    if (propEvaluations) {
-      setEvaluations(propEvaluations);
-    }
-    if (propRespondedMap) {
-      setRespondedMap(propRespondedMap);
-    }
-    setLoading(false);
-  }, [propEvaluations, propRespondedMap]);
-
-  // Prevent body scroll when evaluating a modal
   useEffect(() => {
     if (selectedViewEval || selectedRespondEval || selectedDomainEval) {
       document.body.style.overflow = 'hidden';
@@ -38,57 +24,6 @@ function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respond
     }
     return () => { document.body.style.overflow = ''; };
   }, [selectedViewEval, selectedRespondEval, selectedDomainEval]);
-
-  // Only self-fetch if used standalone (inside org accordion with no parent data)
-  useEffect(() => {
-    if (!propEvaluations) fetchEvaluations();
-  }, []);
-
-  const fetchEvaluations = async () => {
-    const { data: participants, error: profErr } = await supabase
-      .from('profiles')
-      .select('id, custom_id, full_name, preferred_name, phone_number, email, created_at, organization')
-      .eq('role', 'participant');
-
-    const { data: evals } = await supabase
-      .from('evaluations')
-      .select('*');
-
-    const { data: reports } = await supabase
-      .from('admin_reports')
-      .select('participant_id, summary_text');
-
-    let rMap = {};
-    if (reports) {
-      reports.forEach(r => rMap[r.participant_id] = r.summary_text);
-    }
-    setRespondedMap(rMap);
-
-    if (!profErr && participants) {
-      const formattedEvals = participants.map(p => {
-        const evalData = evals?.find(e => e.user_id === p.id);
-        return {
-          id: evalData ? evalData.id : `no-eval-${p.id}`,
-          user_id: p.id,
-          status: evalData ? evalData.status : 'not-started',
-          updated_at: evalData ? evalData.updated_at : p.created_at,
-          responses: evalData ? evalData.responses : {},
-          profiles: {
-            custom_id: p.custom_id,
-            full_name: p.full_name,
-            preferred_name: p.preferred_name,
-            phone_number: p.phone_number,
-            email: p.email,
-            organization: p.organization
-          }
-        };
-      });
-      formattedEvals.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-      setEvaluations(formattedEvals);
-      if (onDataLoaded) onDataLoaded(formattedEvals, rMap);
-    }
-    setLoading(false);
-  };
 
   const handleSelectRespond = async (ev, hasResponded) => {
     setSelectedRespondEval(ev);
@@ -207,8 +142,8 @@ function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respond
         console.warn('VITE_RESEND_API_KEY is not set. Email notification skipped.');
       }
 
-      // Update mapping state so it becomes 'Edit Response' immediately
-      setRespondedMap(prev => ({ ...prev, [selectedRespondEval.user_id]: reportSummary }));
+      // Update local mapping state so it becomes 'Edit Response' immediately
+      setLocalRespondedMap(prev => ({ ...prev, [selectedRespondEval.user_id]: reportSummary }));
 
       setSelectedRespondEval(null);
       setReportSummary('');
@@ -230,7 +165,7 @@ function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respond
     setSendingRecord(false);
   };
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Loading...</div>;
+  if (!evaluations) return null;
 
   const filteredEvaluations = evaluations.filter(ev => {
     if (filter === 'general') return !ev.profiles.organization || ev.profiles.organization.trim() === '';
@@ -244,7 +179,7 @@ function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respond
         {filteredEvaluations.length === 0
           ? <div className="question-card" style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No evaluations found.</div>
           : filteredEvaluations.map(ev => {
-            const hasResponded = respondedMap[ev.user_id] !== undefined;
+            const hasResponded = respondedMap[ev.user_id] !== undefined || localRespondedMap[ev.user_id] !== undefined;
             return (
               <div key={ev.id} className="question-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderColor: ev.status === 'submitted' ? 'rgba(0,230,118,0.4)' : 'var(--border-color)' }}>
                 <div>
@@ -350,7 +285,7 @@ function EvaluationsTab({ filter, orgName, evaluations: propEvaluations, respond
       {selectedRespondEval && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
           <div className="question-card" style={{ maxWidth: '700px', width: '100%', padding: '40px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ marginBottom: '10px', color: '#fff' }}>{respondedMap[selectedRespondEval.user_id] ? 'Edit Response for' : 'Respond to'} {selectedRespondEval.profiles?.full_name} {selectedRespondEval.profiles?.preferred_name ? `(${selectedRespondEval.profiles.preferred_name})` : ''}</h2>
+            <h2 style={{ marginBottom: '10px', color: '#fff' }}>{(respondedMap[selectedRespondEval.user_id] || localRespondedMap[selectedRespondEval.user_id]) ? 'Edit Response for' : 'Respond to'} {selectedRespondEval.profiles?.full_name} {selectedRespondEval.profiles?.preferred_name ? `(${selectedRespondEval.profiles.preferred_name})` : ''}</h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>ID: {selectedRespondEval.profiles?.custom_id}</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -644,8 +579,8 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
                 <EvaluationsTab
                   filter="org"
                   orgName={org.name}
-                  evaluations={allEvaluations.length > 0 ? allEvaluations : undefined}
-                  respondedMap={allEvaluations.length > 0 ? allRespondedMap : undefined}
+                  evaluations={allEvaluations}
+                  respondedMap={allRespondedMap}
                 />
               </div>
             )}
@@ -675,21 +610,66 @@ export default function AdminDashboard() {
   const [allEvaluations, setAllEvaluations] = useState([]);
   const [allRespondedMap, setAllRespondedMap] = useState({});
   const [refreshing, setRefreshing] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
   const adminName = localStorage.getItem('invictus_adminName') || 'Admin';
 
   useEffect(() => {
     document.title = "Admin Dashboard - Invictus";
     const auth = localStorage.getItem('invictus_adminAuth');
     if (!auth) { navigate('/admin/login'); return; }
+    fetchDashboardData();
   }, [navigate]);
 
-  const triggerRefresh = async () => {
+  const fetchDashboardData = async () => {
     setRefreshing(true);
-    // Setting allEvaluations to empty will force child components to reload
-    setAllEvaluations([]);
-    setTimeout(() => {
-       setRefreshing(false);
-    }, 500);
+    try {
+      const { data: participants } = await supabase
+        .from('profiles')
+        .select('id, custom_id, full_name, preferred_name, phone_number, email, created_at, organization')
+        .eq('role', 'participant');
+
+      const { data: evals } = await supabase.from('evaluations').select('*');
+      const { data: reports } = await supabase.from('admin_reports').select('participant_id, summary_text');
+
+      let rMap = {};
+      if (reports) {
+        reports.forEach(r => rMap[r.participant_id] = r.summary_text);
+      }
+      setAllRespondedMap(rMap);
+
+      if (participants) {
+        const formattedEvals = participants.map(p => {
+          const evalData = evals?.find(e => e.user_id === p.id);
+          return {
+            id: evalData ? evalData.id : `no-eval-${p.id}`,
+            user_id: p.id,
+            status: evalData ? evalData.status : 'not-started',
+            updated_at: evalData ? evalData.updated_at : p.created_at,
+            responses: evalData ? evalData.responses : {},
+            profiles: {
+              custom_id: p.custom_id,
+              full_name: p.full_name,
+              preferred_name: p.preferred_name,
+              phone_number: p.phone_number,
+              email: p.email,
+              organization: p.organization
+            }
+          };
+        });
+        formattedEvals.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        setAllEvaluations(formattedEvals);
+      }
+    } catch(err) {
+      console.error(err);
+    }
+    setRefreshing(false);
+    setInitialLoading(false);
+  };
+
+  const triggerRefresh = async () => {
+    setRefreshKey(k => k + 1);
+    await fetchDashboardData();
   };
 
   // Compute stats dynamically based on tab + selectedOrg
@@ -727,6 +707,16 @@ export default function AdminDashboard() {
 
   return (
     <div className="app-container">
+      {/* Fullscreen refreshing overlay loader */}
+      {(refreshing || initialLoading) && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15, 15, 15, 0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+            <FiRefreshCw className="spin-anim" size={45} color="var(--accent)" />
+            <div style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 600 }}>Syncing Data...</div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -776,16 +766,17 @@ export default function AdminDashboard() {
 
       {tab === 'organization'
         ? <OrganizationsTab
+          key={refreshKey}
           onOrgSelect={(orgName) => setSelectedOrg(orgName)}
           selectedOrg={selectedOrg}
           allEvaluations={allEvaluations}
           allRespondedMap={allRespondedMap}
         />
         : <EvaluationsTab
+          key={refreshKey}
           filter={tab}
-          evaluations={allEvaluations.length > 0 ? allEvaluations : undefined}
-          respondedMap={allEvaluations.length > 0 ? allRespondedMap : undefined}
-          onDataLoaded={(evs, rmap) => { setAllEvaluations(evs); setAllRespondedMap(rmap); }}
+          evaluations={allEvaluations}
+          respondedMap={allRespondedMap}
         />
       }
     </div>
