@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { supabase } from '../supabaseClient';
+import { FiEye, FiEyeOff, FiRefreshCw } from 'react-icons/fi';
 import { questionnaireData } from '../data/questionnaire';
 import DomainReportModal from '../components/DomainReportModal';
 import OrgAverageReportModal from '../components/OrgAverageReportModal';
@@ -396,6 +397,12 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
   const [createLoading, setCreateLoading] = useState(false);
   const [showOrgAvgReport, setShowOrgAvgReport] = useState(null);
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [createdOrgDetails, setCreatedOrgDetails] = useState(null);
+  const [editingOrg, setEditingOrg] = useState(null);
+  const [editOrgData, setEditOrgData] = useState({});
+  const [editLoading, setEditLoading] = useState(false);
+
   useEffect(() => { fetchOrgs(); }, []);
 
   const fetchOrgs = async () => {
@@ -432,7 +439,12 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
         setNewOrgData({ name: '', supervisorName: '', supervisorEmail: '', password: '', maxParticipants: '' });
         setShowAdd(false);
         fetchOrgs();
-        alert(`✓ Organization "${data.data?.name}" created!\nOrg ID: ${data.data?.custom_id}\nSignup Token: ${data.data?.signup_token}`);
+        setCreatedOrgDetails({
+          name: data.data?.name,
+          email: newOrgData.supervisorEmail,
+          password: newOrgData.password,
+          signupLink: `${window.location.origin}/${encodeURIComponent(data.data?.signup_token)}/signup`
+        });
       } else {
         alert("Error creating organization: " + data.message);
       }
@@ -440,6 +452,32 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
       alert("Error: " + err.message);
     }
     setCreateLoading(false);
+  };
+
+  const handleEditSubmit = async () => {
+    if (!editOrgData.name || !editOrgData.supervisorEmail || !editOrgData.maxParticipants) {
+      alert("Please fill out the required fields (Name, Email, Limit).");
+      return;
+    }
+    setEditLoading(true);
+    try {
+      const res = await fetch('/api/update-org', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editOrgData)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEditingOrg(null);
+        fetchOrgs();
+        alert("Organization updated successfully!");
+      } else {
+        alert("Error updating organization: " + data.message);
+      }
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
+    setEditLoading(false);
   };
 
   const toggleOrg = (orgId, orgName) => {
@@ -506,12 +544,41 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
           <input type="text" className="input-text" value={newOrgData.name} onChange={e => setNewOrgData({...newOrgData, name: e.target.value})} placeholder="Organization Name" />
           <input type="text" className="input-text" value={newOrgData.supervisorName} onChange={e => setNewOrgData({...newOrgData, supervisorName: e.target.value})} placeholder="Supervisor Name" />
           <input type="email" className="input-text" value={newOrgData.supervisorEmail} onChange={e => setNewOrgData({...newOrgData, supervisorEmail: e.target.value})} placeholder="Supervisor Email Address" />
-          <input type="password" className="input-text" value={newOrgData.password} onChange={e => setNewOrgData({...newOrgData, password: e.target.value})} placeholder="Supervisor Password" />
+          <div style={{ position: 'relative' }}>
+             <input type={showPassword ? 'text' : 'password'} className="input-text" style={{ width: '100%' }} value={newOrgData.password} onChange={e => setNewOrgData({...newOrgData, password: e.target.value})} placeholder="Supervisor Password" />
+             <div style={{ position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)' }} onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+             </div>
+          </div>
           <input type="number" className="input-text" value={newOrgData.maxParticipants} onChange={e => setNewOrgData({...newOrgData, maxParticipants: e.target.value})} placeholder="Total Participants Limit" min="1" />
           
           <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
             <button className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>
             <button className="btn" onClick={handleCreate} disabled={createLoading}>{createLoading ? 'Creating...' : 'Create'}</button>
+          </div>
+        </div>
+      )}
+
+      {createdOrgDetails && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div className="question-card" style={{ maxWidth: '500px', width: '100%', padding: '30px' }}>
+            <h2 style={{ marginTop: 0, color: 'var(--accent)' }}>Organization Created!</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Please copy these details to share with the supervisor.</p>
+            
+            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: '8px', fontFamily: 'monospace', marginBottom: '20px', color: '#fff', lineHeight: '1.6' }}>
+              <div><strong>Org Name:</strong> {createdOrgDetails.name}</div>
+              <div><strong>Login Email:</strong> {createdOrgDetails.email}</div>
+              <div><strong>Password:</strong> {createdOrgDetails.password}</div>
+              <div><strong>Signup Link:</strong> {createdOrgDetails.signupLink}</div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button className="btn btn-secondary" onClick={() => setCreatedOrgDetails(null)}>Close</button>
+              <button className="btn" onClick={() => {
+                navigator.clipboard.writeText(`Organization: ${createdOrgDetails.name}\nSupervisor Login Email: ${createdOrgDetails.email}\nSupervisor Password: ${createdOrgDetails.password}\nParticipant Signup Link: ${createdOrgDetails.signupLink}`);
+                alert('Copied to clipboard!');
+              }}>Copy All Details</button>
+            </div>
           </div>
         </div>
       )}
@@ -539,10 +606,40 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
               <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
                 <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); copyLink(org.signup_token); }}>Copy Link</button>
                 <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => handleViewAvg(e, org.name)}>View Average Report</button>
+                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem', borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={(e) => { 
+                   e.stopPropagation(); 
+                   setEditingOrg(org.id); 
+                   setEditOrgData({ 
+                     id: org.id, 
+                     name: org.name, 
+                     supervisorName: org.supervisor_name, 
+                     supervisorEmail: org.supervisor_email, 
+                     password: '', 
+                     maxParticipants: org.max_participants,
+                     oldSupervisorId: org.supervisor_id 
+                   }); 
+                }}>Edit Settings</button>
                 <span style={{ fontSize: '1.2rem', userSelect: 'none', color: isSelected ? 'var(--accent)' : 'inherit' }}>{isOpen ? '▲' : '▼'}</span>
               </div>
             </div>
-            {isOpen && (
+
+            {editingOrg === org.id && (
+              <div style={{ padding: '20px', background: 'rgba(0,0,0,0.2)', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                 <h4 style={{ margin: 0, color: 'var(--accent)' }}>Edit Organization Settings</h4>
+                 <input type="text" className="input-text" value={editOrgData.name} onChange={e => setEditOrgData({...editOrgData, name: e.target.value})} placeholder="Organization Name" />
+                 <input type="text" className="input-text" value={editOrgData.supervisorName} onChange={e => setEditOrgData({...editOrgData, supervisorName: e.target.value})} placeholder="Supervisor Name" />
+                 <input type="email" className="input-text" value={editOrgData.supervisorEmail} onChange={e => setEditOrgData({...editOrgData, supervisorEmail: e.target.value})} placeholder="Supervisor Email" />
+                 <input type="password" className="input-text" value={editOrgData.password} onChange={e => setEditOrgData({...editOrgData, password: e.target.value})} placeholder="New Supervisor Password (leave blank to keep current)" />
+                 <input type="number" className="input-text" value={editOrgData.maxParticipants} onChange={e => setEditOrgData({...editOrgData, maxParticipants: e.target.value})} placeholder="Max Participants" />
+                 
+                 <div style={{ display: 'flex', gap: '10px' }}>
+                    <button className="btn btn-secondary" onClick={() => setEditingOrg(null)}>Cancel</button>
+                    <button className="btn" onClick={handleEditSubmit} disabled={editLoading}>{editLoading ? 'Saving...' : 'Save Changes'}</button>
+                 </div>
+              </div>
+            )}
+
+            {isOpen && !editingOrg && (
               <div style={{ padding: '20px', borderTop: '1px solid var(--border-color)' }}>
                 <EvaluationsTab
                   filter="org"
@@ -577,6 +674,7 @@ export default function AdminDashboard() {
   const [selectedOrg, setSelectedOrg] = useState(null); // for org accordion selection
   const [allEvaluations, setAllEvaluations] = useState([]);
   const [allRespondedMap, setAllRespondedMap] = useState({});
+  const [refreshing, setRefreshing] = useState(false);
   const adminName = localStorage.getItem('invictus_adminName') || 'Admin';
 
   useEffect(() => {
@@ -584,6 +682,15 @@ export default function AdminDashboard() {
     const auth = localStorage.getItem('invictus_adminAuth');
     if (!auth) { navigate('/admin/login'); return; }
   }, [navigate]);
+
+  const triggerRefresh = async () => {
+    setRefreshing(true);
+    // Setting allEvaluations to empty will force child components to reload
+    setAllEvaluations([]);
+    setTimeout(() => {
+       setRefreshing(false);
+    }, 500);
+  };
 
   // Compute stats dynamically based on tab + selectedOrg
   const computeStats = (evList) => {
@@ -629,10 +736,18 @@ export default function AdminDashboard() {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 2 }}>
           <img src={logo} alt="Invictus Logo" className="main-logo" />
         </div>
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
+          <button className="btn btn-secondary" onClick={triggerRefresh} disabled={refreshing} style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+             <FiRefreshCw className={refreshing ? 'spin-anim' : ''} /> Refresh Data
+          </button>
           <button className="btn btn-secondary" onClick={handleLogout} style={{ borderColor: 'var(--error)', color: 'var(--error)' }}>Logout</button>
         </div>
       </div>
+
+      <style>{`
+        .spin-anim { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+      `}</style>
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>

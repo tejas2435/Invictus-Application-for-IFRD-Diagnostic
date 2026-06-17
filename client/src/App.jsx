@@ -9,6 +9,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import SupervisorLogin from './pages/SupervisorLogin';
 import SupervisorDashboard from './pages/SupervisorDashboard';
+import SupervisorForgotPassword from './pages/SupervisorForgotPassword';
 import './index.css';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
 
         <Route path="/supervisor/login" element={<SupervisorLogin />} />
         <Route path="/supervisor" element={<SupervisorDashboard />} />
+        <Route path="/supervisor/forgot-password" element={<SupervisorForgotPassword />} />
       </Routes>
     </Router>
   );

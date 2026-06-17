@@ -10,9 +10,11 @@ export default function SupervisorDashboard() {
   const [loading, setLoading] = useState(true);
   const [showOrgAvgReport, setShowOrgAvgReport] = useState(false);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0 });
+  const [maxParticipants, setMaxParticipants] = useState(0);
 
   const supervisorName = localStorage.getItem('invictus_supervisorName') || 'Supervisor';
   const orgName = localStorage.getItem('invictus_supervisorOrg');
+  const supervisorId = localStorage.getItem('invictus_supervisorUUID');
 
   useEffect(() => {
     document.title = "Supervisor Dashboard - Invictus";
@@ -27,33 +29,20 @@ export default function SupervisorDashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data: participants, error } = await supabase
-        .from('profiles')
-        .select(`
-          id, custom_id, full_name, preferred_name, role, created_at,
-          evaluations (id, responses, status, created_at)
-        `)
-        .eq('organization', orgName)
-        .eq('role', 'participant');
+      const res = await fetch('/api/get-supervisor-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orgName, supervisorId })
+      });
 
-      if (error) {
-        console.error("Fetch error:", error.message);
-        setLoading(false);
-        return;
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.message || 'Failed to fetch dashboard data');
       }
 
-      const evalsList = [];
-      if (participants) {
-        participants.forEach(p => {
-          if (p.evaluations && p.evaluations.length > 0) {
-            evalsList.push({ ...p.evaluations[0], profiles: p });
-          } else {
-            evalsList.push({ status: 'in-progress', profiles: p });
-          }
-        });
-      }
-
+      const evalsList = result.data.evaluations;
       setEvaluations(evalsList);
+      setMaxParticipants(result.data.maxParticipants);
 
       const total = evalsList.length;
       const completed = evalsList.filter(e => e.status === 'submitted').length;
@@ -62,7 +51,8 @@ export default function SupervisorDashboard() {
       setStats({ total, active, completed });
 
     } catch (err) {
-      console.error(err);
+      console.error("Dashboard Error:", err.message);
+      // Fallback or alert if needed
     }
     setLoading(false);
   };
@@ -100,6 +90,12 @@ export default function SupervisorDashboard() {
 
       {/* Stats */}
       <div style={{ display: 'flex', gap: '20px', marginBottom: '35px' }}>
+        <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px', borderColor: 'rgba(0,191,255,0.4)' }}>
+          <div style={{ fontSize: '2.5rem', fontWeight: 700, color: '#00bfff' }}>
+            {maxParticipants - stats.total} <span style={{ fontSize: '1.2rem', fontWeight: 400, color: 'var(--text-secondary)' }}>/ {maxParticipants}</span>
+          </div>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Registrations Remaining</div>
+        </div>
         <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px' }}>
           <div style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stats.total}</div>
           <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Total Participants</div>

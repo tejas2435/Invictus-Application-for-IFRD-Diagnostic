@@ -87,6 +87,9 @@ export default function SupervisorLogin() {
           <button type="submit" disabled={loading} className="btn btn-secondary" style={{marginTop: '20px', width: '100%', borderColor: '#fff', color: '#fff', opacity: loading ? 0.7 : 1}}>
             {loading ? 'Authenticating...' : 'Secure Login'}
           </button>
+          <div style={{ textAlign: 'center', marginTop: '10px' }}>
+            <Link to="/supervisor/forgot-password" style={{ color: 'var(--accent)', fontSize: '0.85rem', textDecoration: 'none' }}>Forgot Password?</Link>
+          </div>
         </form>
 
         <p style={{textAlign: 'center', marginTop: '30px', fontSize: '0.8rem'}}>
