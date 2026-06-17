@@ -4,3 +4,11 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export const adminSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: { storageKey: 'invictus-admin-auth-token' }
+});
+
+export const supervisorSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: { storageKey: 'invictus-supervisor-auth-token' }
+});

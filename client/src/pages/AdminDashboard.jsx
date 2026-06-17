@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
-import { supabase } from '../supabaseClient';
+import { adminSupabase as supabase } from '../supabaseClient';
 import { FiEye, FiEyeOff, FiRefreshCw } from 'react-icons/fi';
 import { questionnaireData } from '../data/questionnaire';
 import DomainReportModal from '../components/DomainReportModal';
@@ -427,14 +427,17 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
     }
   };
 
-  const copyLink = (signupToken) => {
-    if (!signupToken) {
+  const copyLink = (org) => {
+    if (!org.signup_token) {
        alert("No signup token found for this organization. You may need to update the database schema.");
        return;
     }
-    const url = `${window.location.origin}/${encodeURIComponent(signupToken)}/signup`;
-    navigator.clipboard.writeText(url);
-    alert("Signup link copied to clipboard: " + url);
+    setCreatedOrgDetails({
+      name: org.name,
+      email: org.supervisor_email,
+      password: '******** (Hidden for security)',
+      signupLink: `${window.location.origin}/${encodeURIComponent(org.signup_token)}/signup`
+    });
   };
 
   const handleViewAvg = async (e, orgName) => {
@@ -497,7 +500,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
       {createdOrgDetails && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
           <div className="question-card" style={{ maxWidth: '500px', width: '100%', padding: '30px' }}>
-            <h2 style={{ marginTop: 0, color: 'var(--accent)' }}>Organization Created!</h2>
+            <h2 style={{ marginTop: 0, color: 'var(--accent)' }}>{createdOrgDetails.password === '******** (Hidden for security)' ? 'Organization Details' : 'Organization Created!'}</h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Please copy these details to share with the supervisor.</p>
             
             <div style={{ background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: '8px', fontFamily: 'monospace', marginBottom: '20px', color: '#fff', lineHeight: '1.6' }}>
@@ -539,7 +542,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); copyLink(org.signup_token); }}>Copy Link</button>
+                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); copyLink(org); }}>Copy Link</button>
                 <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => handleViewAvg(e, org.name)}>View Average Report</button>
                 <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem', borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={(e) => { 
                    e.stopPropagation(); 

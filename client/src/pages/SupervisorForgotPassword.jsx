@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
-import { supabase } from '../supabaseClient';
+import { supervisorSupabase as supabase } from '../supabaseClient';
 
 export default function SupervisorForgotPassword() {
   const [email, setEmail] = useState('');

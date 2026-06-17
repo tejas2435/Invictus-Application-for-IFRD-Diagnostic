@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
-import { supabase } from '../supabaseClient';
+import { supervisorSupabase as supabase } from '../supabaseClient';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 export default function SupervisorLogin() {
