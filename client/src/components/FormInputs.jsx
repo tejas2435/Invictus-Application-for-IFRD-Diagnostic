@@ -9,6 +9,7 @@ function cardClass(hasError, isAnswered) {
 }
 
 export function TextInput({ question, value, onChange, hasError, isAnswered }) {
+  const isEditable = question.editable !== false;
   return (
     <div id={`q-${question.id}`} className={cardClass(hasError, isAnswered)}>
       {hasError && <div className="field-error-tag">⚠ Required</div>}
@@ -18,14 +19,17 @@ export function TextInput({ question, value, onChange, hasError, isAnswered }) {
         type="text"
         className="input-text"
         value={value || ''}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => { if(isEditable) onChange(e.target.value); }}
         placeholder="Type your answer here..."
+        readOnly={!isEditable}
+        style={!isEditable ? { opacity: 0.7, cursor: 'not-allowed', backgroundColor: 'rgba(255,255,255,0.05)' } : {}}
       />
     </div>
   );
 }
 
 export function DateInput({ question, value, onChange, hasError, isAnswered }) {
+  const isEditable = question.editable !== false;
   return (
     <div id={`q-${question.id}`} className={cardClass(hasError, isAnswered)}>
       {hasError && <div className="field-error-tag">⚠ Required</div>}
@@ -35,7 +39,9 @@ export function DateInput({ question, value, onChange, hasError, isAnswered }) {
         className="input-text"
         placeholder="DD-MM-YYYY"
         value={value || ''}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => { if(isEditable) onChange(e.target.value); }}
+        readOnly={!isEditable}
+        style={!isEditable ? { opacity: 0.7, cursor: 'not-allowed', backgroundColor: 'rgba(255,255,255,0.05)' } : {}}
       />
     </div>
   );
@@ -125,30 +131,60 @@ export function SelectDropdown({ question, value, onChange, hasError, isAnswered
 }
 
 export function OptionSelection({ question, value, onChange, hasError, isAnswered }) {
+  const optionHints = question.optionHints || {};
+  const isObjectValue = question.allowOther;
+  const selectedOpt = isObjectValue ? (value?.main || '') : (value || '');
+  const otherText = isObjectValue ? (value?.other || '') : '';
+  const showOther = question.allowOther && selectedOpt === 'Other';
+
   return (
     <div id={`q-${question.id}`} className={cardClass(hasError, isAnswered)}>
       {hasError && <div className="field-error-tag">⚠ Required</div>}
       <div className="question-text">{question.text}</div>
-      {question.hint && <div className="question-hint">{question.hint}</div>}
+      {question.hint && <div className="question-hint" style={{ whiteSpace: 'pre-line' }}>{question.hint}</div>}
       <div className="options-list">
         {question.options.map((opt) => (
           <label
             key={opt}
-            className={`option-item ${value === opt ? 'selected' : ''}`}
-            style={{ cursor: 'pointer' }}
+            className={`option-item ${selectedOpt === opt ? 'selected' : ''}`}
+            style={{ cursor: 'pointer', flexDirection: 'column', alignItems: 'flex-start' }}
           >
-            <input
-              type="radio"
-              className="option-input"
-              name={question.id}
-              value={opt}
-              checked={value === opt}
-              onChange={() => onChange(opt)}
-            />
-            <span>{opt}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}>
+              <input
+                type="radio"
+                className="option-input"
+                name={question.id}
+                value={opt}
+                checked={selectedOpt === opt}
+                onChange={() => {
+                  if (isObjectValue) {
+                    onChange(opt === 'Other' ? { main: 'Other', other: otherText } : { main: opt, other: '' });
+                  } else {
+                    onChange(opt);
+                  }
+                }}
+                style={{ flexShrink: 0 }}
+              />
+              <span style={{ fontWeight: 500 }}>{opt}</span>
+            </div>
+            {optionHints[opt] && (
+              <div style={{ marginLeft: '26px', marginTop: '4px', fontSize: '0.78rem', color: 'var(--text-secondary)', whiteSpace: 'pre-line', lineHeight: 1.5 }}>
+                {optionHints[opt]}
+              </div>
+            )}
           </label>
         ))}
       </div>
+      {showOther && (
+        <input
+          type="text"
+          className="input-text"
+          style={{ marginTop: '10px' }}
+          placeholder="Please specify..."
+          value={otherText}
+          onChange={(e) => onChange({ main: 'Other', other: e.target.value })}
+        />
+      )}
     </div>
   );
 }
@@ -219,27 +255,36 @@ export function CheckboxList({ question, value, onChange, hasError, isAnswered }
 
 // RadioOptions — single-select radio list (alias-like OptionSelection, used in Section 0)
 export function RadioOptions({ question, value, onChange, hasError, isAnswered }) {
+  const optionHints = question.optionHints || {};
   return (
     <div id={`q-${question.id}`} className={cardClass(hasError, isAnswered)}>
       {hasError && <div className="field-error-tag">⚠ Required</div>}
       <div className="question-text">{question.text}</div>
-      {question.hint && <div className="question-hint">{question.hint}</div>}
+      {question.hint && <div className="question-hint" style={{ whiteSpace: 'pre-line' }}>{question.hint}</div>}
       <div className="options-list">
         {question.options.map((opt) => (
           <label
             key={opt}
             className={`option-item ${value === opt ? 'selected' : ''}`}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', flexDirection: 'column', alignItems: 'flex-start' }}
           >
-            <input
-              type="radio"
-              className="option-input"
-              name={question.id}
-              value={opt}
-              checked={value === opt}
-              onChange={() => onChange(opt)}
-            />
-            <span>{opt}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}>
+              <input
+                type="radio"
+                className="option-input"
+                name={question.id}
+                value={opt}
+                checked={value === opt}
+                onChange={() => onChange(opt)}
+                style={{ flexShrink: 0 }}
+              />
+              <span style={{ fontWeight: 500 }}>{opt}</span>
+            </div>
+            {optionHints[opt] && (
+              <div style={{ marginLeft: '26px', marginTop: '4px', fontSize: '0.78rem', color: 'var(--text-secondary)', whiteSpace: 'pre-line', lineHeight: 1.5 }}>
+                {optionHints[opt]}
+              </div>
+            )}
           </label>
         ))}
       </div>

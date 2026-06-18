@@ -1,4 +1,4 @@
-// questionnaire.js — Fully hand-mapped from all_questions_data.txt
+// questionnaire.js — Fully hand-mapped from docx_content.txt
 // Structure:
 //   section: 1 | 2 | 3
 //   id: unique string
@@ -7,6 +7,8 @@
 //   infoBefore: string displayed before questions (from {{ }})
 //   keyQuestion: string displayed as a highlighted read-only panel (from "Key Question")
 //   infoAfter: string displayed after questions (from {{ }})
+//   hint: string displayed as a question-level hint/guidance
+//   optionHints: object mapping option label -> hint text (shown per option)
 //   questions: array of question objects
 
 const LIKERT = ["Strongly Disagree", "Disagree", "Neutral / Unsure", "Agree", "Strongly Agree"];
@@ -126,12 +128,16 @@ Estimated Completion Time: 15 – 20 Minutes`,
       {
         id: "A6", text: "A6. Decision-Making Authority", type: "OptionSelection",
         hint: "Which best describes your level of influence?",
-        options: ["Primarily Recommend Decisions", "Contribute to Decisions", "Approve Decisions", "Make Final Decisions", "Influence External Decision Makers"]
+        options: ["Primarily Recommend Decisions", "Contribute to Decisions", "Approve Decisions", "Make Final Decisions", "Influence External Decision Makers", "Not Sure"]
       },
       {
         id: "A7", text: "A7. Familiarity With Future Readiness Concepts", type: "OptionSelection",
         hint: "How familiar are you with concepts such as strategic foresight, scenario planning, AI transformation, future trends and organisational preparedness?",
-        options: ["Not Familiar", "Slightly Familiar", "Moderately Familiar", "Familiar", "Highly Familiar"]
+        options: ["Not Familiar", "Slightly Familiar", "Moderately Familiar", "Familiar", "Highly Familiar", "Not Sure"]
+      },
+      {
+        id: "A8", text: "A8. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
       }
     ]
   },
@@ -148,46 +154,62 @@ Estimated Completion Time: 15 – 20 Minutes`,
     questions: [
       { id: "B1", text: "B1. Organisation Name", type: "TextInput" },
       { id: "B2", text: "B2. Country of Headquarters", type: "TextInput" },
-      { id: "B3", text: "B3. State / Province / Region", type: "TextInput" },
-      { id: "B4", text: "B4. City", type: "TextInput" },
-      { id: "B5", text: "B5. Primary Country of Operation", type: "TextInput" },
+      { id: "B2a", text: "B2(a). State / Province / Region", type: "TextInput" },
+      { id: "B2b", text: "B2(b). City", type: "TextInput" },
+      { id: "B3", text: "B3. Primary Country of Operation", type: "TextInput" },
       {
-        id: "B6", text: "B6. Geographic Region", type: "SelectDropdown",
+        id: "B4", text: "B4. Geographic Region", type: "SelectDropdown",
         options: ["Africa", "ASEAN", "East Asia", "South Asia", "Middle East", "Europe", "North America", "South America", "Oceania", "Global"]
       },
       {
-        id: "B7", text: "B7. Industry Sector", type: "SelectDropdown", allowOther: true,
+        id: "B5", text: "B5. Industry Sector", type: "SelectDropdown", allowOther: true,
         hint: "Please select one.",
         options: ["Agriculture", "Automotive", "Banking & Financial Services", "Construction", "Consulting & Professional Services", "Consumer Goods (FMCG)", "Education", "Energy & Utilities", "Engineering", "Government", "Healthcare", "Hospitality & Tourism", "Information Technology", "Insurance", "Logistics & Supply Chain", "Manufacturing", "Media & Communications", "Mining & Resources", "Non-Profit / NGO", "Oil & Gas", "Property & Real Estate", "Retail", "Telecommunications", "Transportation", "University / Higher Education", "Financial Services", "FinTech", "Islamic Finance", "Life Sciences", "MedTech", "Defence", "Aerospace", "Semiconductors", "Data Centres", "Energy Transition", "Renewable Energy", "Professional Services", "Education Technology", "Other"]
       },
       {
-        id: "B8", text: "B8. Organisation Type", type: "SelectDropdown", allowOther: true,
+        id: "B6", text: "B6. Organisation Type", type: "SelectDropdown", allowOther: true,
         options: ["Public Listed Company", "Private Company", "Government Agency", "Government Linked Company (GLC)", "Statutory Body", "Multinational Corporation (MNC)", "Family-Owned Business", "Small & Medium Enterprise (SME)", "Startup", "Non-Governmental Organisation (NGO)", "Cooperative", "University / Academic Institution", "Other"]
       },
       {
-        id: "B9", text: "B9. Number of Employees Worldwide", type: "SelectDropdown",
+        id: "B7", text: "B7. Number of Employees Worldwide", type: "SelectDropdown",
         options: ["Less than 10", "10 – 49", "50 – 199", "200 – 499", "500 – 999", "1,000 – 4,999", "5,000 – 9,999", "10,000 – 49,999", "More than 50,000"]
       },
       {
-        id: "B10", text: "B10. Annual Revenue / Operating Budget", type: "SelectDropdown",
+        id: "B8", text: "B8. Annual Revenue / Operating Budget", type: "SelectDropdown",
         options: ["Less than USD 1 Million", "USD 1 Million – USD 10 Million", "USD 11 Million – USD 50 Million", "USD 51 Million – USD 100 Million", "USD 101 Million – USD 500 Million", "USD 501 Million – USD 1 Billion", "More than USD 1 Billion", "Prefer Not to Disclose"]
       },
       {
-        id: "B11", text: "B11. Number of Countries in Which Your Organisation Operates", type: "OptionSelection",
+        id: "B9", text: "B9. Number of Countries in Which Your Organisation Operates", type: "OptionSelection",
         options: ["1 Country", "2 – 5 Countries", "6 – 10 Countries", "11 – 25 Countries", "26 – 50 Countries", "More than 50 Countries"]
       },
       {
-        id: "B12", text: "B12. Primary Market Served", type: "OptionSelection",
-        options: ["Local", "National", "Regional", "International", "Global"]
+        id: "B10", text: "B10. Primary Market Served", type: "OptionSelection",
+        hint: `Recommended Definitions:\nLocal – Single city or locality\nNational – One country\nRegional – Several countries within one region (e.g., ASEAN, GCC, EU)\nInternational – Multiple countries, but not worldwide. Operations or customers are concentrated in selected countries or regions.\nGlobal – Worldwide presence or market reach across multiple regions and continents, with products, services, or operations designed for a global market.`,
+        options: ["Local", "National", "Regional", "International", "Global", "Not Sure"]
       },
       {
-        id: "B13", text: "B13. Organisation Life Cycle", type: "OptionSelection",
-        options: ["Startup", "Growth", "Expansion", "Mature", "Transformation", "Turnaround", "Renewal"]
+        id: "B11", text: "B11. Organisation Life Cycle", type: "OptionSelection",
+        hint: `Select the stage that best reflects your organisation's current reality rather than its aspirations. Organisations may move between stages over time, and different parts of the organisation may be at different stages. Choose the stage that most closely represents the organisation as a whole.\n\nWhich stage best describes your organisation today?`,
+        options: ["Startup", "Growth", "Expansion", "Mature", "Transformation", "Turnaround", "Renewal", "Not Sure"],
+        optionHints: {
+          "Startup": "A newly established organisation focused on validating its business model, developing products or services, and achieving market traction.\nTypical characteristics:\n• Early growth\n• Limited resources\n• High uncertainty\n• Strong founder involvement",
+          "Growth": "The organisation is experiencing increasing demand, expanding customers, products or services, and building internal capabilities.\nTypical characteristics:\n• Revenue growth\n• Hiring and scaling teams\n• Expanding operations\n• Increasing market presence",
+          "Expansion": "The organisation is entering new markets, geographies, customer segments or business areas to accelerate growth.\nTypical characteristics:\n• Regional or international expansion\n• Acquisitions or partnerships\n• New products and services\n• Increased complexity",
+          "Mature": "The organisation has established operations, stable revenues and well-developed systems and processes.\nTypical characteristics:\n• Strong market position\n• Operational stability\n• Predictable performance\n• Focus on optimisation and efficiency",
+          "Transformation": "The organisation is deliberately changing its business model, capabilities, technology, leadership or strategy to remain relevant in a changing environment.\nTypical characteristics:\n• Digital or AI transformation\n• Business model innovation\n• Organisational restructuring\n• Major strategic shifts",
+          "Turnaround": "The organisation is addressing significant performance challenges and undertaking actions to restore competitiveness and sustainability.\nTypical characteristics:\n• Declining performance\n• Cost restructuring\n• Leadership changes\n• Strategic repositioning",
+          "Renewal": "The organisation has successfully navigated disruption or transformation and is building a new phase of growth, relevance and long-term sustainability.\nTypical characteristics:\n• New strategic direction\n• Rebuilt capabilities\n• Renewed growth opportunities\n• Stronger resilience and adaptability",
+          "Not Sure": ""
+        }
       },
       {
-        id: "B14", text: "B14. Ownership Influence", type: "SelectDropdown",
+        id: "B12", text: "B12. Ownership Influence", type: "SelectDropdown",
         hint: "Who has the greatest influence on strategic direction?",
-        options: ["Founder / Owner", "Board", "Executive Leadership Team", "Government", "Shareholders", "Parent Company", "Multiple Stakeholders"]
+        options: ["Founder / Owner", "Board", "Executive Leadership Team", "Government", "Shareholders", "Parent Company", "Multiple Stakeholders", "Not Sure"]
+      },
+      {
+        id: "B13", text: "B13. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
       }
     ]
   },
@@ -204,11 +226,21 @@ Estimated Completion Time: 15 – 20 Minutes`,
     questions: [
       {
         id: "C1", text: "C1. How far ahead does your organisation typically plan?", type: "SelectDropdown",
-        options: ["Less than 1 Year", "1 Year", "2 Years", "3 Years", "5 Years", "10 Years", "More than 10 Years"]
+        options: ["Less than 1 Year", "1 Year", "2 Years", "3 Years", "5 Years", "10 Years", "More than 10 Years", "Not Sure"]
       },
       {
         id: "C2", text: "C2. Which statement best describes your industry today?", type: "OptionSelection",
-        options: ["Stable", "Slowly Evolving", "Moderately Changing", "Rapidly Changing", "Highly Disrupted", "Constantly Disrupted"]
+        hint: "Select the option that best reflects the current reality of your industry rather than the performance of your own organisation.\n\nPlease select the description that best reflects the current reality of your industry.",
+        options: ["Stable", "Slowly Evolving", "Moderately Changing", "Rapidly Changing", "Highly Disrupted", "Constantly Disrupted", "Not Sure"],
+        optionHints: {
+          "Stable": "The industry experiences relatively few significant changes and remains predictable over time.\nTypical characteristics:\n• Established business models\n• Low levels of disruption\n• Slow technological change\n• Predictable customer expectations\nExamples: Utilities, traditional infrastructure.",
+          "Slowly Evolving": "Change occurs gradually and organisations have sufficient time to adapt.\nTypical characteristics:\n• Moderate technological change\n• Incremental innovation\n• Stable competitive landscape\n• Long planning cycles\nExamples: Insurance, traditional manufacturing.",
+          "Moderately Changing": "The industry experiences regular changes that require organisations to adapt periodically.\nTypical characteristics:\n• New competitors emerge occasionally\n• Customer expectations evolve\n• Regulations and technologies change periodically\n• Increasing pressure to innovate\nExamples: Banking, higher education, healthcare.",
+          "Rapidly Changing": "The pace of change is accelerating and organisations must continuously adapt to remain competitive.\nTypical characteristics:\n• Frequent technological developments\n• Evolving customer behaviour\n• New entrants and business models\n• Shorter planning horizons\nExamples: Retail, telecommunications, automotive.",
+          "Highly Disrupted": "The industry is undergoing fundamental changes that threaten existing business models and competitive positions.\nTypical characteristics:\n• Significant shifts in technology\n• New forms of competition\n• Regulatory uncertainty\n• Business model transformation\nExamples: Media, transportation, energy transition.",
+          "Constantly Disrupted": "The industry faces continuous uncertainty and multiple sources of disruption, making long-term predictability difficult.\nTypical characteristics:\n• Simultaneous technological, economic and geopolitical pressures\n• Frequent shifts in customer expectations\n• Constant emergence of new risks and opportunities\n• Continuous need for adaptation\nExamples: Artificial Intelligence, cybersecurity, semiconductors, digital platforms.",
+          "Not Sure": ""
+        }
       },
       {
         id: "C3", text: "C3. What is currently the greatest source of uncertainty facing your organisation?", type: "SelectDropdown", allowOther: true,
@@ -230,6 +262,10 @@ Estimated Completion Time: 15 – 20 Minutes`,
       {
         id: "C7", text: "C7. Does your organisation have a dedicated strategy, risk, innovation or future-focused committee?", type: "OptionSelection",
         options: ["Yes", "No"]
+      },
+      {
+        id: "C8", text: "C8. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
       }
     ]
   },
@@ -260,6 +296,10 @@ Estimated Completion Time: 15 – 20 Minutes`,
       {
         id: "D4", text: "D4. What is the biggest concern regarding AI?", type: "SelectDropdown", allowOther: true,
         options: ["Workforce Impact", "Skills Gap", "Ethics", "Data Privacy", "Cybersecurity", "Compliance", "Return on Investment", "Governance", "Other"]
+      },
+      {
+        id: "D5", text: "D5. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
       }
     ]
   },
@@ -287,7 +327,19 @@ Estimated Completion Time: 15 – 20 Minutes`,
       { id: "E5", text: "E5. What may be the single biggest blind spot your organisation is overlooking today?", type: "TextAreaInput" },
       {
         id: "E6", text: "E6. Which future time horizon concerns leadership most?", type: "OptionSelection",
-        options: ["Next 12 Months", "1–3 Years", "3–5 Years", "5–10 Years", "Beyond 10 Years"]
+        hint: "Select the time horizon that receives the greatest leadership attention today—not necessarily the time horizon that should receive the greatest attention.\n\nPlease select the time horizon that receives the greatest attention and concern from senior leadership when discussing risks, opportunities and strategic priorities.",
+        options: ["Next 12 Months", "1–3 Years", "3–5 Years", "5–10 Years", "Beyond 10 Years"],
+        optionHints: {
+          "Next 12 Months": "Leadership focuses primarily on immediate operational and short-term issues.\nTypical characteristics:\n• Budget and performance targets\n• Cost management\n• Quarterly results\n• Current market conditions",
+          "1–3 Years": "Leadership concentrates on medium-term priorities and execution.\nTypical characteristics:\n• Strategic plans\n• Talent and capability development\n• Market expansion\n• Technology investments",
+          "3–5 Years": "Leadership actively considers longer-term shifts and emerging opportunities.\nTypical characteristics:\n• Industry evolution\n• Business model changes\n• Future customer needs\n• Competitive positioning",
+          "5–10 Years": "Leadership discusses structural changes that may fundamentally reshape the organisation and industry.\nTypical characteristics:\n• Demographic changes\n• Climate transition\n• AI and technological disruption\n• New sources of growth",
+          "Beyond 10 Years": "Leadership regularly explores long-term scenarios and uncertainties that may influence the organisation's future relevance and sustainability.\nTypical characteristics:\n• Alternative futures and scenarios\n• Societal and geopolitical shifts\n• Long-term resilience\n• Legacy and intergenerational impact"
+        }
+      },
+      {
+        id: "E7", text: "E7. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
       }
     ]
   },
@@ -319,6 +371,10 @@ Estimated Completion Time: 15 – 20 Minutes`,
       {
         id: "F4", text: "F4. Strategic Execution", type: "TextAreaInput",
         hint: "How many major strategic initiatives achieved intended outcomes?"
+      },
+      {
+        id: "F5", text: "F5. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
       }
     ]
   },
@@ -339,8 +395,8 @@ Please answer based on the current reality of your organisation rather than its 
     questions: [
       { id: "consent_1", text: "I confirm that the information provided is accurate to the best of my knowledge.", type: "CheckboxSingle" },
       { id: "consent_2", text: "I understand that the results of this assessment are intended for developmental, benchmarking, strategic intelligence and future readiness purposes and do not constitute a guarantee of future organisational performance.", type: "CheckboxSingle" },
-      { id: "consent_name", text: "Name", type: "TextInput", isAutoFilled: true },
-      { id: "consent_date", text: "Date", type: "DateInput" }
+      { id: "consent_name", text: "Name", type: "TextInput", isAutoFilled: true, editable: false },
+      { id: "consent_date", text: "Date", type: "DateInput", isAutoFilled: true, editable: false }
     ]
   },
 
@@ -738,13 +794,17 @@ There are no right or wrong answers.
 Please answer based on your current observations and professional judgement.`,
     questions: [
       {
-        id: "S3_A1", text: "1. Which THREE areas currently require the greatest leadership attention within your organisation?",
+        id: "S3_A1", text: "A1. Which THREE areas currently require the greatest leadership attention within your organisation?",
         type: "CheckboxList", limit: 3, allowOther: true,
         hint: "Select up to three.",
         options: ["Revenue Growth", "Profitability", "Cost Management", "Talent Attraction", "Talent Retention", "Leadership Development", "Succession Planning", "Innovation", "Customer Experience", "Digital Transformation", "Artificial Intelligence", "Cybersecurity", "Operational Excellence", "Regulatory Compliance", "Sustainability / Regenerative Growth", "Supply Chain Resilience", "Market Expansion", "Governance", "Risk Management", "Other"]
       },
-      { id: "S3_A2", text: "2. Which ONE of the above is currently the highest priority?", type: "TextAreaInput" },
-      { id: "S3_A3", text: "3. Why is this your highest priority?", type: "TextAreaInput" }
+      { id: "S3_A2", text: "A2. Which ONE of the above is currently the highest priority?", type: "TextAreaInput" },
+      { id: "S3_A3", text: "A3. Why is this your highest priority?", type: "TextAreaInput" },
+      {
+        id: "S3_A4", text: "A4. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
+      }
     ]
   },
 
@@ -757,16 +817,28 @@ Please answer based on your current observations and professional judgement.`,
     title: "PART B — Future Risks",
     questions: [
       {
-        id: "S3_B4", text: "4. Which area presents the greatest potential risk to your organisation over the next 3–5 years?",
+        id: "S3_B4", text: "B4. Which area presents the greatest potential risk to your organisation over the next 3–5 years?",
         type: "SelectDropdown", allowOther: true,
         hint: "Select one.",
         options: ["Artificial Intelligence", "Talent Availability", "Leadership Capability", "Geopolitical Tensions", "Regulatory Changes", "Economic Uncertainty", "Cybersecurity", "New Competitors", "Business Model Disruption", "Climate & Environmental Factors", "Supply Chain Disruptions", "Customer Behaviour Changes", "Technology Disruption", "Other"]
       },
-      { id: "S3_B5", text: "5. Please explain why you selected this risk.", type: "TextAreaInput" },
+      { id: "S3_B5", text: "B5. Please explain why you selected this risk.", type: "TextAreaInput" },
       {
-        id: "S3_B6", text: "6. How prepared do you believe your organisation is to manage this risk?",
+        id: "S3_B6", text: "B6. How prepared do you believe your organisation is to manage this risk?",
         type: "OptionSelection",
-        options: ["Not Prepared", "Slightly Prepared", "Moderately Prepared", "Well Prepared", "Highly Prepared"]
+        hint: "Please assess your organisation's current ability to anticipate, respond to and recover from this risk. Consider leadership awareness, plans, capabilities, resources and governance arrangements.\n\nConsider the organisation's actual capabilities and practices rather than its intentions or aspirations.",
+        options: ["Very Unprepared", "Somewhat Unprepared", "Moderately Prepared", "Well Prepared", "Highly Prepared"],
+        optionHints: {
+          "Very Unprepared": "Little or no awareness, plans, capabilities or resources exist to address this risk.",
+          "Somewhat Unprepared": "Awareness exists, but responses are largely reactive and significant gaps remain.",
+          "Moderately Prepared": "Basic plans and capabilities exist, but improvements are required to manage the risk effectively.",
+          "Well Prepared": "Clear plans, resources and capabilities are in place, and the organisation is generally able to respond effectively.",
+          "Highly Prepared": "The organisation proactively monitors the risk, regularly reviews its response capabilities and can adapt quickly to changing circumstances."
+        }
+      },
+      {
+        id: "S3_B7", text: "B7. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
       }
     ]
   },
@@ -780,16 +852,20 @@ Please answer based on your current observations and professional judgement.`,
     title: "PART C — Future Opportunities",
     questions: [
       {
-        id: "S3_C7", text: "7. Which area presents the greatest opportunity for your organisation over the next 3–5 years?",
+        id: "S3_C8", text: "C8. Which area presents the greatest opportunity for your organisation over the next 3–5 years?",
         type: "SelectDropdown", allowOther: true,
         hint: "Select one.",
         options: ["Artificial Intelligence", "New Markets", "New Products or Services", "Strategic Partnerships", "Workforce Capability Development", "Digital Transformation", "Automation", "Customer Experience", "Research & Innovation", "Sustainability / Regenerative Growth", "Geographic Expansion", "Data & Analytics", "Other"]
       },
-      { id: "S3_C8", text: "8. Please explain why you selected this opportunity.", type: "TextAreaInput" },
+      { id: "S3_C9", text: "C9. Please explain why you selected this opportunity.", type: "TextAreaInput" },
       {
-        id: "S3_C9", text: "9. How confident are you that your organisation is positioned to capture this opportunity?",
+        id: "S3_C10", text: "C10. How confident are you that your organisation is positioned to capture this opportunity?",
         type: "OptionSelection",
         options: ["Not Confident", "Slightly Confident", "Moderately Confident", "Very Confident", "Highly Confident"]
+      },
+      {
+        id: "S3_C11", text: "C11. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
       }
     ]
   },
@@ -803,12 +879,25 @@ Please answer based on your current observations and professional judgement.`,
     title: "PART D — Industry Assumptions",
     questions: [
       {
-        id: "S3_D10", text: "10. Which statement best describes your industry's current situation?",
+        id: "S3_D12", text: "D12. Which statement best describes your industry's current situation?",
         type: "OptionSelection",
-        options: ["Stable", "Gradually Evolving", "Rapidly Changing", "Highly Disrupted", "Undergoing Fundamental Transformation"]
+        hint: "Assess the industry as a whole, not your organisation. Consider technological, regulatory, economic, geopolitical, customer and competitive developments over the past three years and those expected over the next three years.\n\nPlease select the option that best reflects the overall condition of your industry today rather than the performance of your own organisation.",
+        options: ["Stable", "Evolving", "Highly Competitive", "Uncertain", "Disrupted", "Transforming"],
+        optionHints: {
+          "Stable": "The industry is relatively predictable, with few major disruptions or significant changes.\nTypical characteristics:\n• Established business models\n• Slow rate of change\n• Predictable customer demand\n• Moderate competition",
+          "Evolving": "The industry is experiencing gradual changes that require organisations to adapt over time.\nTypical characteristics:\n• Emerging technologies\n• Changing customer expectations\n• New regulations\n• Incremental innovation",
+          "Highly Competitive": "Competitive pressures are increasing, requiring organisations to continuously improve and differentiate themselves.\nTypical characteristics:\n• New entrants\n• Price pressures\n• Increased customer expectations\n• Rapid innovation",
+          "Uncertain": "The future direction of the industry is becoming increasingly difficult to predict.\nTypical characteristics:\n• Economic volatility\n• Regulatory uncertainty\n• Geopolitical developments\n• Shifting market dynamics",
+          "Disrupted": "The industry is undergoing fundamental changes that threaten traditional business models.\nTypical characteristics:\n• Technological disruption\n• New competitors and business models\n• Significant shifts in customer behaviour\n• Structural changes in the industry",
+          "Transforming": "The industry is being reshaped by multiple forces and is moving toward a new future state.\nTypical characteristics:\n• Convergence of technologies\n• AI and automation\n• Sustainability and climate transition\n• Workforce and demographic changes\n• New ecosystems and partnerships"
+        }
       },
-      { id: "S3_D11", text: "11. Which commonly accepted assumption within your industry do you believe is most likely to be challenged over the next five years?", type: "TextAreaInput" },
-      { id: "S3_D12", text: "12. What development could fundamentally change your industry faster than most people expect?", type: "TextAreaInput" }
+      { id: "S3_D12b", text: "D12. Which commonly accepted assumption within your industry do you believe is most likely to be challenged over the next five years?", type: "TextAreaInput" },
+      { id: "S3_D13", text: "D13. What development could fundamentally change your industry faster than most people expect?", type: "TextAreaInput" },
+      {
+        id: "S3_D14", text: "D14. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
+      }
     ]
   },
 
@@ -821,16 +910,28 @@ Please answer based on your current observations and professional judgement.`,
     title: "PART E — Signals & Emerging Changes",
     questions: [
       {
-        id: "S3_E13", text: "13. Which emerging development deserves significantly more attention from leaders?",
+        id: "S3_E15", text: "E15. Which emerging development deserves significantly more attention from leaders?",
         type: "SelectDropdown", allowOther: true,
         hint: "Select one.",
         options: ["Artificial Intelligence", "Demographic Change", "Workforce Transformation", "Climate Change", "Geopolitical Change", "Education & Skills", "Cybersecurity", "Consumer Behaviour", "Energy Transition", "Health & Wellbeing", "Regulatory Change", "Other"]
       },
-      { id: "S3_E14", text: "14. Why do you believe this deserves more attention?", type: "TextAreaInput" },
+      { id: "S3_E16", text: "E16. Why do you believe this deserves more attention?", type: "TextAreaInput" },
       {
-        id: "S3_E15", text: "15. How frequently does your organisation discuss emerging developments before they become immediate issues?",
+        id: "S3_E17", text: "E17. How frequently does your organisation discuss emerging developments before they become immediate issues?",
         type: "OptionSelection",
-        options: ["Never", "Rarely", "Occasionally", "Frequently", "Systematically"]
+        hint: "Emerging developments may include technological changes, AI, geopolitical events, demographic shifts, customer behaviour, regulatory changes, climate issues, new competitors and evolving business models. Assess actual organisational practice rather than aspirations or isolated examples.\n\nPlease consider how often leadership proactively discusses trends, risks, opportunities and weak signals before they require urgent action or become operational problems.",
+        options: ["Never", "Rarely", "Sometimes", "Often", "Consistently"],
+        optionHints: {
+          "Never": "Emerging developments are generally discussed only after they have become immediate problems or crises.\nTypical characteristics:\n• Reactive decision-making\n• Limited environmental scanning\n• Crisis-driven responses",
+          "Rarely": "Occasional discussions occur, but usually only when issues begin affecting the organisation.\nTypical characteristics:\n• Short-term focus\n• Limited forward-looking conversations\n• Few structured reviews",
+          "Sometimes": "Leadership periodically discusses developments that may influence the future.\nTypical characteristics:\n• Annual strategy reviews\n• Some trend awareness\n• Selective attention to external changes",
+          "Often": "Leadership regularly explores emerging developments before they become pressing issues.\nTypical characteristics:\n• Quarterly strategic discussions\n• Monitoring of trends and risks\n• Consideration of future implications",
+          "Consistently": "Leadership systematically identifies and discusses emerging developments well before they become immediate concerns.\nTypical characteristics:\n• Continuous environmental scanning\n• Weak signal detection\n• Scenario discussions\n• Proactive preparation and decision-making"
+        }
+      },
+      {
+        id: "S3_E18", text: "E18. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
       }
     ]
   },
@@ -844,20 +945,54 @@ Please answer based on your current observations and professional judgement.`,
     title: "PART F — Future Preparedness",
     questions: [
       {
-        id: "S3_F16", text: "16. Which statement best describes your organisation's planning horizon?",
+        id: "S3_F17", text: "F17. Which statement best describes your organisation's planning horizon?",
         type: "OptionSelection",
-        options: ["Less than 12 Months", "1–2 Years", "3–5 Years", "6–10 Years", "More than 10 Years"]
+        hint: "Select the horizon that receives the greatest leadership attention today, not the horizon that should receive the greatest attention.\n\nPlease select the time horizon that receives the greatest attention during strategic discussions and decision-making.",
+        options: ["Less than 12 Months", "1–2 Years", "3–5 Years", "6–10 Years", "More than 10 Years"],
+        optionHints: {
+          "Less than 12 Months": "Planning is primarily focused on immediate operational and short-term priorities.\nTypical characteristics:\n• Annual budgets\n• Operational issues\n• Quarterly targets",
+          "1–2 Years": "Planning extends beyond immediate priorities but remains largely execution focused.\nTypical characteristics:\n• Business plans\n• Resource allocation\n• Capability development",
+          "3–5 Years": "Leadership actively considers medium-term opportunities and risks.\nTypical characteristics:\n• Strategic plans\n• Market positioning\n• Technology investments",
+          "6–10 Years": "Leadership regularly discusses structural changes that may reshape the organisation.\nTypical characteristics:\n• Demographics\n• AI transformation\n• Industry evolution",
+          "More than 10 Years": "Leadership routinely explores long-term scenarios and future possibilities.\nTypical characteristics:\n• Alternative futures\n• Sustainability\n• Long-term resilience"
+        }
       },
       {
-        id: "S3_F17", text: "17. Which statement best describes your organisation's current use of Artificial Intelligence?",
+        id: "S3_F18", text: "F18. Which statement best describes your organisation's current use of Artificial Intelligence?",
         type: "OptionSelection",
-        options: ["AI is not currently being discussed.", "AI is being explored but no formal initiatives exist.", "AI pilots are being tested in selected areas.", "AI has been implemented in one or more business functions.", "AI is integrated across multiple business functions.", "AI is integrated into core business operations.", "AI is influencing business model transformation and strategic decision-making."]
+        hint: "Assess actual implementation rather than aspirations or future plans.\n\nPlease select the option that best reflects your organisation's current level of AI adoption.",
+        options: ["AI is not currently being discussed.", "AI is being explored but no formal initiatives exist.", "AI pilots are being tested in selected areas.", "AI has been implemented in one or more business functions.", "AI is integrated across multiple business functions.", "AI is integrated into core business operations.", "AI is influencing business model transformation and strategic decision-making."],
+        optionHints: {
+          "AI is not currently being discussed.": "No meaningful conversations or initiatives exist.",
+          "AI is being explored but no formal initiatives exist.": "Leaders are discussing AI, but no pilots or projects have been initiated.",
+          "AI pilots are being tested in selected areas.": "Limited experiments or proof-of-concept initiatives are underway.",
+          "AI has been implemented in one or more business functions.": "AI applications are delivering value within specific functions.\nExamples: Customer service, Marketing, HR, Finance.",
+          "AI is integrated across multiple business functions.": "AI capabilities are being deployed across several areas.\nExamples: Operations, Supply chain, Risk management, Sales and marketing.",
+          "AI is integrated into core business operations.": "AI is embedded within critical processes and workflows.",
+          "AI is influencing business model transformation and strategic decision-making.": "AI is shaping competitive advantage, products, services and strategic direction."
+        }
       },
       {
-        id: "S3_F18", text: "18. Which capability will be most important for organisational success over the next decade?",
-        type: "SelectDropdown", allowOther: true,
-        hint: "Select one.",
-        options: ["Leadership", "Adaptability", "Decision-Making", "Innovation", "Artificial Intelligence", "Learning Agility", "Strategic Thinking", "Governance", "Workforce Capability", "Other"]
+        id: "S3_F19", text: "F19. Which capability will be most important for organisational success over the next decade?",
+        type: "OptionSelection", allowOther: true,
+        hint: "Select the capability that will matter most over the next decade, not necessarily the capability that is strongest today.\n\nSelect the capability that you believe will contribute most to long-term organisational success over the next ten years.",
+        options: ["Leadership", "Adaptability", "Decision-Making", "Innovation", "Artificial Intelligence", "Learning Agility", "Strategic Thinking", "Governance", "Workforce Capability", "Other"],
+        optionHints: {
+          "Leadership": "Ability to provide direction, alignment and influence.",
+          "Adaptability": "Ability to respond and adjust to changing circumstances.",
+          "Decision-Making": "Ability to make timely and high-quality decisions under uncertainty.",
+          "Innovation": "Ability to create new products, services and business models.",
+          "Artificial Intelligence": "Ability to leverage AI technologies effectively and responsibly.",
+          "Learning Agility": "Ability to continuously learn, unlearn and apply new knowledge.",
+          "Strategic Thinking": "Ability to anticipate change and make long-term choices.",
+          "Governance": "Ability to provide oversight, accountability and effective stewardship.",
+          "Workforce Capability": "Ability to attract, develop and retain future capabilities.",
+          "Other": ""
+        }
+      },
+      {
+        id: "S3_F20", text: "F20. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
       }
     ]
   },
@@ -882,19 +1017,46 @@ Preparedness is not about predicting the future. It is about developing the capa
       {
         id: "S3_G1", text: "G1. On a scale of 1–10, how future-ready do you believe your organisation is today?",
         type: "OptionSelection",
-        options: ["1 – Not Future Ready", "2", "3", "4", "5", "6", "7", "8", "9", "10 – Highly Future Ready"]
+        hint: "Consider your organisation's ability to anticipate change, respond to uncertainty, adapt to disruption and sustain long-term relevance.\n\nAssess current reality rather than aspirations or desired future state.",
+        options: ["1–2", "3–4", "5–6", "7–8", "9–10"],
+        optionHints: {
+          "1–2": "Very low preparedness.",
+          "3–4": "Limited preparedness with significant vulnerabilities.",
+          "5–6": "Moderate preparedness with areas requiring improvement.",
+          "7–8": "Strong preparedness with relatively few weaknesses.",
+          "9–10": "Exceptional preparedness and high adaptive capability."
+        }
       },
       {
         id: "S3_G2", text: "G2. Compared with your competitors, how prepared is your organisation for future disruption?",
         type: "OptionSelection",
-        options: ["Significantly Behind", "Slightly Behind", "About The Same", "Slightly Ahead", "Significantly Ahead"]
+        hint: "Consider leadership capability, strategic agility, innovation, workforce readiness and adaptability rather than financial performance alone.\n\nPlease compare your organisation with the organisations you compete with most directly.",
+        options: ["Significantly Behind", "Slightly Behind", "About The Same", "Slightly Ahead", "Significantly Ahead"],
+        optionHints: {
+          "Significantly Behind": "Competitors appear substantially better prepared.",
+          "Slightly Behind": "Competitors appear somewhat more prepared.",
+          "About The Same": "Preparedness appears broadly comparable.",
+          "Slightly Ahead": "Your organisation appears somewhat more prepared.",
+          "Significantly Ahead": "Your organisation appears substantially more prepared."
+        }
       },
       {
         id: "S3_G3", text: "G3. How confident are you in your answer?",
         type: "OptionSelection",
-        options: ["Low", "Moderate", "High"]
+        hint: "How confident are you that your responses accurately reflect your organisation's current reality?",
+        options: ["Low", "Moderate", "High", "Very High"],
+        optionHints: {
+          "Low": "Limited visibility or evidence supports my assessment.",
+          "Moderate": "Some evidence supports my assessment, but uncertainty remains.",
+          "High": "Strong evidence and direct experience support my assessment.",
+          "Very High": "Extensive evidence and broad organisational visibility strongly support my assessment."
+        }
       },
-      { id: "S3_G4", text: "G4. What may be the single biggest blind spot your organisation is overlooking today?", type: "TextAreaInput" }
+      { id: "S3_G4", text: "G4. What may be the single biggest blind spot your organisation is overlooking today?", type: "TextAreaInput" },
+      {
+        id: "S3_G5", text: "G5. How confident are you in the answers you have provided?", type: "OptionSelection",
+        options: ["Very Low", "Low", "Moderate", "High", "Very High"]
+      }
     ]
   }
 ];
