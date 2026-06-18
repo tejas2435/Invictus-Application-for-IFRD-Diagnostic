@@ -20,19 +20,6 @@ export default function ForgotPassword() {
     setError('');
     setMessage('');
 
-    const { data: profileCheck } = await supabase
-      .from('profiles')
-      .select('email')
-      .ilike('email', email)
-      .limit(1)
-      .maybeSingle();
-
-    if (!profileCheck) {
-      setError('Account does not exist. Please check the email address or sign up.');
-      setLoading(false);
-      return;
-    }
-
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + '/reset-password',
     });
@@ -40,7 +27,7 @@ export default function ForgotPassword() {
     if (resetError) {
       setError(resetError.message);
     } else {
-      setMessage('Password reset link has been sent to your email.');
+      setMessage('If an account exists, a password reset link has been sent to your email.');
     }
     setLoading(false);
   };
