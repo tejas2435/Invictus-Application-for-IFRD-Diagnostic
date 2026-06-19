@@ -426,9 +426,6 @@ function DiagnosticForm() {
         {/* Info before questions */}
         {currentPart.infoBefore && <InfoPanel text={currentPart.infoBefore} />}
 
-        {/* Declaration info (if present) */}
-        {currentPart.declarationInfo && <InfoPanel text={currentPart.declarationInfo} customStyle={{ background: 'rgba(0,123,255,0.05)', borderColor: 'var(--accent)', marginTop: '20px' }} />}
-
         {/* Domain definition panel */}
         {currentPart.domainInfo && <DomainInfoPanel text={currentPart.domainInfo} />}
 

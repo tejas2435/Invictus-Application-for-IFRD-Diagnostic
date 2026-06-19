@@ -1,10 +1,10 @@
 import React from 'react';
 
 // InfoPanel — for {{ }} instructional text blocks
-export function InfoPanel({ text, customStyle }) {
+export function InfoPanel({ text }) {
   if (!text) return null;
   return (
-    <div className="info-panel" style={customStyle}>
+    <div className="info-panel">
       {text.split('\n').map((line, i) => (
         line.trim() === '' ? <br key={i} /> : <p key={i}>{line}</p>
       ))}
