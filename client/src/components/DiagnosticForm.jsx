@@ -350,7 +350,6 @@ function DiagnosticForm() {
     })();
     const hasError = errorIds.includes(q.id);
     const props = {
-      key: q.id,
       question: q,
       value,
       hasError,
@@ -364,17 +363,26 @@ function DiagnosticForm() {
       }
     };
 
+    let component = null;
     switch (q.type) {
-      case 'TextAreaInput': return <TextAreaInput {...props} />;
-      case 'SelectDropdown': return <SelectDropdown {...props} />;
-      case 'OptionSelection': return <OptionSelection {...props} />;
-      case 'RadioOptions': return <RadioOptions {...props} />;
-      case 'CheckboxList': return <CheckboxList {...props} />;
-      case 'TextInput': return <TextInput {...props} />;
-      case 'CheckboxSingle': return <CheckboxSingle {...props} />;
-      case 'DateInput': return <DateInput {...props} />;
-      default: return null;
+      case 'TextAreaInput': component = <TextAreaInput {...props} />; break;
+      case 'SelectDropdown': component = <SelectDropdown {...props} />; break;
+      case 'OptionSelection': component = <OptionSelection {...props} />; break;
+      case 'RadioOptions': component = <RadioOptions {...props} />; break;
+      case 'CheckboxList': component = <CheckboxList {...props} />; break;
+      case 'TextInput': component = <TextInput {...props} />; break;
+      case 'CheckboxSingle': component = <CheckboxSingle {...props} />; break;
+      case 'DateInput': component = <DateInput {...props} />; break;
     }
+
+    if (!component) return null;
+
+    return (
+      <React.Fragment key={q.id}>
+        {q.preInfo && <InfoPanel text={q.preInfo} />}
+        {component}
+      </React.Fragment>
+    );
   };
 
   return (

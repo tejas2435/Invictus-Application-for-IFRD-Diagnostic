@@ -50,6 +50,8 @@ export function DateInput({ question, value, onChange, hasError, isAnswered }) {
 export function CheckboxSingle({ question, value, onChange, hasError, isAnswered }) {
   return (
     <div id={`q-${question.id}`} className={cardClass(hasError, isAnswered)}>
+      {hasError && <div className="field-error-tag">⚠ Required</div>}
+      {question.hint && <div className="question-hint" style={{ whiteSpace: 'pre-line', marginBottom: '10px' }}>{question.hint}</div>}
       <label className={`option-item ${value ? 'selected' : ''}`} style={{ cursor: 'pointer' }}>
         <input
           type="checkbox"

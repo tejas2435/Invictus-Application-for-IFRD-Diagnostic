@@ -217,10 +217,28 @@ By participating in the Invictus Future Readiness Diagnostic™ (IFRD™), parti
   - Country and regional benchmarks;  
   - Future preparedness research;  
   - AI-powered intelligence capabilities; and  
-  - The Invictus Global Future Readiness Index™ (IGFRI™).  
 No individual, team or organisation will be identified without explicit permission.`,
+    infoAfter: `Powered by the Invictus Future Readiness Diagnostic™ (IFRD™) 
+Most Organisations Measure Performance. 
+We Measure Preparedness. 
+
+Preparedness determines whether we are ready for tomorrow. 
+Assessment results are intended to inform, not predict. 
+The future cannot be guaranteed. Preparedness can be strengthened.`,
     questions: [
-      { id: "consent_declaration", text: 'I CONSENT AND WISH TO PROCEED\n\nBy selecting "I Consent and Wish to Proceed", I acknowledge that I have read, understood and agreed to the above terms regarding confidentiality, data usage, benchmarking, research and the intended use of assessment results.', type: "CheckboxSingle" }
+      {
+        id: "consent_confirm",
+        preInfo: `PARTICIPANT DECLARATION\nBy proceeding with this assessment`,
+        hint: `I confirm that:`,
+        text: 'I have read and understood the information above, confirm that my responses are accurate to the best of my knowledge, and consent to participate in the Invictus Future Readiness Diagnostic™ (IFRD™). I understand that my information will be treated confidentially, that anonymised and aggregated data may be used for benchmarking and research purposes, and that assessment results are provided for developmental and strategic purposes only and do not guarantee future organisational performance.',
+        type: "CheckboxSingle"
+      },
+      {
+        id: "consent_declaration",
+        preInfo: `Declaration\nBy selecting "I Consent and Wish to Proceed", I acknowledge that I have read, understood and agreed to the above terms regarding confidentiality, data usage, benchmarking, research and the intended use of assessment results.`,
+        text: 'I CONSENT AND WISH TO PROCEED',
+        type: "CheckboxSingle"
+      }
     ]
   },
   // ─────────────────────────────────────────
