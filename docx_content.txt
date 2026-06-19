@@ -41,6 +41,146 @@ Previous / Save and Next(this save and next will only visible at last question) 
 After Completing QNA  System Message Until Reply comes
 Option for Logout 
 
+
+PARTICIPANT CONSENT, CONFIDENTIALITY AND DATA USAGE 
+
+Before proceeding with the Invictus Future Readiness Diagnostic™ (IFRD™), please read the following information carefully. 
+
+Why Your Participation Matters 
+
+Most organisations measure performance. 
+Very few measure preparedness. 
+By participating in the Invictus Future Readiness Diagnostic™ (IFRD™), you are contributing to a growing body of knowledge designed to help leaders, organisations, industries and societies better understand preparedness for future uncertainty, disruption and opportunity. 
+The collective intelligence generated through the IFRD™ ecosystem supports the development of future benchmarks, research and the Invictus Global Future Readiness Index™ (IGFRI™). 
+Together, these insights help organisations move beyond measuring performance and towards understanding preparedness. 
+
+Purpose of Information Collection 
+
+The information collected through the IFRD™ is used exclusively for purposes related to the IFRD™ ecosystem and the advancement of Future Preparedness Intelligence™. 
+This information enables: 
+  - Generation of individual, team and organisational reports.  
+  - Benchmarking and comparative analysis.  
+  - Strategic foresight and preparedness research.  
+  - Continuous improvement of the IFRD™ platform.  
+  - Development of the Corporate Future Readiness Benchmark™.  
+  - Development of the Invictus Global Future Readiness Index™ (IGFRI™).  
+  - Industry, regional and global preparedness insights.  
+  - Development of future analytics and intelligence capabilities.  
+Information collected through the IFRD™ will not be sold or used for purposes unrelated to the IFRD™ ecosystem. 
+
+Confidentiality 
+
+All information provided will be treated with strict confidentiality. 
+Individual responses will not be disclosed to third parties without prior consent unless required by applicable laws and regulations. 
+Assessment findings, benchmarking outputs, research reports and publications may be presented only in aggregated and anonymised form. 
+No individual, team or organisation will be identified without explicit permission. 
+
+Benchmarking, Research and Publications 
+
+Participants acknowledge and understand that anonymised and aggregated information may be used for: 
+  - Benchmarking and comparative studies.  
+  - Industry and sector analysis.  
+  - Country and regional comparisons.  
+  - Academic and professional research.  
+  - Publications and future reports.  
+Development of future preparedness indices.  
+Development of AI-powered analytics and intelligence capabilities.  
+Continuous improvement of the IFRD™ ecosystem.  
+No individual, team or organisation will be identified without prior written permission. 
+
+Data Retention 
+
+Information collected through the IFRD™ may be retained for purposes related to: 
+  - Assessment reporting.  
+  - Benchmarking.  
+  - Longitudinal studies.  
+  - Research and publications.  
+  - Continuous improvement of the IFRD™ ecosystem.  
+  - Development of future preparedness intelligence capabilities.  
+Information will be managed responsibly and in accordance with applicable laws, regulations and good data governance practices. 
+
+Commitment to Responsible Data Management 
+
+Invictus Leader is committed to protecting personal information and managing assessment data responsibly. 
+Information collected through the IFRD™ will be handled in accordance with applicable privacy and data protection laws and regulations. 
+
+Voluntary Participation 
+
+Participation in the IFRD™ is voluntary. 
+Participants may discontinue the assessment at any time. 
+Where appropriate, participants may choose not to answer selected questions. 
+
+Accuracy of Responses 
+
+The quality and usefulness of the assessment depend upon the accuracy and honesty of the information provided. 
+Participants are encouraged to answer based on the current reality of their organisation rather than aspirations or desired future states. 
+
+Intended Use of Results 
+
+The IFRD™ is intended to support: 
+  -  Learning and development.  
+  - Leadership conversations.  
+  - Strategic thinking.  
+  - Benchmarking and comparative analysis.  
+  - Organisational preparedness.  
+  - Strategic foresight and decision-making.  
+Future preparedness improvement.  
+The results are intended for developmental and intelligence purposes only. 
+They should not be interpreted as a guarantee, prediction or assurance of future organisational performance or outcomes. 
+
+Use of Advanced Analytics 
+
+Invictus Leader may use advanced analytics and AI-enabled capabilities to improve the quality, benchmarking and intelligence capabilities of the IFRD™ platform. 
+Such use will not identify individuals, teams or organisations without explicit permission. 
+
+Intellectual Property 
+
+The Invictus Future Readiness Diagnostic™ (IFRD™), its methodologies, frameworks, models, scoring systems and associated intellectual property remain the property of Invictus Leader.
+Participation in the assessment does not transfer ownership of any intellectual property rights. 
+
+Limitation of Responsibility 
+
+The results and insights generated by the IFRD™ are intended to support learning, reflection, benchmarking and strategic conversations. 
+They should not be interpreted as financial, legal, investment, psychological or professional advice. 
+Invictus Leader shall not be responsible for decisions, actions or outcomes arising solely from the use of assessment findings. 
+
+Continuous Improvement 
+
+The IFRD™ platform, methodologies and benchmarking models may evolve over time as new research, insights and capabilities emerge. 
+
+Invictus Leader reserves the right to enhance and improve the platform in support of better Future Preparedness Intelligence™. 
+
+Important Notice 
+
+By participating in the Invictus Future Readiness Diagnostic™ (IFRD™), participants acknowledge and agree that anonymised and aggregated information may be used for benchmarking, research, publications and the continued development of the IFRD™ ecosystem, including: 
+  - The Corporate Future Readiness Benchmark™;  
+  - Industry and sector benchmarks;  
+  - Country and regional benchmarks;  
+  - Future preparedness research;  
+  - AI-powered intelligence capabilities; and  
+  - The Invictus Global Future Readiness Index™ (IGFRI™).  
+No individual, team or organisation will be identified without explicit permission. 
+
+ 
+PARTICIPANT DECLARATION 
+By proceeding with this assessment, I confirm that: 
+☐ I have read and understood the information above, confirm that my responses are accurate to the best of my knowledge, and consent to participate in the Invictus Future Readiness Diagnostic™ (IFRD™). I understand that my information will be treated confidentially, that anonymised and aggregated data may be used for benchmarking and research purposes, and that assessment results are provided for developmental and strategic purposes only and do not guarantee future organisational performance. 
+
+
+Declaration 
+By selecting "I Consent and Wish to Proceed", I acknowledge that I have read, understood and agreed to the above terms regarding confidentiality, data usage, benchmarking, research and the intended use of assessment results. 
+ 
+□ I CONSENT AND WISH TO PROCEED 
+ 
+Powered by the Invictus Future Readiness Diagnostic™ (IFRD™) 
+Most Organisations Measure Performance. 
+We Measure Preparedness. 
+ 
+Preparedness determines whether we are ready for tomorrow. 
+Assessment results are intended to inform, not predict. 
+The future cannot be guaranteed. Preparedness can be strengthened. 
+ 
+
 SECTION 0 
 Assessment Context & Classification™ 
 

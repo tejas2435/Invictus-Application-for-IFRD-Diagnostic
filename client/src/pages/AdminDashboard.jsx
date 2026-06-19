@@ -128,7 +128,7 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
           });
           const resText = await res.text();
           let result;
-          try { result = JSON.parse(resText); } catch(e) { result = { success: res.ok, message: resText || 'No response details' }; }
+          try { result = JSON.parse(resText); } catch (e) { result = { success: res.ok, message: resText || 'No response details' }; }
           console.log('Backend Email Proxy response:', result);
           if (res.ok && result.success) emailSent = true;
           else emailError = result.message || 'Unknown backend error';
@@ -369,7 +369,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
           `API not available locally. Deploy to Vercel to use this feature.\n\nServer response: ${text.substring(0, 100)}...`
         );
       }
-      
+
       if (data.success) {
         setNewOrgData({ name: '', supervisorName: '', supervisorEmail: '', password: '', maxParticipants: '' });
         setShowAdd(false);
@@ -378,6 +378,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
           name: data.data?.name,
           email: newOrgData.supervisorEmail,
           password: newOrgData.password,
+          maxParticipants: newOrgData.maxParticipants,
           signupLink: `${window.location.origin}/${encodeURIComponent(data.data?.signup_token)}/signup`
         });
       } else {
@@ -429,12 +430,13 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
 
   const copyLink = (org) => {
     if (!org.signup_token) {
-       alert("No signup token found for this organization. You may need to update the database schema.");
-       return;
+      alert("No signup token found for this organization. You may need to update the database schema.");
+      return;
     }
     setCreatedOrgDetails({
       name: org.name,
       email: org.supervisor_email,
+      maxParticipants: org.max_participants,
       password: '******** (Hidden for security)',
       signupLink: `${window.location.origin}/${encodeURIComponent(org.signup_token)}/signup`
     });
@@ -451,7 +453,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
         `)
         .eq('organization', orgName)
         .eq('role', 'participant');
-        
+
       if (error) throw error;
 
       const evals = [];
@@ -463,7 +465,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
         });
       }
       setShowOrgAvgReport({ orgName, evaluations: evals });
-    } catch(err) {
+    } catch (err) {
       alert("Error generating report: " + err.message);
     }
   };
@@ -479,17 +481,17 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
       {showAdd && (
         <div style={{ marginBottom: '20px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
           <h3 style={{ marginTop: 0 }}>Create New Organization</h3>
-          <input type="text" className="input-text" value={newOrgData.name} onChange={e => setNewOrgData({...newOrgData, name: e.target.value})} placeholder="Organization Name" />
-          <input type="text" className="input-text" value={newOrgData.supervisorName} onChange={e => setNewOrgData({...newOrgData, supervisorName: e.target.value})} placeholder="Supervisor Name" />
-          <input type="email" className="input-text" value={newOrgData.supervisorEmail} onChange={e => setNewOrgData({...newOrgData, supervisorEmail: e.target.value})} placeholder="Supervisor Email Address" />
+          <input type="text" className="input-text" value={newOrgData.name} onChange={e => setNewOrgData({ ...newOrgData, name: e.target.value })} placeholder="Organization Name" />
+          <input type="text" className="input-text" value={newOrgData.supervisorName} onChange={e => setNewOrgData({ ...newOrgData, supervisorName: e.target.value })} placeholder="Supervisor Name" />
+          <input type="email" className="input-text" value={newOrgData.supervisorEmail} onChange={e => setNewOrgData({ ...newOrgData, supervisorEmail: e.target.value })} placeholder="Supervisor Email Address" />
           <div style={{ position: 'relative' }}>
-             <input type={showPassword ? 'text' : 'password'} className="input-text" style={{ width: '100%' }} value={newOrgData.password} onChange={e => setNewOrgData({...newOrgData, password: e.target.value})} placeholder="Supervisor Password" />
-             <div style={{ position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)' }} onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-             </div>
+            <input type={showPassword ? 'text' : 'password'} className="input-text" style={{ width: '100%' }} value={newOrgData.password} onChange={e => setNewOrgData({ ...newOrgData, password: e.target.value })} placeholder="Supervisor Password" />
+            <div style={{ position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)' }} onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </div>
           </div>
-          <input type="number" className="input-text" value={newOrgData.maxParticipants} onChange={e => setNewOrgData({...newOrgData, maxParticipants: e.target.value})} placeholder="Total Participants Limit" min="1" />
-          
+          <input type="number" className="input-text" value={newOrgData.maxParticipants} onChange={e => setNewOrgData({ ...newOrgData, maxParticipants: e.target.value })} placeholder="Total Participants Limit" min="1" />
+
           <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
             <button className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>
             <button className="btn" onClick={handleCreate} disabled={createLoading}>{createLoading ? 'Creating...' : 'Create'}</button>
@@ -502,10 +504,11 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
           <div className="question-card" style={{ maxWidth: '500px', width: '100%', padding: '30px' }}>
             <h2 style={{ marginTop: 0, color: 'var(--accent)' }}>{createdOrgDetails.password === '******** (Hidden for security)' ? 'Organization Details' : 'Organization Created!'}</h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Please copy these details to share with the supervisor.</p>
-            
+
             <div style={{ background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: '8px', fontFamily: 'monospace', marginBottom: '20px', color: '#fff', lineHeight: '1.6' }}>
               <div><strong>Org Name:</strong> {createdOrgDetails.name}</div>
               <div><strong>Login Email:</strong> {createdOrgDetails.email}</div>
+              {createdOrgDetails.maxParticipants && <div><strong>Max Participants:</strong> {createdOrgDetails.maxParticipants}</div>}
               <div><strong>Password:</strong> {createdOrgDetails.password}</div>
               <div><strong>Signup Link:</strong> {createdOrgDetails.signupLink}</div>
             </div>
@@ -513,7 +516,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button className="btn btn-secondary" onClick={() => setCreatedOrgDetails(null)}>Close</button>
               <button className="btn" onClick={() => {
-                navigator.clipboard.writeText(`Organization: ${createdOrgDetails.name}\nSupervisor Login Email: ${createdOrgDetails.email}\nSupervisor Password: ${createdOrgDetails.password}\nParticipant Signup Link: ${createdOrgDetails.signupLink}`);
+                navigator.clipboard.writeText(`Organization: ${createdOrgDetails.name}\nMax Participants: ${createdOrgDetails.maxParticipants}\nSupervisor Login Email: ${createdOrgDetails.email}\nSupervisor Password: ${createdOrgDetails.password}\nParticipant Signup Link: ${createdOrgDetails.signupLink}`);
                 alert('Copied to clipboard!');
               }}>Copy All Details</button>
             </div>
@@ -544,18 +547,18 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
               <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
                 <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); copyLink(org); }}>Copy Link</button>
                 <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => handleViewAvg(e, org.name)}>View Average Report</button>
-                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem', borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={(e) => { 
-                   e.stopPropagation(); 
-                   setEditingOrg(org.id); 
-                   setEditOrgData({ 
-                     id: org.id, 
-                     name: org.name, 
-                     supervisorName: org.supervisor_name, 
-                     supervisorEmail: org.supervisor_email, 
-                     password: '', 
-                     maxParticipants: org.max_participants,
-                     oldSupervisorId: org.supervisor_id 
-                   }); 
+                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem', borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingOrg(org.id);
+                  setEditOrgData({
+                    id: org.id,
+                    name: org.name,
+                    supervisorName: org.supervisor_name,
+                    supervisorEmail: org.supervisor_email,
+                    password: '',
+                    maxParticipants: org.max_participants,
+                    oldSupervisorId: org.supervisor_id
+                  });
                 }}>Edit Settings</button>
                 <span style={{ fontSize: '1.2rem', userSelect: 'none', color: isSelected ? 'var(--accent)' : 'inherit' }}>{isOpen ? '▲' : '▼'}</span>
               </div>
@@ -563,17 +566,17 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
 
             {editingOrg === org.id && (
               <div style={{ padding: '20px', background: 'rgba(0,0,0,0.2)', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                 <h4 style={{ margin: 0, color: 'var(--accent)' }}>Edit Organization Settings</h4>
-                 <input type="text" className="input-text" value={editOrgData.name} onChange={e => setEditOrgData({...editOrgData, name: e.target.value})} placeholder="Organization Name" />
-                 <input type="text" className="input-text" value={editOrgData.supervisorName} onChange={e => setEditOrgData({...editOrgData, supervisorName: e.target.value})} placeholder="Supervisor Name" />
-                 <input type="email" className="input-text" value={editOrgData.supervisorEmail} onChange={e => setEditOrgData({...editOrgData, supervisorEmail: e.target.value})} placeholder="Supervisor Email" />
-                 <input type="password" className="input-text" value={editOrgData.password} onChange={e => setEditOrgData({...editOrgData, password: e.target.value})} placeholder="New Supervisor Password (leave blank to keep current)" />
-                 <input type="number" className="input-text" value={editOrgData.maxParticipants} onChange={e => setEditOrgData({...editOrgData, maxParticipants: e.target.value})} placeholder="Max Participants" />
-                 
-                 <div style={{ display: 'flex', gap: '10px' }}>
-                    <button className="btn btn-secondary" onClick={() => setEditingOrg(null)}>Cancel</button>
-                    <button className="btn" onClick={handleEditSubmit} disabled={editLoading}>{editLoading ? 'Saving...' : 'Save Changes'}</button>
-                 </div>
+                <h4 style={{ margin: 0, color: 'var(--accent)' }}>Edit Organization Settings</h4>
+                <input type="text" className="input-text" value={editOrgData.name} onChange={e => setEditOrgData({ ...editOrgData, name: e.target.value })} placeholder="Organization Name" />
+                <input type="text" className="input-text" value={editOrgData.supervisorName} onChange={e => setEditOrgData({ ...editOrgData, supervisorName: e.target.value })} placeholder="Supervisor Name" />
+                <input type="email" className="input-text" value={editOrgData.supervisorEmail} onChange={e => setEditOrgData({ ...editOrgData, supervisorEmail: e.target.value })} placeholder="Supervisor Email" />
+                <input type="password" className="input-text" value={editOrgData.password} onChange={e => setEditOrgData({ ...editOrgData, password: e.target.value })} placeholder="New Supervisor Password (leave blank to keep current)" />
+                <input type="number" className="input-text" value={editOrgData.maxParticipants} onChange={e => setEditOrgData({ ...editOrgData, maxParticipants: e.target.value })} placeholder="Max Participants" />
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button className="btn btn-secondary" onClick={() => setEditingOrg(null)}>Cancel</button>
+                  <button className="btn" onClick={handleEditSubmit} disabled={editLoading}>{editLoading ? 'Saving...' : 'Save Changes'}</button>
+                </div>
               </div>
             )}
 
@@ -663,7 +666,7 @@ export default function AdminDashboard() {
         formattedEvals.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
         setAllEvaluations(formattedEvals);
       }
-    } catch(err) {
+    } catch (err) {
       console.error(err);
     }
     setRefreshing(false);
@@ -731,7 +734,7 @@ export default function AdminDashboard() {
         </div>
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
           <button className="btn btn-secondary" onClick={triggerRefresh} disabled={refreshing} style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-             <FiRefreshCw className={refreshing ? 'spin-anim' : ''} /> Refresh Data
+            <FiRefreshCw className={refreshing ? 'spin-anim' : ''} /> Refresh Data
           </button>
           <button className="btn btn-secondary" onClick={handleLogout} style={{ borderColor: 'var(--error)', color: 'var(--error)' }}>Logout</button>
         </div>
