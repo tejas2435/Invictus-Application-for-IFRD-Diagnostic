@@ -16,6 +16,7 @@ const CONFIDENCE = ["Low Confidence", "Moderate Confidence", "High Confidence"];
 const EVIDENCE = ["No Formal Evidence", "Limited Evidence", "Some Evidence", "Significant Evidence", "Extensive Evidence"];
 
 const CRI_INFO = `Confidence Reliability Index™ (CRI)
+
 The Confidence Reliability Index™ (CRI) measures the reliability of your responses by evaluating the level of confidence and supporting evidence behind your assessment.
 Higher CRI scores indicate that responses are supported by stronger evidence and greater confidence.
 This information is used to strengthen the accuracy and reliability of your Future Readiness assessment.`;
@@ -160,13 +161,22 @@ Information will be managed responsibly and in accordance with applicable laws, 
 
 Commitment to Responsible Data Management 
 
+
+
 Invictus Leader is committed to protecting personal information and managing assessment data responsibly. 
+
 Information collected through the IFRD™ will be handled in accordance with applicable privacy and data protection laws and regulations. 
+
+
 
 Voluntary Participation 
 
+
+
 Participation in the IFRD™ is voluntary. 
+
 Participants may discontinue the assessment at any time. 
+
 Where appropriate, participants may choose not to answer selected questions. 
 
 Accuracy of Responses 
@@ -178,12 +188,19 @@ Intended Use of Results
 
 The IFRD™ is intended to support: 
   -  Learning and development.  
-  - Leadership conversations.  
+
+  - Leadership conversations. 
+
   - Strategic thinking.  
+
   - Benchmarking and comparative analysis.  
+
   - Organisational preparedness.  
+
   - Strategic foresight and decision-making.  
-Future preparedness improvement.  
+
+  - Future preparedness improvement.  
+
 The results are intended for developmental and intelligence purposes only. 
 They should not be interpreted as a guarantee, prediction or assurance of future organisational performance or outcomes. 
 
@@ -218,12 +235,13 @@ By participating in the Invictus Future Readiness Diagnostic™ (IFRD™), parti
   - Future preparedness research;  
   - AI-powered intelligence capabilities; and  
 No individual, team or organisation will be identified without explicit permission.`,
-    infoAfter: `Powered by the Invictus Future Readiness Diagnostic™ (IFRD™) 
-Most Organisations Measure Performance. 
-We Measure Preparedness. 
+    infoAfter: `Powered by the Invictus Future Readiness Diagnostic™ (IFRD™)
 
-Preparedness determines whether we are ready for tomorrow. 
-Assessment results are intended to inform, not predict. 
+Most Organisations Measure Performance.
+We Measure Preparedness.
+
+Preparedness determines whether we are ready for tomorrow.
+Assessment results are intended to inform, not predict.
 The future cannot be guaranteed. Preparedness can be strengthened.`,
     questions: [
       {
@@ -535,6 +553,7 @@ The future cannot be guaranteed. Preparedness can be strengthened.`,
     type: "consent",
     title: "Consent & Declaration",
     infoAfter: `END OF SECTION 1
+
 Thank you for completing the Future Readiness Intelligence Profile™.
 The next section evaluates organisational preparedness across twelve critical dimensions that influence future readiness, resilience, adaptability and long-term success.
 Please answer based on the current reality of your organisation rather than its aspirations.`,
@@ -1154,10 +1173,12 @@ Please answer based on your current observations and professional judgement.`,
 Organisations often believe they are more prepared than they actually are.
 This section helps identify potential blind spots between perceived preparedness and actual preparedness.`,
     infoAfter: `END OF SECTION 3
+
 Thank you for completing the Invictus Future Readiness Diagnostic™ (IFRD™).
 Your responses contribute to a deeper understanding of organisational preparedness, strategic decision-making and future readiness.
 The information provided will be used to generate your IFRD™ Executive Snapshot, highlighting key strengths, readiness indicators and areas requiring attention.
 Organisations that consistently anticipate change, challenge assumptions and strengthen their decision-making capabilities are often better positioned to navigate uncertainty and create long-term value.
+
 Preparedness is not about predicting the future. It is about developing the capability to respond effectively when the future arrives.`,
     questions: [
       {

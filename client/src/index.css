@@ -76,15 +76,17 @@ p {
 .info-panel {
   background: rgba(255, 255, 255, 0.04);
   border-left: 4px solid var(--accent);
-  padding: 20px 24px;
+  padding: 24px 28px;
   border-radius: 8px;
   margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .info-panel p {
-  color: var(--text-primary);
   font-weight: 400;
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 /* Key Question Panel */

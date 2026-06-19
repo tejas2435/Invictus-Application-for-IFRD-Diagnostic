@@ -35,6 +35,7 @@ function DiagnosticForm() {
   const [adminId, setAdminId] = useState('Pending Assignment');
   const [organization, setOrganization] = useState('General');
   const [preferredName, setPreferredName] = useState('');
+  const [userPhone, setUserPhone] = useState('');
 
   useEffect(() => {
     document.title = "Participant Diagnostic - Invictus";
@@ -58,10 +59,11 @@ function DiagnosticForm() {
       const { data: adminData } = await supabase.from('profiles').select('custom_id').eq('role', 'admin').limit(1);
       if (adminData && adminData.length > 0) setAdminId(adminData[0].custom_id);
 
-      const { data: profileData } = await supabase.from('profiles').select('organization, preferred_name').eq('id', storedUUID).single();
+      const { data: profileData } = await supabase.from('profiles').select('organization, preferred_name, phone_number').eq('id', storedUUID).single();
       if (profileData) {
         if (profileData.organization) setOrganization(profileData.organization);
         if (profileData.preferred_name) setPreferredName(profileData.preferred_name);
+        if (profileData.phone_number) setUserPhone(profileData.phone_number);
       }
 
       // 2. Fetch User Evaluation state
@@ -398,7 +400,7 @@ function DiagnosticForm() {
             </h1>
           </div>
           <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-            <ProfileMenu userId={userId} userName={preferredName ? `${userName} (${preferredName})` : userName} userEmail={userEmail} />
+            <ProfileMenu userId={userId} userName={preferredName ? `${userName} (${preferredName})` : userName} userEmail={userEmail} userPhone={userPhone} />
           </div>
         </div>
 

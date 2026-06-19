@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function ProfileMenu({ userId, userName, userEmail }) {
+export default function ProfileMenu({ userId, userName, userEmail, userPhone }) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Keep responses but clear user tracking, wait: "so user can login back where they left".
-    // I should not clear responses of course (it's already saved anyway). Just clear the current active run.
     localStorage.removeItem('invictus_userId');
-    // For local mock realism, might want to keep the session so they really pick up, but removing user clears the active session.
     navigate('/');
   };
 
@@ -29,7 +26,7 @@ export default function ProfileMenu({ userId, userName, userEmail }) {
           position: 'absolute', 
           top: '110%', 
           right: 0, 
-          width: '250px', 
+          width: '270px', 
           padding: '20px', 
           zIndex: 100, 
           background: 'var(--bg-dark)',
@@ -52,6 +49,13 @@ export default function ProfileMenu({ userId, userName, userEmail }) {
             <>
               <div style={{ fontSize: '0.85rem', marginBottom: '4px', color: 'var(--text-secondary)' }}>Email:</div>
               <div style={{ fontSize: '0.9rem', marginBottom: '12px', wordBreak: 'break-all' }}>{userEmail}</div>
+            </>
+          )}
+
+          {userPhone && (
+            <>
+              <div style={{ fontSize: '0.85rem', marginBottom: '4px', color: 'var(--text-secondary)' }}>Phone:</div>
+              <div style={{ fontSize: '0.9rem', marginBottom: '12px', letterSpacing: '0.03em' }}>{userPhone}</div>
             </>
           )}
 

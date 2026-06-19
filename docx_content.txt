@@ -315,8 +315,23 @@ SECTION 1
 PART A  
 FUTURE READINESS INTELLIGENCE PROFILE™ 
  PARTICIPANT INTELLIGENCE PROFILE™ 
-A1. Current Job Title  (//Text singleLine Input field)
-A2. Primary Leadership Responsibility (//Drop Down List with Anyone Selection& If Other Selected Give Text Field to Reply With customer Answer )
+
+A1. Full Name 
+
+Shape 
+
+A2. Preferred Name 
+
+Shape 
+
+A3. Email Address 
+
+Shape 
+
+A4. Mobile Number (Including Country Code) 
+
+A5. Current Job Title  (//Text singleLine Input field)
+A6. Primary Leadership Responsibility (//Drop Down List with Anyone Selection& If Other Selected Give Text Field to Reply With customer Answer )
 Please select one. 
 □ Strategy 
 □ Operations 
@@ -334,7 +349,7 @@ Please select one.
 □ Other 
 Please Specify: 
  
-A3. Leadership Level (//Drop Down List with Anyone Selection& If Other Selected Give Text Field to Reply With customer Answer )
+A7. Leadership Level (//Drop Down List with Anyone Selection& If Other Selected Give Text Field to Reply With customer Answer )
 □ Board Member 
 □ Chairman / Chairwoman 
 □ Chief Executive Officer (CEO) 
@@ -355,21 +370,21 @@ A3. Leadership Level (//Drop Down List with Anyone Selection& If Other Selected 
 □ Other 
 Please Specify: 
  
-A4. Years in Current Role (//Option Selection with Anyone Selection)
+A8. Years in Current Role (//Option Selection with Anyone Selection)
 □ Less than 1 Year 
 □ 1 – 3 Years 
 □ 4 – 7 Years 
 □ 8 – 15 Years 
 □ More than 15 Years 
  
-A5. Total Years of Professional Experience (//Option Selection with Anyone Selection)
+A9. Total Years of Professional Experience (//Option Selection with Anyone Selection)
 □ Less than 5 Years 
 □ 5 – 10 Years 
 □ 11 – 20 Years 
 □ 21 – 30 Years 
 □ More than 30 Years 
  
-A6. Decision-Making Authority (//Option Selection with Anyone Selection)
+A10. Decision-Making Authority (//Option Selection with Anyone Selection)
 Which best describes your level of influence? 
 □ Primarily Recommend Decisions 
 □ Contribute to Decisions 
@@ -378,7 +393,7 @@ Which best describes your level of influence?
 □ Influence External Decision Makers 
 □ Not Sure 
  
-A7. Familiarity With Future Readiness Concepts (//Option Selection with Anyone Selection)
+A11. Familiarity With Future Readiness Concepts (//Option Selection with Anyone Selection)
 How familiar are you with concepts such as strategic foresight, scenario planning, AI transformation, future trends and organisational preparedness? 
 □ Not Familiar 
 □ Slightly Familiar 
@@ -387,7 +402,7 @@ How familiar are you with concepts such as strategic foresight, scenario plannin
 □ Highly Familiar 
 □ Not Sure 
  
-A8. How confident are you in the answers you have provided? (//Option Selection with Anyone Selection)
+A12. How confident are you in the answers you have provided? (//Option Selection with Anyone Selection)
 Very Low  
 Low  
 Moderate  
