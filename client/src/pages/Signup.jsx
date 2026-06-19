@@ -48,9 +48,9 @@ export default function Signup() {
       setLoading(false);
       return;
     }
-    
+
     const org = orgs[0];
-    
+
     // Check participant count
     const { count, error: countErr } = await supabase
       .from('profiles')
@@ -59,11 +59,11 @@ export default function Signup() {
       .eq('role', 'participant');
 
     if (countErr) {
-       setOrgError("Error verifying organization capabilities.");
+      setOrgError("Error verifying organization capabilities.");
     } else if (org.max_participants > 0 && count >= org.max_participants) {
-       setOrgError("This organization has reached its maximum participant limit.");
+      setOrgError("This organization has reached its maximum participant limit.");
     } else {
-       setOrgData(org);
+      setOrgData(org);
     }
     setLoading(false);
   };
@@ -100,7 +100,7 @@ export default function Signup() {
     } else if (data?.session) {
       if (data?.user) {
         if (orgData) {
-           await supabase.from('profiles').update({ organization: orgData.name }).eq('id', data.user.id);
+          await supabase.from('profiles').update({ organization: orgData.name }).eq('id', data.user.id);
         }
         const { data: profile } = await supabase
           .from('profiles')
@@ -124,7 +124,7 @@ export default function Signup() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
+
     const { data, error: verifyError } = await supabase.auth.verifyOtp({
       email: formData.email,
       token: otp,
@@ -137,9 +137,9 @@ export default function Signup() {
     } else {
       if (data?.user) {
         await new Promise(r => setTimeout(r, 600));
-        
+
         if (orgData) {
-           await supabase.from('profiles').update({ organization: orgData.name }).eq('id', data.user.id);
+          await supabase.from('profiles').update({ organization: orgData.name }).eq('id', data.user.id);
         }
 
         const { data: profile } = await supabase
@@ -158,8 +158,8 @@ export default function Signup() {
   };
 
   return (
-    <div className="app-container" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
-      <div className="question-card" style={{width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center'}}>
+    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+      <div className="question-card" style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center' }}>
         <img src={logo} alt="Invictus Logo" className="main-logo" />
         {orgError ? (
           <div style={{ textAlign: 'center', color: 'var(--error)', marginTop: '20px' }}>
@@ -168,85 +168,85 @@ export default function Signup() {
           </div>
         ) : (
           <>
-            <h1 style={{textAlign: 'center', fontSize: '1.8rem', marginBottom: '30px'}}>Sign Up for Participant {orgData ? <div style={{fontSize:'0.9rem', color:'var(--accent)'}}>{orgData.name}</div> : (signupToken && 'Loading Org...')}</h1>
-            
+            <h1 style={{ textAlign: 'center', fontSize: '1.8rem', marginBottom: '30px' }}>Sign Up for Participant {orgData ? <div style={{ fontSize: '1.6rem', color: 'var(--accent)' }}>{orgData.name}</div> : (signupToken && 'Loading Org...')}</h1>
+
             {!awaitingOTP ? (
-          <>
-            <form onSubmit={handleSignup} style={{display: 'flex', flexDirection: 'column', gap: '20px', width: '100%'}}>
-              {error && <div style={{background: 'rgba(255, 23, 68, 0.1)', color: 'var(--error)', padding: '10px', borderRadius: '5px', textAlign: 'center'}}>{error}</div>}
-              
-              <div><label className="question-text" style={{fontSize: '0.9rem'}}>1. Full Name</label><input name="fullName" value={formData.fullName} onChange={handleChange} type="text" className="input-text" required /></div>
-              <div><label className="question-text" style={{fontSize: '0.9rem'}}>2. Preferred Name</label><input name="preferredName" value={formData.preferredName} onChange={handleChange} type="text" className="input-text" required /></div>
-              <div><label className="question-text" style={{fontSize: '0.9rem'}}>3. Email Address</label><input name="email" value={formData.email} onChange={handleChange} type="email" className="input-text" required /></div>
-              <div>
-                <label className="question-text" style={{fontSize: '0.9rem'}}>4. Mobile Number</label>
-                <div style={{display: 'flex', gap: '10px'}}>
-                  <Select
-                    options={countryOptions}
-                    value={countryOptions.find(o => o.value === formData.phoneCode)}
-                    onChange={(selected) => setFormData({...formData, phoneCode: selected.value})}
-                    className="react-select-container"
-                    classNamePrefix="react-select"
-                    styles={{
-                      control: (base) => ({ ...base, background: 'rgba(0,0,0,0.5)', borderColor: 'var(--border-color)', minWidth: '130px', minHeight: '44px' }),
-                      singleValue: (base) => ({ ...base, color: 'var(--text-primary)' }),
-                      menuList: (base) => ({...base, background: 'var(--bg-dark)'}),
-                      option: (base, state) => ({...base, background: state.isFocused ? 'var(--accent)' : 'transparent', color: state.isFocused ? '#000' : 'var(--text-primary)'}),
-                      input: (base) => ({ ...base, color: 'var(--text-primary)' })
-                    }}
-                  />
-                  <input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} type="text" className="input-text" placeholder="Number" style={{flex: 1}} required />
-                </div>
-              </div>
-              <div>
-                <label className="question-text" style={{fontSize: '0.9rem'}}>5. Set Password</label>
-                <div style={{position: 'relative'}}>
-                   <input name="password" value={formData.password} onChange={handleChange} type={showPassword ? 'text' : 'password'} className="input-text" required />
-                   <div style={{position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)'}} onClick={() => setShowPassword(!showPassword)}>
-                      {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-                   </div>
-                </div>
-              </div>
-              <div>
-                <label className="question-text" style={{fontSize: '0.9rem'}}>6. Confirm Password</label>
-                <div style={{position: 'relative'}}>
-                   <input name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} type={showConfirmPassword ? 'text' : 'password'} className="input-text" required />
-                   <div style={{position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)'}} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                      {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-                   </div>
-                </div>
-              </div>
+              <>
+                <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+                  {error && <div style={{ background: 'rgba(255, 23, 68, 0.1)', color: 'var(--error)', padding: '10px', borderRadius: '5px', textAlign: 'center' }}>{error}</div>}
 
-              <button type="submit" disabled={loading} className="btn btn-secondary" style={{marginTop: '20px', width: '100%', borderColor: '#fff', color: '#fff', opacity: loading ? 0.7 : 1}}>
-                {loading ? 'Registering...' : 'Register & Verify Email'}
-              </button>
-            </form>
+                  <div><label className="question-text" style={{ fontSize: '0.9rem' }}>1. Full Name</label><input name="fullName" value={formData.fullName} onChange={handleChange} type="text" className="input-text" required /></div>
+                  <div><label className="question-text" style={{ fontSize: '0.9rem' }}>2. Preferred Name</label><input name="preferredName" value={formData.preferredName} onChange={handleChange} type="text" className="input-text" required /></div>
+                  <div><label className="question-text" style={{ fontSize: '0.9rem' }}>3. Email Address</label><input name="email" value={formData.email} onChange={handleChange} type="email" className="input-text" required /></div>
+                  <div>
+                    <label className="question-text" style={{ fontSize: '0.9rem' }}>4. Mobile Number</label>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <Select
+                        options={countryOptions}
+                        value={countryOptions.find(o => o.value === formData.phoneCode)}
+                        onChange={(selected) => setFormData({ ...formData, phoneCode: selected.value })}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        styles={{
+                          control: (base) => ({ ...base, background: 'rgba(0,0,0,0.5)', borderColor: 'var(--border-color)', minWidth: '130px', minHeight: '44px' }),
+                          singleValue: (base) => ({ ...base, color: 'var(--text-primary)' }),
+                          menuList: (base) => ({ ...base, background: 'var(--bg-dark)' }),
+                          option: (base, state) => ({ ...base, background: state.isFocused ? 'var(--accent)' : 'transparent', color: state.isFocused ? '#000' : 'var(--text-primary)' }),
+                          input: (base) => ({ ...base, color: 'var(--text-primary)' })
+                        }}
+                      />
+                      <input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} type="text" className="input-text" placeholder="Number" style={{ flex: 1 }} required />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="question-text" style={{ fontSize: '0.9rem' }}>5. Set Password</label>
+                    <div style={{ position: 'relative' }}>
+                      <input name="password" value={formData.password} onChange={handleChange} type={showPassword ? 'text' : 'password'} className="input-text" required />
+                      <div style={{ position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)' }} onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="question-text" style={{ fontSize: '0.9rem' }}>6. Confirm Password</label>
+                    <div style={{ position: 'relative' }}>
+                      <input name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} type={showConfirmPassword ? 'text' : 'password'} className="input-text" required />
+                      <div style={{ position: 'absolute', right: '15px', top: '12px', cursor: 'pointer', color: 'var(--text-secondary)' }} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                        {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                      </div>
+                    </div>
+                  </div>
 
-            <p style={{textAlign: 'center', marginTop: '30px', color: 'var(--text-secondary)'}}>
-              Already an existing user? <Link to="/" style={{color: 'var(--accent)', textDecoration: 'none', fontWeight: 600}}>Login here</Link>
-            </p>
+                  <button type="submit" disabled={loading} className="btn btn-secondary" style={{ marginTop: '20px', width: '100%', borderColor: '#fff', color: '#fff', opacity: loading ? 0.7 : 1 }}>
+                    {loading ? 'Registering...' : 'Register & Verify Email'}
+                  </button>
+                </form>
+
+                <p style={{ textAlign: 'center', marginTop: '30px', color: 'var(--text-secondary)' }}>
+                  Already an existing user? <Link to="/" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>Login here</Link>
+                </p>
+              </>
+            ) : (
+              <form onSubmit={handleVerifyOTP} style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+                {error && <div style={{ background: 'rgba(255, 23, 68, 0.1)', color: 'var(--error)', padding: '10px', borderRadius: '5px', textAlign: 'center' }}>{error}</div>}
+
+                <div style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '10px' }}>
+                  We sent a 6-digit confirmation code to <strong>{formData.email}</strong>.<br />
+                  Please check your inbox and spam folder.
+                </div>
+
+                <div>
+                  <label className="question-text" style={{ fontSize: '0.9rem', textAlign: 'center', display: 'block' }}>Enter OTP</label>
+                  <input value={otp} onChange={e => setOtp(e.target.value)} type="text" className="input-text" required placeholder="123456" style={{ textAlign: 'center', letterSpacing: '8px', fontSize: '1.2rem' }} maxLength={6} />
+                </div>
+
+                <button type="submit" disabled={loading} className="btn btn-secondary" style={{ marginTop: '20px', width: '100%', borderColor: '#fff', color: '#fff', opacity: loading ? 0.7 : 1 }}>
+                  {loading ? 'Verifying...' : 'Verify Option & Start Diagnostic'}
+                </button>
+              </form>
+            )}
           </>
-        ) : (
-          <form onSubmit={handleVerifyOTP} style={{display: 'flex', flexDirection: 'column', gap: '20px', width: '100%'}}>
-            {error && <div style={{background: 'rgba(255, 23, 68, 0.1)', color: 'var(--error)', padding: '10px', borderRadius: '5px', textAlign: 'center'}}>{error}</div>}
-            
-            <div style={{textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '10px'}}>
-              We sent a 6-digit confirmation code to <strong>{formData.email}</strong>.<br/>
-              Please check your inbox and spam folder.
-            </div>
-
-            <div>
-              <label className="question-text" style={{fontSize: '0.9rem', textAlign: 'center', display: 'block'}}>Enter OTP</label>
-              <input value={otp} onChange={e => setOtp(e.target.value)} type="text" className="input-text" required placeholder="123456" style={{textAlign: 'center', letterSpacing: '8px', fontSize: '1.2rem'}} maxLength={6} />
-            </div>
-
-            <button type="submit" disabled={loading} className="btn btn-secondary" style={{marginTop: '20px', width: '100%', borderColor: '#fff', color: '#fff', opacity: loading ? 0.7 : 1}}>
-              {loading ? 'Verifying...' : 'Verify Option & Start Diagnostic'}
-            </button>
-          </form>
         )}
-        </>
-      )}
       </div>
     </div>
   );
