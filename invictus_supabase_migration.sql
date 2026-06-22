@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS public.evaluations (
   responses           JSONB DEFAULT '{}',         -- All questionnaire answers
   status              TEXT DEFAULT 'in-progress', -- 'in-progress' | 'submitted'
   highest_part_index  INTEGER DEFAULT 0,          -- For save-and-resume progress
+  reference_number    TEXT UNIQUE,                -- Assesment Reference Number
   created_at          TIMESTAMPTZ DEFAULT NOW(),
   updated_at          TIMESTAMPTZ DEFAULT NOW(),
   submitted_at        TIMESTAMPTZ

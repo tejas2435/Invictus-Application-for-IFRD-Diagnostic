@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { adminSupabase as supabase } from '../supabaseClient';
-import { FiEye, FiEyeOff, FiRefreshCw } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiRefreshCw, FiDownload } from 'react-icons/fi';
 import { questionnaireData } from '../data/questionnaire';
 import DomainReportModal from '../components/DomainReportModal';
 import OrgAverageReportModal from '../components/OrgAverageReportModal';
+import { computeDomainScores, scoreToBand } from '../utils/computeScores';
+import { generatePDF, generateExcel, generateCSV } from '../utils/exportUtils';
 
 function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
   const [selectedViewEval, setSelectedViewEval] = useState(null);
   const [selectedRespondEval, setSelectedRespondEval] = useState(null);
   const [selectedDomainEval, setSelectedDomainEval] = useState(null);
+  const [openExportMenu, setOpenExportMenu] = useState(null);
   const [reportSummary, setReportSummary] = useState('');
   const [reportFile, setReportFile] = useState(null);
   const [sendingRecord, setSendingRecord] = useState(false);
@@ -181,7 +184,7 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
           : filteredEvaluations.map(ev => {
             const hasResponded = respondedMap[ev.user_id] !== undefined || localRespondedMap[ev.user_id] !== undefined;
             return (
-              <div key={ev.id} className="question-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderColor: ev.status === 'submitted' ? 'rgba(0,230,118,0.4)' : 'var(--border-color)' }}>
+              <div key={ev.id} className="question-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderColor: ev.status === 'submitted' ? 'rgba(0,230,118,0.4)' : 'var(--border-color)', position: 'relative', zIndex: openExportMenu === ev.id ? 50 : 1 }}>
                 <div>
                   <h3 style={{ margin: '0 0 5px 0', fontSize: '1.2rem', color: '#fff' }}>{ev.profiles?.full_name} {ev.profiles?.preferred_name ? `(${ev.profiles.preferred_name})` : ''} {ev.profiles?.organization && <span style={{ fontSize: '0.8rem', color: 'var(--accent)', marginLeft: '10px' }}>[{ev.profiles.organization}]</span>}</h3>
                   <div style={{ display: 'flex', gap: '15px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
@@ -211,6 +214,69 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
                     style={{ borderColor: ev.status === 'submitted' ? 'var(--accent)' : 'var(--border-color)', color: ev.status === 'submitted' ? 'var(--accent)' : 'var(--border-color)', opacity: ev.status === 'submitted' ? 1 : 0.5, padding: '6px 12px', fontSize: '0.85rem', fontWeight: 400 }}>
                     {hasResponded ? 'Edit Response' : 'Respond'}
                   </button>
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      disabled={ev.status !== 'submitted'}
+                      onClick={() => setOpenExportMenu(openExportMenu === ev.id ? null : ev.id)}
+                      className="btn btn-secondary"
+                      style={{
+                        borderColor: ev.status === 'submitted' ? '#3b82f6' : 'var(--border-color)',
+                        color: ev.status === 'submitted' ? '#3b82f6' : 'var(--border-color)',
+                        opacity: ev.status === 'submitted' ? 1 : 0.4,
+                        padding: '6px 12px', fontSize: '0.85rem', fontWeight: 400,
+                        display: 'flex', alignItems: 'center', gap: '6px'
+                      }}
+                    >
+                      <FiDownload /> Export
+                    </button>
+                    {openExportMenu === ev.id && ev.status === 'submitted' && (
+                      <div style={{
+                        position: 'absolute', top: '100%', right: 0, marginTop: '5px',
+                        background: '#1a1a1a', border: '1px solid var(--border-color)',
+                        borderRadius: '6px', padding: '5px', zIndex: 100,
+                        display: 'flex', flexDirection: 'column', minWidth: '150px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                      }}>
+                        <button className="btn btn-secondary" style={{ border: 'none', textAlign: 'left', padding: '8px 12px', fontSize: '0.85rem' }} onClick={async () => {
+                          let evToExport = { ...ev };
+                          if (!evToExport.reference_number) {
+                            const year = new Date(ev.created_at || Date.now()).getFullYear();
+                            const randomNum = Math.floor(100000 + Math.random() * 900000);
+                            evToExport.reference_number = `IFRD-MY-${year}-${randomNum}`;
+                            await supabase.from('evaluations').update({ reference_number: evToExport.reference_number }).eq('id', ev.id);
+                          }
+                          const ds = computeDomainScores(evToExport.responses);
+                          const overallAvg = parseFloat((ds.reduce((s, d) => s + d.avg, 0) / ds.length).toFixed(2));
+                          generatePDF(evToExport, ds, scoreToBand(overallAvg));
+                          setOpenExportMenu(null);
+                        }}>📄 Export PDF</button>
+                        <button className="btn btn-secondary" style={{ border: 'none', textAlign: 'left', padding: '8px 12px', fontSize: '0.85rem' }} onClick={async () => {
+                          let evToExport = { ...ev };
+                          if (!evToExport.reference_number) {
+                            const year = new Date(ev.created_at || Date.now()).getFullYear();
+                            const randomNum = Math.floor(100000 + Math.random() * 900000);
+                            evToExport.reference_number = `IFRD-MY-${year}-${randomNum}`;
+                            await supabase.from('evaluations').update({ reference_number: evToExport.reference_number }).eq('id', ev.id);
+                          }
+                          const ds = computeDomainScores(evToExport.responses);
+                          const overallAvg = parseFloat((ds.reduce((s, d) => s + d.avg, 0) / ds.length).toFixed(2));
+                          generateExcel(evToExport, ds, scoreToBand(overallAvg));
+                          setOpenExportMenu(null);
+                        }}>📊 Export Excel</button>
+                        <button className="btn btn-secondary" style={{ border: 'none', textAlign: 'left', padding: '8px 12px', fontSize: '0.85rem' }} onClick={async () => {
+                          let evToExport = { ...ev };
+                          if (!evToExport.reference_number) {
+                            const year = new Date(ev.created_at || Date.now()).getFullYear();
+                            const randomNum = Math.floor(100000 + Math.random() * 900000);
+                            evToExport.reference_number = `IFRD-MY-${year}-${randomNum}`;
+                            await supabase.from('evaluations').update({ reference_number: evToExport.reference_number }).eq('id', ev.id);
+                          }
+                          generateCSV(evToExport);
+                          setOpenExportMenu(null);
+                        }}>📝 Export CSV</button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )
@@ -317,6 +383,7 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
         <DomainReportModal
           evaluation={selectedDomainEval}
           onClose={() => setSelectedDomainEval(null)}
+          showExport={true}
         />
       )}
     </>

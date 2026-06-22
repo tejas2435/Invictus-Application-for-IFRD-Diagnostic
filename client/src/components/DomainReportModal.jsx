@@ -7,83 +7,10 @@ import {
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
-// Map LIKERT text → numeric score 1–5
-const LIKERT_SCORE = {
-  'Strongly Disagree': 1,
-  'Disagree': 2,
-  'Neutral / Unsure': 3,
-  'Agree': 4,
-  'Strongly Agree': 5
-};
+import { computeDomainScores, scoreToBand } from '../utils/computeScores';
+import { generatePDF, generateExcel, generateCSV } from '../utils/exportUtils';
 
-// The 12 domains with their section-part id and the 11 scored question IDs
-const DOMAIN_CONFIG = [
-  {
-    partId: 's2_domain1', name: 'Strategic Readiness',
-    qIds: ['D1_Q1','D1_Q2','D1_Q3','D1_Q4','D1_Q5','D1_Q6','D1_Q7','D1_Q8','D1_Q9','D1_Q10','D1_Q11']
-  },
-  {
-    partId: 's2_domain2', name: 'Leadership Readiness',
-    qIds: ['D2_Q12','D2_Q13','D2_Q14','D2_Q15','D2_Q16','D2_Q17','D2_Q18','D2_Q19','D2_Q20','D2_Q21','D2_Q22']
-  },
-  {
-    partId: 's2_domain3', name: 'Signal Readiness',
-    qIds: ['D3_Q23','D3_Q24','D3_Q25','D3_Q26','D3_Q27','D3_Q28','D3_Q29','D3_Q30','D3_Q31','D3_Q32','D3_Q33']
-  },
-  {
-    partId: 's2_domain4', name: 'Decision Intelligence',
-    qIds: ['D4_Q34','D4_Q35','D4_Q36','D4_Q37','D4_Q38','D4_Q39','D4_Q40','D4_Q41','D4_Q42','D4_Q43','D4_Q44']
-  },
-  {
-    partId: 's2_domain5', name: 'Problem Framing',
-    qIds: ['D5_Q45','D5_Q46','D5_Q47','D5_Q48','D5_Q49','D5_Q50','D5_Q51','D5_Q52','D5_Q53','D5_Q54','D5_Q55']
-  },
-  {
-    partId: 's2_domain6', name: 'Governance Readiness',
-    qIds: ['D6_Q56','D6_Q57','D6_Q58','D6_Q59','D6_Q60','D6_Q61','D6_Q62','D6_Q63','D6_Q64','D6_Q65','D6_Q66']
-  },
-  {
-    partId: 's2_domain7', name: 'AI Governance',
-    qIds: ['D7_Q67','D7_Q68','D7_Q69','D7_Q70','D7_Q71','D7_Q72','D7_Q73','D7_Q74','D7_Q75','D7_Q76','D7_Q77']
-  },
-  {
-    partId: 's2_domain8', name: 'Workforce Readiness',
-    qIds: ['D8_Q78','D8_Q79','D8_Q80','D8_Q81','D8_Q82','D8_Q83','D8_Q84','D8_Q85','D8_Q86','D8_Q87','D8_Q88']
-  },
-  {
-    partId: 's2_domain9', name: 'Learning Velocity',
-    qIds: ['D9_Q89','D9_Q90','D9_Q91','D9_Q92','D9_Q93','D9_Q94','D9_Q95','D9_Q96','D9_Q97','D9_Q98','D9_Q99']
-  },
-  {
-    partId: 's2_domain10', name: 'Adaptive Capacity',
-    qIds: ['D10_Q100','D10_Q101','D10_Q102','D10_Q103','D10_Q104','D10_Q105','D10_Q106','D10_Q107','D10_Q108','D10_Q109','D10_Q110']
-  },
-  {
-    partId: 's2_domain11', name: 'Ecosystem Readiness',
-    qIds: ['D11_Q111','D11_Q112','D11_Q113','D11_Q114','D11_Q115','D11_Q116','D11_Q117','D11_Q118','D11_Q119','D11_Q120','D11_Q121']
-  },
-  {
-    partId: 's2_domain12', name: 'Strategic Integrity',
-    qIds: ['D12_Q122','D12_Q123','D12_Q124','D12_Q125','D12_Q126','D12_Q127','D12_Q128','D12_Q129','D12_Q130','D12_Q131','D12_Q132']
-  }
-];
-
-function computeDomainScores(responses) {
-  return DOMAIN_CONFIG.map(domain => {
-    const partResponses = responses?.[domain.partId] || {};
-    const scores = domain.qIds
-      .map(qId => LIKERT_SCORE[partResponses[qId]] || null)
-      .filter(s => s !== null);
-
-    const avg = scores.length > 0
-      ? parseFloat((scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2))
-      : 0;
-
-    return { name: domain.name, avg, answered: scores.length, total: domain.qIds.length };
-  });
-}
-
-export default function DomainReportModal({ evaluation, onClose }) {
+export default function DomainReportModal({ evaluation, onClose, showExport = false }) {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const radarDivRef = useRef(null);
@@ -161,13 +88,7 @@ export default function DomainReportModal({ evaluation, onClose }) {
     };
   }, [evaluation]);
 
-  const scoreToBand = (score) => {
-    if (score >= 4.5) return { label: 'Highly Ready', color: '#00e676' };
-    if (score >= 3.5) return { label: 'Ready', color: '#69f0ae' };
-    if (score >= 2.5) return { label: 'Developing', color: '#ffc800' };
-    if (score >= 1.5) return { label: 'At Risk', color: '#ff9800' };
-    return { label: 'Critical Gap', color: '#ff1744' };
-  };
+// Removed local scoreToBand in favor of imported version
 
   const overall = scoreToBand(overallAvg);
 
@@ -327,7 +248,6 @@ export default function DomainReportModal({ evaluation, onClose }) {
             ))}
           </div>
         </div>
-
         <button onClick={onClose} style={{
           width: '100%', padding: '14px', background: 'transparent',
           border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.5)',

@@ -143,6 +143,10 @@ function DiagnosticForm() {
         newAnswers[q.id] = `${dd}-${mm}-${yyyy}`;
         updated = true;
       }
+      if (q.id === 'B1' && organization && organization !== 'General' && !newAnswers[q.id]) {
+        newAnswers[q.id] = organization;
+        updated = true;
+      }
     });
 
     if (updated) {
@@ -272,10 +276,75 @@ function DiagnosticForm() {
     setShowSubmitConfirm(false);
 
     if (evaluationId) {
+      const year = new Date().getFullYear();
+      const randomNum = Math.floor(100000 + Math.random() * 900000);
+      const referenceNumber = `IFRD-MY-${year}-${randomNum}`;
+
       await supabase.from('evaluations').update({
         status: 'submitted',
-        submitted_at: new Date().toISOString()
+        submitted_at: new Date().toISOString(),
+        reference_number: referenceNumber
       }).eq('id', evaluationId);
+
+      // Send Emails
+      const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY;
+      if (RESEND_API_KEY) {
+        // Participant Email
+        if (userEmail) {
+          try {
+            await fetch('/api/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                apiKey: RESEND_API_KEY,
+                from: import.meta.env.VITE_RESEND_FROM_EMAIL || 'Invictus Diagnostics <info@invictusleader.com>',
+                to: userEmail,
+                subject: 'Your Invictus Future Readiness Diagnostic™ Assessment Has Been Successfully Submitted',
+                html: `
+                  <p>Dear ${preferredName ? `${userName} (${preferredName})` : userName},</p>
+                  <p>Thank you for completing the Invictus Future Readiness Diagnostic™ (IFRD™).</p>
+                  <p><strong>Assessment Details:</strong><br/>
+                  Assessment Reference Number: ${referenceNumber}<br/>
+                  Date & Time of Submission: ${new Date().toLocaleString()}</p>
+                  <p>Your assessment results will be reviewed and a comprehensive report will be available on your dashboard soon. We will notify you via email when it's ready to download.</p>
+                  <p>Best regards,<br/>Invictus Diagnostics Team</p>
+                `
+              })
+            });
+          } catch (err) { console.error('Participant email failed', err); }
+        }
+
+        // Admin Notification Email
+        try {
+          const { data: adminData } = await supabase.from('profiles').select('email').eq('role', 'admin').limit(1);
+          if (adminData && adminData.length > 0 && adminData[0].email) {
+            const adminEmail = adminData[0].email;
+            const assessType = responses?.['s1_context']?.['Z1'] || 'N/A';
+            const asText = typeof assessType === 'object' ? (assessType.main + (assessType.other ? ` (${assessType.other})` : '')) : assessType;
+            
+            await fetch('/api/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                apiKey: RESEND_API_KEY,
+                from: import.meta.env.VITE_RESEND_FROM_EMAIL || 'Invictus Diagnostics <info@invictusleader.com>',
+                to: adminEmail,
+                subject: `New IFRD™ Assessment Completed – ${userName}`,
+                html: `
+                  <p>A new Invictus Future Readiness Diagnostic™ (IFRD™) assessment has been submitted.</p>
+                  <p><strong>Participant Name:</strong> ${userName} ${preferredName ? `(${preferredName})` : ''}<br/>
+                  <strong>Email:</strong> ${userEmail || 'N/A'}<br/>
+                  <strong>Organisation:</strong> ${organization || 'N/A'}<br/>
+                  <strong>Assessment Type:</strong> ${asText}<br/>
+                  <strong>Reference Number:</strong> ${referenceNumber}<br/>
+                  <strong>Submission Time:</strong> ${new Date().toLocaleString()}</p>
+                  <p>Please log in to the Admin Dashboard to review the responses.</p>
+                `
+              })
+            });
+          }
+        } catch (err) { console.error('Admin email failed', err); }
+      }
     }
 
     setSubmitSuccess(true);
@@ -341,6 +410,10 @@ function DiagnosticForm() {
   if (!currentPart) return null;
 
   const renderQuestion = (q) => {
+    let overrideQ = { ...q };
+    if (q.id === 'consent_name' || q.id === 'consent_date' || (q.id === 'B1' && organization && organization !== 'General')) {
+      overrideQ.editable = false;
+    }
     const value = responses[currentPart.id]?.[q.id];
     const isAnswered = (() => {
       if (value === undefined || value === null || value === '') return false;
@@ -352,7 +425,7 @@ function DiagnosticForm() {
     })();
     const hasError = errorIds.includes(q.id);
     const props = {
-      question: q,
+      question: overrideQ,
       value,
       hasError,
       isAnswered,
