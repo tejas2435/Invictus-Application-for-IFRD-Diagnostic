@@ -297,7 +297,7 @@ function DiagnosticForm() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 apiKey: RESEND_API_KEY,
-                from: import.meta.env.VITE_RESEND_FROM_EMAIL || 'Invictus Diagnostics <info@invictusleader.com>',
+                from: (() => { const e = import.meta.env.VITE_RESEND_FROM_EMAIL; return e ? (e.includes('<') ? e : `Invictus Diagnostics <${e}>`) : 'Invictus Diagnostics <info@invictusleader.com>'; })(),
                 to: userEmail,
                 subject: 'Your Invictus Future Readiness Diagnostic™ Assessment Has Been Successfully Submitted',
                 html: `
@@ -327,7 +327,7 @@ function DiagnosticForm() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 apiKey: RESEND_API_KEY,
-                from: import.meta.env.VITE_RESEND_FROM_EMAIL || 'Invictus Diagnostics <info@invictusleader.com>',
+                from: (() => { const e = import.meta.env.VITE_RESEND_FROM_EMAIL; return e ? (e.includes('<') ? e : `Invictus Diagnostics <${e}>`) : 'Invictus Diagnostics <info@invictusleader.com>'; })(),
                 to: adminEmail,
                 subject: `New IFRD™ Assessment Completed – ${userName}`,
                 html: `
