@@ -57,8 +57,10 @@ export async function generatePDF(evaluation, domainScores, overallBand) {
   let startY = 140;
   doc.text(`Participant: ${pName} ${evaluation.profiles?.preferred_name ? '('+evaluation.profiles.preferred_name+')' : ''}`, PADDING, startY); startY += LINE_HEIGHT;
   doc.text(`Email: ${evaluation.profiles?.email || 'N/A'}`, PADDING, startY); startY += LINE_HEIGHT;
-  doc.text(`Organisation: ${evaluation.responses?.s1_partB?.B1 || 'N/A'}`, PADDING, startY); startY += LINE_HEIGHT;
-  doc.text(`Industry: ${evaluation.responses?.s1_partB?.B5 || 'N/A'}`, PADDING, startY); startY += LINE_HEIGHT;
+  const orgNameFull = formatExportAnswer(evaluation.responses?.s1_partB?.B1);
+  const indNameFull = formatExportAnswer(evaluation.responses?.s1_partB?.B5);
+  doc.text(`Organisation: ${orgNameFull === '— No Response —' ? 'N/A' : orgNameFull}`, PADDING, startY); startY += LINE_HEIGHT;
+  doc.text(`Industry: ${indNameFull === '— No Response —' ? 'N/A' : indNameFull}`, PADDING, startY); startY += LINE_HEIGHT;
   doc.text(`Reference No: ${evaluation.reference_number || 'N/A'}`, PADDING, startY); startY += LINE_HEIGHT;
   doc.text(`Date: ${new Date(evaluation.created_at || Date.now()).toLocaleDateString()}`, PADDING, startY);
   
@@ -216,7 +218,7 @@ export function generateExcel(evaluation, domainScores, overallBand) {
   const summaryData = [
     ['Participant Name', pName],
     ['Email', evaluation.profiles?.email || 'N/A'],
-    ['Organisation', evaluation.responses?.s1_partB?.B1 || 'N/A'],
+    ['Organisation', formatExportAnswer(evaluation.responses?.s1_partB?.B1) === '— No Response —' ? 'N/A' : formatExportAnswer(evaluation.responses?.s1_partB?.B1)],
     ['Reference Number', evaluation.reference_number || 'N/A'],
     ['Date Completed', new Date(evaluation.created_at || Date.now()).toLocaleDateString()],
     [''],
