@@ -601,7 +601,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
         const orgActive = orgTotal - orgCompleted;
 
         return (
-          <div key={org.id} style={{ marginBottom: '15px', border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--border-color)'}`, borderRadius: '8px', overflow: 'hidden', transition: 'border-color 0.2s' }}>
+          <div key={org.id} style={{ marginBottom: '15px', border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--border-color)'}`, borderRadius: '8px', overflow: 'visible', transition: 'border-color 0.2s' }}>
             <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }} onClick={() => toggleOrg(org.id, org.name)}>
               <div>
                 <h3 style={{ margin: 0, color: '#fff' }}>{org.name}</h3>

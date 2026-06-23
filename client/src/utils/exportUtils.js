@@ -11,6 +11,23 @@ import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, F
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
+const formatExportAnswer = (answer) => {
+  if (answer === null || answer === undefined) return '— No Response —';
+  if (typeof answer === 'string' || typeof answer === 'number' || typeof answer === 'boolean') {
+    return answer.toString();
+  } else if (answer.items) {
+    let display = answer.items.join(', ');
+    if (answer.other) display += ` (Other: ${answer.other})`;
+    return display;
+  } else if (answer.main) {
+    let display = answer.main;
+    if (answer.other) display += ` (Other: ${answer.other})`;
+    return display;
+  }
+  try { return typeof answer === 'object' ? JSON.stringify(answer) : String(answer); }
+  catch { return String(answer); }
+};
+
 function checkPageBreak(doc, currentY, requiredSpace = LINE_HEIGHT) {
   if (currentY + requiredSpace > PAGE_HEIGHT - PADDING) {
     doc.addPage();
@@ -164,8 +181,8 @@ export async function generatePDF(evaluation, domainScores, overallBand) {
     doc.setFont("helvetica", "normal");
     
     section.questions.forEach(q => {
-      const answer = sectionResponses[q.id];
-      if (answer) {
+      let rawAnswer = sectionResponses[q.id];
+      if (rawAnswer) {
         let questionText = q.text;
         // Basic wraparound for long questions
         let splitText = doc.splitTextToSize(`Q: ${questionText}`, PAGE_WIDTH - 2 * PADDING);
@@ -173,6 +190,7 @@ export async function generatePDF(evaluation, domainScores, overallBand) {
         doc.text(splitText, PADDING, y);
         y += splitText.length * 6;
         
+        let answer = formatExportAnswer(rawAnswer);
         let ansText = `A: ${answer}`;
         let splitAns = doc.splitTextToSize(ansText, PAGE_WIDTH - 2 * PADDING - 10);
         doc.setTextColor(30, 30, 150);
@@ -222,8 +240,9 @@ export function generateExcel(evaluation, domainScores, overallBand) {
   questionnaireData.forEach(section => {
     const sectionResponses = evaluation.responses?.[section.id] || {};
     section.questions.forEach(q => {
-      if (sectionResponses[q.id]) {
-        responseData.push([section.title, q.id, q.text, sectionResponses[q.id]]);
+      let rawAnswer = sectionResponses[q.id];
+      if (rawAnswer) {
+        responseData.push([section.title, q.id, q.text, formatExportAnswer(rawAnswer)]);
       }
     });
   });
@@ -240,9 +259,10 @@ export function generateCSV(evaluation) {
   questionnaireData.forEach(section => {
     const sectionResponses = evaluation.responses?.[section.id] || {};
     section.questions.forEach(q => {
-      if (sectionResponses[q.id]) {
+      let rawAnswer = sectionResponses[q.id];
+      if (rawAnswer) {
         const qText = q.text.replace(/"/g, '""');
-        const ansText = String(sectionResponses[q.id]).replace(/"/g, '""');
+        const ansText = formatExportAnswer(rawAnswer).replace(/"/g, '""');
         csv += `"${section.title}","${q.id}","${qText}","${ansText}"\n`;
       }
     });
