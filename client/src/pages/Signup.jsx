@@ -158,8 +158,8 @@ export default function Signup() {
   };
 
   return (
-    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-      <div className="question-card" style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center' }}>
+    <div className="app-container centering-container">
+      <div className="question-card card-narrow" style={{ alignItems: 'center' }}>
         <img src={logo} alt="Invictus Logo" className="main-logo" />
         {orgError ? (
           <div style={{ textAlign: 'center', color: 'var(--error)', marginTop: '20px' }}>
@@ -168,7 +168,7 @@ export default function Signup() {
           </div>
         ) : (
           <>
-            <h1 style={{ textAlign: 'center', fontSize: '1.8rem', marginBottom: '30px' }}>Sign Up for Participant {orgData ? <div style={{ fontSize: '1.6rem', color: 'var(--accent)' }}>{orgData.name}</div> : (signupToken && 'Loading Org...')}</h1>
+            <h1 className="diag-title" style={{ marginBottom: '30px' }}>Sign Up for Participant {orgData ? <div style={{ fontSize: '1.6rem', color: 'var(--accent)' }}>{orgData.name}</div> : (signupToken && 'Loading Org...')}</h1>
 
             {!awaitingOTP ? (
               <>
@@ -180,7 +180,7 @@ export default function Signup() {
                   <div><label className="question-text" style={{ fontSize: '0.9rem' }}>3. Email Address</label><input name="email" value={formData.email} onChange={handleChange} type="email" className="input-text" required /></div>
                   <div>
                     <label className="question-text" style={{ fontSize: '0.9rem' }}>4. Mobile Number</label>
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    <div className="phone-input-row" style={{ display: 'flex', gap: '10px' }}>
                       <Select
                         options={countryOptions}
                         value={countryOptions.find(o => o.value === formData.phoneCode)}

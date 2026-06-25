@@ -6,7 +6,6 @@
   --text-primary: #f0f0f0;
   --text-secondary: #a0a0a0;
   --accent: #00e676;
-  /* Google form style but dark with neon green accent based on their green/red dots idea */
   --accent-hover: #00c853;
   --error: #ff1744;
   --border-color: rgba(255, 255, 255, 0.1);
@@ -26,6 +25,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* App Container */
@@ -33,6 +33,16 @@ body {
   max-width: 1000px;
   margin: 0 auto;
   padding: 40px 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.centering-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
   width: 100%;
 }
 
@@ -249,8 +259,6 @@ p {
   background-color: #fff;
 }
 
-/* We don't necessarily need small dots explicitly rendered if the line implies progress, but we can design part sub-steps if needed */
-
 /* Question Cards */
 .question-card {
   background: var(--bg-card);
@@ -266,6 +274,16 @@ p {
   border-color: var(--accent);
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.card-compact {
+  padding: 20px;
+}
+
+.card-narrow {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 /* Answered question — green border */
@@ -377,6 +395,15 @@ p {
   width: 18px;
   height: 18px;
   accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.respond-modal-actions,
+.modal-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 /* Scrollable Container */
@@ -414,6 +441,7 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 }
 
 .btn:hover {
@@ -433,19 +461,349 @@ p {
 
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-2px);
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.btn-domain { border-color: #a78bfa !important; color: #a78bfa !important; }
+.btn-accent { border-color: var(--accent) !important; color: var(--accent) !important; }
+.btn-export { border-color: #3b82f6 !important; color: #3b82f6 !important; }
+
+.btn:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .form-footer {
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
+  gap: 10px;
 }
 
-/* Animations */
-.fade-enter {
-  opacity: 0;
-  transform: translateY(10px);
+/* Dashboard header layout */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.dashboard-header-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.dashboard-header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 2;
+}
+
+.dashboard-header-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Stats row */
+.stats-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 35px;
+  flex-wrap: wrap;
+}
+
+.stats-row .question-card {
+  flex: 1;
+  min-width: 80px;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Tabs row */
+.tabs-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+/* Eval card layout */
+.eval-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.eval-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Eval card sub-components */
+.eval-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.eval-card-title {
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.eval-card-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+/* Org card header */
+.org-card-header {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.org-card-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 2000;
+  overflow-y: auto;
+  padding: 20px 16px;
+}
+
+.modal-inner {
+  max-width: 900px;
+  width: 100%;
+}
+
+.modal-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.export-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 5px;
+  background: #1a1a1a;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 5px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.export-btn {
+  border: none;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  background: transparent;
+  color: var(--text-primary);
+  width: 100%;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.export-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.flex-column-gap15 {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Modal section header with export btn */
+.modal-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Score banner inside modal */
+.score-banner {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 20px 25px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* Score legend wrap */
+.score-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Domain breakdown row */
+.domain-row-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Participant detail grid */
+.participant-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+}
+
+/* Diagnostic form header */
+.diag-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  gap: 10px;
+}
+
+.diag-title {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.diag-header-left {
+  flex: 1;
+}
+
+.diag-header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 2;
+}
+
+.diag-header-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.part-header {
+  margin-bottom: 20px;
+}
+
+.part-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Stats & Tabs */
+.stat-card {
+  flex: 1;
+  text-align: center;
+  padding: 24px;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  fontWeight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+.stat-progress { border-color: rgba(255, 200, 0, 0.4); }
+.stat-completed { border-color: rgba(0, 230, 118, 0.4); }
+
+.active-tab {
+  flex: 1;
+  background: var(--accent) !important;
+  color: #000 !important;
+  border: 1px solid var(--border-color);
+}
+
+.inactive-tab {
+  flex: 1;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color);
+}
+
+.inactive-tab:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 .fade-enter-active {
@@ -461,4 +819,459 @@ p {
 .fade-exit-active {
   opacity: 0;
   transition: opacity 300ms;
+}
+
+/* ===================== MOBILE BREAKPOINTS ===================== */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 20px 14px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 14px;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+  }
+
+  .main-logo {
+    height: 70px;
+    margin-bottom: 16px;
+  }
+
+  /* Question cards slimmer on mobile */
+  .question-card {
+    padding: 18px 14px;
+    margin-bottom: 16px;
+  }
+
+  .question-text {
+    font-size: 1rem;
+  }
+
+  /* Progress bar */
+  .progress-bar-wrapper {
+    margin-bottom: 24px;
+  }
+
+  .progress-container {
+    padding: 10px 12px;
+  }
+
+  .dot-big {
+    width: 18px;
+    height: 18px;
+    border-width: 3px;
+  }
+
+  .dot-small {
+    width: 9px;
+    height: 9px;
+    border-width: 2px;
+  }
+
+  .progress-label {
+    font-size: 0.78rem;
+    padding: 0 4px;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+  }
+
+  /* Info panels */
+  .info-panel {
+    padding: 16px 16px;
+  }
+
+  .key-question-panel {
+    padding: 16px 16px;
+  }
+
+  .key-question-text {
+    font-size: 1rem;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
+  /* Form footer: stack on narrow screens */
+  .form-footer {
+    flex-direction: column-reverse;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .form-footer .btn {
+    width: 100%;
+  }
+
+  /* Dashboard header: wrap and stack */
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-header-center {
+    align-self: center;
+    flex: unset;
+    width: 100%;
+  }
+
+  .dashboard-header-right {
+    align-self: stretch;
+    justify-content: flex-start;
+    flex: unset;
+    width: 100%;
+  }
+
+  /* Stats row: 2×2 grid on mobile */
+  .stats-row {
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stats-row .stat-card {
+    min-width: calc(50% - 100px);
+    padding: 14px 10px;
+    flex: 1 1 calc(50% - 10px);
+  }
+
+  .stat-value {
+    font-size: 1.8rem !important;
+  }
+
+  /* Tabs: wrap on mobile */
+  .tabs-row {
+    gap: 8px;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .tabs-row .btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+
+  /* Eval card: stack info and actions */
+  .eval-card-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .eval-card-actions {
+    width: 100%;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .eval-card-actions .btn {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 130px;
+    font-size: 0.75rem;
+    padding: 8px 10px;
+  }
+
+  /* Org card header: stack on small */
+  .org-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .org-card-actions {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .org-card-actions .btn {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.8rem;
+    padding: 8px 8px;
+  }
+
+  /* Modal padding reduced */
+  .modal-overlay {
+    padding: 10px 10px;
+    align-items: flex-start;
+  }
+
+  .modal-inner {
+    max-width: 100%;
+  }
+
+  /* Score banner stacks on mobile */
+  .score-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .score-value {
+    font-size: 2.5rem !important;
+  }
+
+  /* Modal section header: stack title and export btn */
+  .modal-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .modal-section-header .btn {
+    width: 100%;
+  }
+
+  /* Participant detail grid: 1 col on mobile */
+  .participant-detail-grid {
+    grid-template-columns: 1fr;
+    font-size: 0.95rem;
+    gap: 10px;
+  }
+
+  /* Diagnostic header: stack */
+  .diag-header {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 8px;
+  }
+
+  .diag-header-left {
+    display: none; /* empty spacer – hide on mobile */
+  }
+
+  .diag-header-center {
+    flex: unset;
+    width: 100%;
+  }
+
+  .diag-header-right {
+    flex: unset;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Signup phone row: stack */
+  .phone-input-row {
+    flex-direction: column;
+  }
+
+  /* Respond modal actions: full-width */
+  .respond-modal-actions, .modal-form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .respond-modal-actions .btn, .modal-form-actions .btn {
+    width: 100%;
+  }
+
+  .export-dropdown-menu {
+    right: auto;
+    left: 0;
+    min-width: 130px;
+  }
+
+  /* Centering container fix for mobile */
+  .centering-container {
+    min-height: auto;
+    padding: 20px 0;
+  }
+
+  /* Admin Dashboard Table Replacements */
+  .eval-card-info {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .eval-card-title {
+    font-size: 1.05rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .eval-card-meta {
+    font-size: 0.8rem !important;
+    gap: 6px !important;
+  }
+
+  /* Fullscreen View Modal responsive */
+  .modal-fullscreen-header {
+    padding: 12px 16px !important;
+  }
+
+  .modal-fullscreen-content {
+    padding: 16px !important;
+  }
+
+  .modal-fullscreen-section {
+    padding: 16px !important;
+    margin-bottom: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.25rem;
+  }
+
+  .main-logo {
+    height: 56px;
+  }
+
+  .question-card {
+    padding: 14px 12px;
+  }
+
+  .btn {
+    font-size: 0.82rem;
+    padding: 10px 12px;
+  }
+
+  .stats-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .stats-row .stat-card {
+    width: 100%;
+    min-width: 0;
+    flex: unset;
+  }
+
+  .stat-value {
+    font-size: 1.8rem !important;
+  }
+
+  .eval-card-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .eval-card-actions .btn {
+    width: 100%;
+    flex: unset;
+    min-width: 0;
+  }
+
+  /* Organizations stack completely */
+  .org-card-header {
+    gap: 15px;
+  }
+
+  .org-card-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .org-card-actions .btn {
+    width: 100%;
+  }
+
+  /* Tabs stack partially or scroll */
+  .tabs-row {
+    flex-wrap: wrap;
+  }
+
+  .tabs-row .btn {
+    flex: 1 1 calc(50% - 4px);
+    font-size: 0.75rem;
+  }
+}
+/* ===============================================================
+   Profile Menu Component
+   =============================================================== */
+.profile-menu-btn {
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  border-color: #fff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-menu-label {
+  display: inline;
+}
+
+.profile-menu-dropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  width: 270px;
+  max-width: calc(100vw - 24px);
+  padding: 20px;
+  z-index: 100;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  border-radius: 12px;
+}
+
+/* ===============================================================
+   Participant View Mobile Fixes
+   =============================================================== */
+@media (max-width: 768px) {
+  /* Hide Profile text label on mobile, show only icon circle */
+  .profile-menu-label {
+    display: none;
+  }
+
+  .profile-menu-btn {
+    padding: 8px 10px;
+    gap: 0;
+  }
+
+  /* Diagnostic form header: use grid so profile button stays top-right
+     and the logo+title stay centered */
+  .diag-header {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-direction: unset;
+  }
+
+  .diag-header-left {
+    display: none !important;
+  }
+
+  .diag-header-center {
+    grid-column: 1 / 2;
+    grid-row: 1;
+    width: 100% !important;
+    text-align: center;
+    flex: unset;
+  }
+
+  .diag-header-right {
+    grid-column: 2 / 3;
+    grid-row: 1;
+    justify-content: flex-end;
+    width: auto !important;
+    flex: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-menu-dropdown {
+    max-width: calc(100vw - 20px);
+    right: -10px;
+  }
 }

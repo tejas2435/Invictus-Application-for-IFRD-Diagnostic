@@ -74,39 +74,39 @@ export default function SupervisorDashboard() {
   return (
     <div className="app-container">
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <h1 style={{ margin: 0, fontSize: '1.6rem' }}>Supervisor Dashboard</h1>
+      <div className="dashboard-header">
+        <div className="dashboard-header-left">
+          <h1 className="diag-title" style={{ textAlign: 'left', fontSize: '1.4rem' }}>Supervisor Dashboard</h1>
           <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '2px' }}>Welcome, {supervisorName} • {orgName}</div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 2 }}>
+        <div className="dashboard-header-center">
           <img src={logo} alt="Invictus Logo" className="main-logo" />
         </div>
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '15px', alignItems: 'center' }}>
-           <button className="btn btn-secondary" onClick={() => setShowOrgAvgReport(true)}>Aggregate Report</button>
+        <div className="dashboard-header-right">
+          <button className="btn btn-secondary" onClick={() => setShowOrgAvgReport(true)}>Aggregate Report</button>
           <button className="btn btn-secondary" onClick={handleLogout} style={{ borderColor: 'var(--error)', color: 'var(--error)' }}>Logout</button>
         </div>
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'flex', gap: '20px', marginBottom: '35px' }}>
-        <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px', borderColor: 'rgba(0,191,255,0.4)' }}>
-          <div style={{ fontSize: '2.5rem', fontWeight: 700, color: '#00bfff' }}>
+      <div className="stats-row">
+        <div className="question-card stat-card" style={{ borderColor: 'rgba(0,191,255,0.4)' }}>
+          <div className="stat-value" style={{ color: '#00bfff' }}>
             {maxParticipants - stats.total} <span style={{ fontSize: '1.2rem', fontWeight: 400, color: 'var(--text-secondary)' }}>/ {maxParticipants}</span>
           </div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Registrations Remaining</div>
+          <div className="stat-label">Remaining Slots</div>
         </div>
-        <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px' }}>
-          <div style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stats.total}</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Total Participants</div>
+        <div className="question-card stat-card">
+          <div className="stat-value">{stats.total}</div>
+          <div className="stat-label">Total Participants</div>
         </div>
-        <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px', borderColor: 'rgba(255,200,0,0.4)' }}>
-          <div style={{ fontSize: '2.5rem', fontWeight: 700, color: '#ffc800' }}>{stats.active}</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>In Progress</div>
+        <div className="question-card stat-card stat-progress">
+          <div className="stat-value" style={{ color: '#ffc800' }}>{stats.active}</div>
+          <div className="stat-label">In Progress</div>
         </div>
-        <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px', borderColor: 'rgba(0,230,118,0.4)' }}>
-          <div style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--accent)' }}>{stats.completed}</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Completed</div>
+        <div className="question-card stat-card stat-completed">
+          <div className="stat-value" style={{ color: 'var(--accent)' }}>{stats.completed}</div>
+          <div className="stat-label">Completed</div>
         </div>
       </div>
 
@@ -117,25 +117,28 @@ export default function SupervisorDashboard() {
         {evaluations.length === 0 ? (
           <div className="question-card" style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No participants found for this organization.</div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div className="flex-column-gap15">
             {evaluations.map((ev, i) => (
-              <div key={i} className="question-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px', borderLeft: ev.status === 'submitted' ? '4px solid var(--accent)' : '4px solid #ffc800' }}>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>
-                    {ev.profiles?.full_name} {ev.profiles?.preferred_name ? `(${ev.profiles.preferred_name})` : ''}
-                  </h3>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>
-                    ID: {ev.profiles?.custom_id || 'N/A'} • Joined: {new Date(ev.profiles?.created_at).toLocaleDateString()}
+              <div key={i} className="question-card card-compact" style={{ borderLeft: ev.status === 'submitted' ? '4px solid var(--accent)' : '4px solid #ffc800' }}>
+                <div className="eval-card-row">
+                  <div className="eval-card-info">
+                    <h3 className="eval-card-title">
+                      {ev.profiles?.full_name} {ev.profiles?.preferred_name ? `(${ev.profiles.preferred_name})` : ''}
+                    </h3>
+                    <div className="eval-card-meta">
+                      <span>ID: {ev.profiles?.custom_id || 'N/A'}</span>
+                      <span>Joined: {new Date(ev.profiles?.created_at).toLocaleDateString()}</span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <span style={{ 
-                    padding: '4px 10px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600,
-                    background: ev.status === 'submitted' ? 'rgba(0,230,118,0.1)' : 'rgba(255,200,0,0.1)',
-                    color: ev.status === 'submitted' ? 'var(--accent)' : '#ffc800'
-                  }}>
-                    {ev.status === 'submitted' ? 'Completed' : 'In Progress'}
-                  </span>
+                  <div className="eval-card-actions">
+                    <span style={{ 
+                      padding: '4px 10px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600,
+                      background: ev.status === 'submitted' ? 'rgba(0,230,118,0.1)' : 'rgba(255,200,0,0.1)',
+                      color: ev.status === 'submitted' ? 'var(--accent)' : '#ffc800'
+                    }}>
+                      {ev.status === 'submitted' ? 'Completed' : 'In Progress'}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}

@@ -13,30 +13,19 @@ export default function ProfileMenu({ userId, userName, userEmail, userPhone }) 
   return (
     <div style={{ position: 'relative' }}>
       <button 
-        className="btn btn-secondary" 
+        className="btn btn-secondary profile-menu-btn" 
         onClick={() => setIsOpen(!isOpen)}
-        style={{ padding: '8px 15px', fontSize: '0.9rem', borderColor: '#fff', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}
       >
-        <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#fff', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>U</div>
-        Profile
+        <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#fff', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold', flexShrink: 0 }}>U</div>
+        <span className="profile-menu-label">Profile</span>
       </button>
 
       {isOpen && (
-        <div className="question-card" style={{ 
-          position: 'absolute', 
-          top: '110%', 
-          right: 0, 
-          width: '270px', 
-          padding: '20px', 
-          zIndex: 100, 
-          background: 'var(--bg-dark)',
-          border: '1px solid var(--border-color)',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.8)'
-        }}>
+        <div className="profile-menu-dropdown question-card">
           <h4 style={{ margin: '0 0 15px 0', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>Participant Profile</h4>
           
           <div style={{ fontSize: '0.85rem', marginBottom: '4px', color: 'var(--text-secondary)' }}>ID:</div>
-          <div style={{ fontSize: '0.9rem', marginBottom: '12px' }}>{userId}</div>
+          <div style={{ fontSize: '0.9rem', marginBottom: '12px', wordBreak: 'break-all' }}>{userId}</div>
 
           {userName && (
             <>

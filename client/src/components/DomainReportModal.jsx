@@ -88,14 +88,18 @@ export default function DomainReportModal({ evaluation, onClose, showExport = fa
     };
   }, [evaluation]);
 
-// Removed local scoreToBand in favor of imported version
-
   const overall = scoreToBand(overallAvg);
 
+  // Export always renders at desktop width so the image looks great regardless of device
   const exportElement = async (elementRef, filename) => {
     if (!elementRef.current) return;
     try {
-      const canvas = await html2canvas(elementRef.current, { backgroundColor: '#0f0f0f' });
+      const canvas = await html2canvas(elementRef.current, {
+        backgroundColor: '#0f0f0f',
+        scale: 2,
+        windowWidth: 1200,
+        useCORS: true
+      });
       const link = document.createElement('a');
       link.download = filename;
       link.href = canvas.toDataURL('image/jpeg', 0.9);
@@ -109,21 +113,16 @@ export default function DomainReportModal({ evaluation, onClose, showExport = fa
   const participantName = evaluation.profiles?.full_name || 'Participant';
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-      background: 'rgba(0,0,0,0.92)', display: 'flex', alignItems: 'flex-start',
-      justifyContent: 'center', zIndex: 2000, overflowY: 'auto', padding: '40px 20px'
-    }}>
-      <div style={{ maxWidth: '900px', width: '100%' }}>
+    <div className="modal-overlay">
+      <div className="modal-inner">
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' }}>
-          <div>
-            <h2 style={{ margin: 0, color: '#fff', fontSize: '1.5rem' }}>
-              Domain Report Summary
+        <div className="diag-header" style={{ marginBottom: '24px' }}>
+          <div className="diag-header-left" style={{ flex: 1 }}>
+            <h2 style={{ margin: 0, color: '#fff', fontSize: '1.2rem' }}>
+              Domain Report
             </h2>
-            <div style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '0.9rem' }}>
+            <div style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '0.85rem' }}>
               {evaluation.profiles?.full_name}
-              {evaluation.profiles?.preferred_name ? ` (${evaluation.profiles.preferred_name})` : ''} — ID: {evaluation.profiles?.custom_id}
             </div>
           </div>
           <button onClick={onClose} style={{
@@ -134,7 +133,7 @@ export default function DomainReportModal({ evaluation, onClose, showExport = fa
         </div>
 
         {/* ── EXPORT 1: banner + radar ── */}
-        <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="modal-section-header">
           <h3 style={{ color: '#fff', margin: 0, fontSize: '1rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             Radar — Future Readiness Profile™
           </h3>
@@ -146,19 +145,15 @@ export default function DomainReportModal({ evaluation, onClose, showExport = fa
 
         <div ref={radarDivRef} style={{ background: '#111', padding: '24px', borderRadius: '12px', marginBottom: '30px' }}>
           {/* Overall Score Banner */}
-          <div style={{
-            background: 'rgba(255,255,255,0.04)', border: `1px solid ${overall.color}40`,
-            borderLeft: `4px solid ${overall.color}`, borderRadius: '8px',
-            padding: '20px 25px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '30px'
-          }}>
-            <div>
-              <div style={{ fontSize: '3rem', fontWeight: 800, color: overall.color, lineHeight: 1 }}>{overallAvg}</div>
-              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginTop: '4px' }}>Overall / 5.00</div>
+          <div className="score-banner" style={{ border: `1px solid ${overall.color}40`, borderLeft: `4px solid ${overall.color}` }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="score-value" style={{ fontSize: '3rem', fontWeight: 800, color: overall.color, lineHeight: 1 }}>{overallAvg}</div>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', marginTop: '4px' }}>Overall / 5.00</div>
             </div>
-            <div>
+            <div style={{ flex: 1 }}>
               <div style={{ fontSize: '1.2rem', fontWeight: 700, color: overall.color }}>{overall.label}</div>
-              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginTop: '2px' }}>
-                Invictus Future Readiness Index™ — Based on 12 domains, 132 questions
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginTop: '2px' }}>
+                Invictus Future Readiness Index™
               </div>
             </div>
           </div>
@@ -168,7 +163,7 @@ export default function DomainReportModal({ evaluation, onClose, showExport = fa
         </div>
 
         {/* ── EXPORT 2: banner + breakdown + legend ── */}
-        <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="modal-section-header">
           <h3 style={{ color: '#fff', margin: 0, fontSize: '1rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             Domain Breakdown
           </h3>
@@ -180,11 +175,7 @@ export default function DomainReportModal({ evaluation, onClose, showExport = fa
 
         <div ref={breakdownDivRef} style={{ background: '#111', padding: '24px', borderRadius: '12px', marginBottom: '30px' }}>
           {/* Overall Score Banner (repeated for context) */}
-          <div style={{
-            background: 'rgba(255,255,255,0.04)', border: `1px solid ${overall.color}40`,
-            borderLeft: `4px solid ${overall.color}`, borderRadius: '8px',
-            padding: '20px 25px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '30px'
-          }}>
+          <div className="score-banner" style={{ border: `1px solid ${overall.color}40`, borderLeft: `4px solid ${overall.color}` }}>
             <div>
               <div style={{ fontSize: '3rem', fontWeight: 800, color: overall.color, lineHeight: 1 }}>{overallAvg}</div>
               <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginTop: '4px' }}>Overall / 5.00</div>
@@ -204,7 +195,7 @@ export default function DomainReportModal({ evaluation, onClose, showExport = fa
               const pct = (d.avg / 5) * 100;
               return (
                 <div key={i}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                  <div className="domain-row-meta">
                     <div style={{ fontSize: '0.9rem', color: '#f0f0f0' }}>
                       <span style={{ color: 'rgba(255,255,255,0.4)', marginRight: '8px', fontSize: '0.8rem' }}>D{i + 1}</span>
                       {d.name}
@@ -232,7 +223,7 @@ export default function DomainReportModal({ evaluation, onClose, showExport = fa
           </div>
 
           {/* Score Legend */}
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="score-legend">
             {[
               { range: '4.5 – 5.0', label: 'Highly Ready', color: '#00e676' },
               { range: '3.5 – 4.4', label: 'Ready', color: '#69f0ae' },

@@ -170,7 +170,7 @@ export function OptionSelection({ question, value, onChange, hasError, isAnswere
               <span style={{ fontWeight: 500 }}>{opt}</span>
             </div>
             {optionHints[opt] && (
-              <div style={{ marginLeft: '26px', marginTop: '4px', fontSize: '0.78rem', color: 'var(--text-secondary)', whiteSpace: 'pre-line', lineHeight: 1.5 }}>
+              <div style={{ paddingLeft: '32px', marginTop: '4px', fontSize: '0.78rem', color: 'var(--text-secondary)', whiteSpace: 'pre-line', lineHeight: 1.5 }}>
                 {optionHints[opt]}
               </div>
             )}
@@ -283,7 +283,7 @@ export function RadioOptions({ question, value, onChange, hasError, isAnswered }
               <span style={{ fontWeight: 500 }}>{opt}</span>
             </div>
             {optionHints[opt] && (
-              <div style={{ marginLeft: '26px', marginTop: '4px', fontSize: '0.78rem', color: 'var(--text-secondary)', whiteSpace: 'pre-line', lineHeight: 1.5 }}>
+              <div style={{ paddingLeft: '32px', marginTop: '4px', fontSize: '0.78rem', color: 'var(--text-secondary)', whiteSpace: 'pre-line', lineHeight: 1.5 }}>
                 {optionHints[opt]}
               </div>
             )}

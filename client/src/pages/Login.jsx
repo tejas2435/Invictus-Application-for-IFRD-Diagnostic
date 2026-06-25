@@ -70,10 +70,10 @@ export default function Login() {
   };
 
   return (
-    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-      <div className="question-card" style={{ width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', padding: '40px', alignItems: 'center' }}>
+    <div className="app-container centering-container">
+      <div className="question-card card-narrow">
         <img src={logo} alt="Invictus Logo" className="main-logo" />
-        <h1 style={{ textAlign: 'center', fontSize: '1.8rem', marginBottom: '20px' }}>Participant Login</h1>
+        <h1 className="diag-title" style={{ marginBottom: '20px' }}>Participant Login</h1>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
           {error && <div style={{ background: 'rgba(255, 23, 68, 0.1)', color: 'var(--error)', padding: '10px', borderRadius: '5px', textAlign: 'center' }}>{error}</div>}
@@ -105,10 +105,8 @@ export default function Login() {
           New user? <Link to="/signup" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>Sign up here</Link>
         </p>
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '50px', fontSize: '0.8rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '30px', fontSize: '0.8rem' }}>
           <Link to="/supervisor/login" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>Supervisor Portal</Link>
-          <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
-          <Link to="/admin/login" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>Admin Portal</Link>
         </div>
       </div>
     </div>

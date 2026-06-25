@@ -464,15 +464,15 @@ function DiagnosticForm() {
     <>
       <div className="app-container fade-enter-active">
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
-          <div style={{ flex: 1 }}></div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 2 }}>
+        <div className="diag-header">
+          <div className="diag-header-left"></div>
+          <div className="diag-header-center">
             <img src={logo} alt="Invictus Logo" className="main-logo" style={{ marginBottom: '10px' }} />
-            <h1 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '0.02em', textAlign: 'center' }}>
+            <h1 className="diag-title">
               Future Readiness Diagnostic™
             </h1>
           </div>
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="diag-header-right">
             <ProfileMenu userId={userId} userName={preferredName ? `${userName} (${preferredName})` : userName} userEmail={userEmail} userPhone={userPhone} />
           </div>
         </div>
@@ -496,8 +496,8 @@ function DiagnosticForm() {
         )}
 
         {/* Section header */}
-        <div className="part-header" style={{ marginBottom: '20px' }}>
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+        <div className="part-header">
+          <div className="part-label">
             {currentPart.sectionLabel}
           </div>
           <h2 style={{ margin: 0 }}>{currentPart.title}</h2>
@@ -559,17 +559,14 @@ function DiagnosticForm() {
 
       {/* Submit Confirmation Modal */}
       {showSubmitConfirm && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-        }}>
-          <div className="question-card" style={{ maxWidth: '500px', width: '90%', textAlign: 'center', padding: '40px' }}>
+        <div className="modal-overlay">
+          <div className="question-card card-narrow" style={{ textAlign: 'center', padding: '30px' }}>
             <h2 style={{ marginBottom: '20px', color: '#fff' }}>Confirm Submission</h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '30px', lineHeight: '1.6' }}>
               Are you sure you want to submit your diagnostic? You will <strong>not</strong> be able to change your responses after submission.<br /><br />
               If you want to review your answers, click <strong>Cancel</strong>.
             </p>
-            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+            <div className="respond-modal-actions" style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
               <button className="btn btn-secondary" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={cancelSubmit}>
                 Cancel
               </button>

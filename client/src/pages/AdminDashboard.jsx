@@ -178,66 +178,52 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div className="flex-column-gap15">
         {filteredEvaluations.length === 0
           ? <div className="question-card" style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No evaluations found.</div>
           : filteredEvaluations.map(ev => {
             const hasResponded = respondedMap[ev.user_id] !== undefined || localRespondedMap[ev.user_id] !== undefined;
             return (
-              <div key={ev.id} className="question-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderColor: ev.status === 'submitted' ? 'rgba(0,230,118,0.4)' : 'var(--border-color)', position: 'relative', zIndex: openExportMenu === ev.id ? 50 : 1 }}>
-                <div>
-                  <h3 style={{ margin: '0 0 5px 0', fontSize: '1.2rem', color: '#fff' }}>{ev.profiles?.full_name} {ev.profiles?.preferred_name ? `(${ev.profiles.preferred_name})` : ''} {ev.profiles?.organization && <span style={{ fontSize: '0.8rem', color: 'var(--accent)', marginLeft: '10px' }}>[{ev.profiles.organization}]</span>}</h3>
-                  <div style={{ display: 'flex', gap: '15px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+              <div key={ev.id} className="question-card card-compact" style={{ borderColor: ev.status === 'submitted' ? 'rgba(0,230,118,0.4)' : 'var(--border-color)', position: 'relative', zIndex: openExportMenu === ev.id ? 50 : 1 }}>
+                <div className="eval-card-row">
+                <div className="eval-card-info">
+                  <h3 className="eval-card-title">{ev.profiles?.full_name} {ev.profiles?.preferred_name ? `(${ev.profiles.preferred_name})` : ''} {ev.profiles?.organization && <span style={{ fontSize: '0.8rem', color: 'var(--accent)' }}>[{ev.profiles.organization}]</span>}</h3>
+                  <div className="eval-card-meta">
                     <span><strong>ID:</strong> {ev.profiles?.custom_id}</span>
                     <span><strong>Status:</strong> <span style={{ color: ev.status === 'submitted' ? 'var(--accent)' : 'inherit' }}>{ev.status}</span></span>
                     <span><strong>Updated:</strong> {new Date(ev.updated_at).toLocaleDateString()}</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                  <button onClick={() => setSelectedViewEval(ev)} className="btn btn-secondary" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 400 }}>
+                <div className="eval-card-actions">
+                  <button onClick={() => setSelectedViewEval(ev)} className="btn btn-secondary">
                     View Assessment
                   </button>
                   <button
                     disabled={ev.status !== 'submitted'}
                     onClick={() => setSelectedDomainEval(ev)}
-                    className="btn btn-secondary"
-                    style={{
-                      borderColor: ev.status === 'submitted' ? '#a78bfa' : 'var(--border-color)',
-                      color: ev.status === 'submitted' ? '#a78bfa' : 'var(--border-color)',
-                      opacity: ev.status === 'submitted' ? 1 : 0.4,
-                      padding: '6px 12px', fontSize: '0.85rem', fontWeight: 400
-                    }}
+                    className="btn btn-secondary btn-domain"
                   >
                     Domain Report
                   </button>
-                  <button disabled={ev.status !== 'submitted'} onClick={() => handleSelectRespond(ev, hasResponded)} className="btn btn-secondary"
-                    style={{ borderColor: ev.status === 'submitted' ? 'var(--accent)' : 'var(--border-color)', color: ev.status === 'submitted' ? 'var(--accent)' : 'var(--border-color)', opacity: ev.status === 'submitted' ? 1 : 0.5, padding: '6px 12px', fontSize: '0.85rem', fontWeight: 400 }}>
+                  <button 
+                    disabled={ev.status !== 'submitted'} 
+                    onClick={() => handleSelectRespond(ev, hasResponded)} 
+                    className={`btn btn-secondary ${ev.status === 'submitted' ? 'btn-accent' : ''}`}
+                  >
                     {hasResponded ? 'Edit Response' : 'Respond'}
                   </button>
                   <div style={{ position: 'relative' }}>
                     <button
                       disabled={ev.status !== 'submitted'}
                       onClick={() => setOpenExportMenu(openExportMenu === ev.id ? null : ev.id)}
-                      className="btn btn-secondary"
-                      style={{
-                        borderColor: ev.status === 'submitted' ? '#3b82f6' : 'var(--border-color)',
-                        color: ev.status === 'submitted' ? '#3b82f6' : 'var(--border-color)',
-                        opacity: ev.status === 'submitted' ? 1 : 0.4,
-                        padding: '6px 12px', fontSize: '0.85rem', fontWeight: 400,
-                        display: 'flex', alignItems: 'center', gap: '6px'
-                      }}
+                      className={`btn btn-secondary ${ev.status === 'submitted' ? 'btn-export' : ''}`}
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
                       <FiDownload /> Export
                     </button>
                     {openExportMenu === ev.id && ev.status === 'submitted' && (
-                      <div style={{
-                        position: 'absolute', top: '100%', right: 0, marginTop: '5px',
-                        background: '#1a1a1a', border: '1px solid var(--border-color)',
-                        borderRadius: '6px', padding: '5px', zIndex: 100,
-                        display: 'flex', flexDirection: 'column', minWidth: '150px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
-                      }}>
-                        <button className="btn btn-secondary" style={{ border: 'none', textAlign: 'left', padding: '8px 12px', fontSize: '0.85rem' }} onClick={async () => {
+                      <div className="export-dropdown-menu">
+                        <button className="export-btn" onClick={async () => {
                           let evToExport = { ...ev };
                           if (!evToExport.reference_number) {
                             const year = new Date(ev.created_at || Date.now()).getFullYear();
@@ -250,7 +236,7 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
                           generatePDF(evToExport, ds, scoreToBand(overallAvg));
                           setOpenExportMenu(null);
                         }}>📄 Export PDF</button>
-                        <button className="btn btn-secondary" style={{ border: 'none', textAlign: 'left', padding: '8px 12px', fontSize: '0.85rem' }} onClick={async () => {
+                        <button className="export-btn" onClick={async () => {
                           let evToExport = { ...ev };
                           if (!evToExport.reference_number) {
                             const year = new Date(ev.created_at || Date.now()).getFullYear();
@@ -263,7 +249,7 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
                           generateExcel(evToExport, ds, scoreToBand(overallAvg));
                           setOpenExportMenu(null);
                         }}>📊 Export Excel</button>
-                        <button className="btn btn-secondary" style={{ border: 'none', textAlign: 'left', padding: '8px 12px', fontSize: '0.85rem' }} onClick={async () => {
+                        <button className="export-btn" onClick={async () => {
                           let evToExport = { ...ev };
                           if (!evToExport.reference_number) {
                             const year = new Date(ev.created_at || Date.now()).getFullYear();
@@ -278,6 +264,7 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
                     )}
                   </div>
                 </div>
+                </div>
               </div>
             )
           })
@@ -287,15 +274,15 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
       {/* FULLSCREEN VIEW MODAL */}
       {selectedViewEval && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#0f0f0f', display: 'flex', flexDirection: 'column', zIndex: 1000, overflowY: 'auto' }}>
-          <div style={{ position: 'sticky', top: 0, padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0f0f0f', borderBottom: '1px solid var(--border-color)', zIndex: 10 }}>
-            <h2 style={{ margin: 0, color: '#fff' }}>Participant Assessment View</h2>
-            <button onClick={() => setSelectedViewEval(null)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: '2rem', cursor: 'pointer', outline: 'none' }}>×</button>
+          <div className="modal-fullscreen-header" style={{ position: 'sticky', top: 0, padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0f0f0f', borderBottom: '1px solid var(--border-color)', zIndex: 10 }}>
+            <h2 style={{ margin: 0, color: '#fff', fontSize: '1.1rem' }}>Assessment View</h2>
+            <button onClick={() => setSelectedViewEval(null)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.8rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}>×</button>
           </div>
 
-          <div style={{ maxWidth: '1000px', width: '100%', margin: '0 auto', padding: '40px' }}>
-            <div style={{ marginBottom: '40px', background: 'rgba(255,255,255,0.03)', padding: '25px', borderRadius: '8px', borderLeft: '4px solid var(--accent)' }}>
+          <div className="modal-fullscreen-content" style={{ maxWidth: '1000px', width: '100%', margin: '0 auto', padding: '20px' }}>
+            <div className="modal-fullscreen-section" style={{ marginBottom: '30px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '8px', borderLeft: '4px solid var(--accent)' }}>
               <h3 style={{ marginTop: 0, marginBottom: '15px', color: 'var(--accent)' }}>Participant Details</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '1.05rem', color: 'var(--text-secondary)' }}>
+              <div className="participant-detail-grid">
                 <div><strong style={{ color: '#fff' }}>Full Name:</strong> {selectedViewEval.profiles?.full_name} {selectedViewEval.profiles?.preferred_name ? `(${selectedViewEval.profiles.preferred_name})` : ''}</div>
                 <div><strong style={{ color: '#fff' }}>Preferred Name:</strong> {selectedViewEval.profiles?.preferred_name || 'N/A'}</div>
                 <div><strong style={{ color: '#fff' }}>PID:</strong> {selectedViewEval.profiles?.custom_id}</div>
@@ -349,12 +336,12 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
 
       {/* RESPOND MODAL */}
       {selectedRespondEval && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div className="question-card" style={{ maxWidth: '700px', width: '100%', padding: '40px', maxHeight: '90vh', overflowY: 'auto' }}>
+        <div className="modal-overlay">
+          <div className="question-card card-narrow" style={{ padding: '30px', maxHeight: '90vh', overflowY: 'auto', width: '100%' }}>
             <h2 style={{ marginBottom: '10px', color: '#fff' }}>{(respondedMap[selectedRespondEval.user_id] || localRespondedMap[selectedRespondEval.user_id]) ? 'Edit Response for' : 'Respond to'} {selectedRespondEval.profiles?.full_name} {selectedRespondEval.profiles?.preferred_name ? `(${selectedRespondEval.profiles.preferred_name})` : ''}</h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>ID: {selectedRespondEval.profiles?.custom_id}</p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div className="modal-form-container">
               <div style={{ background: 'rgba(0,230,118,0.05)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(0,230,118,0.2)' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Notification will be sent to: </span>
                 <strong style={{ color: 'var(--accent)' }}>{selectedRespondEval.profiles?.email || 'No email on file'}</strong>
@@ -365,11 +352,11 @@ function EvaluationsTab({ filter, orgName, evaluations, respondedMap }) {
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Attach PDF Report (Optional)</label>
-                <input type="file" accept=".pdf,.doc,.docx" onChange={e => setReportFile(e.target.files[0])} style={{ color: 'var(--text-secondary)' }} />
+                <input type="file" accept=".pdf,.doc,.docx" onChange={e => setReportFile(e.target.files[0])} style={{ color: 'var(--text-secondary)', maxWidth: '100%' }} />
               </div>
-              <div style={{ display: 'flex', gap: '15px', justifyContent: 'flex-end', marginTop: '20px' }}>
-                <button disabled={sendingRecord} className="btn btn-secondary" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={() => setSelectedRespondEval(null)}>Cancel</button>
-                <button disabled={!reportSummary || sendingRecord} className="btn btn-secondary" style={{ borderColor: 'var(--accent)', color: 'var(--accent)', opacity: (!reportSummary || sendingRecord) ? 0.5 : 1 }} onClick={handleSendReport}>
+              <div className="respond-modal-actions">
+                <button disabled={sendingRecord} className="btn btn-secondary" onClick={() => setSelectedRespondEval(null)}>Cancel</button>
+                <button disabled={!reportSummary || sendingRecord} className="btn btn-secondary btn-accent" style={{ opacity: (!reportSummary || sendingRecord) ? 0.5 : 1 }} onClick={handleSendReport}>
                   {sendingRecord ? 'Saving...' : 'Save & Notify'}
                 </button>
               </div>
@@ -542,11 +529,11 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-        <button className="btn" onClick={() => setShowAdd(true)}>+ Add Organization</button>
+        <button className="btn" style={{ width: '100%' }} onClick={() => setShowAdd(true)}>+ Add Organization</button>
       </div>
 
       {showAdd && (
-        <div style={{ marginBottom: '20px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div className="question-card card-compact flex-column-gap15" style={{ marginBottom: '20px' }}>
           <h3 style={{ marginTop: 0 }}>Create New Organization</h3>
           <input type="text" className="input-text" value={newOrgData.name} onChange={e => setNewOrgData({ ...newOrgData, name: e.target.value })} placeholder="Organization Name" />
           <input type="text" className="input-text" value={newOrgData.supervisorName} onChange={e => setNewOrgData({ ...newOrgData, supervisorName: e.target.value })} placeholder="Supervisor Name" />
@@ -559,7 +546,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
           </div>
           <input type="number" className="input-text" value={newOrgData.maxParticipants} onChange={e => setNewOrgData({ ...newOrgData, maxParticipants: e.target.value })} placeholder="Total Participants Limit" min="1" />
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+          <div className="modal-form-actions" style={{ marginTop: '0' }}>
             <button className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>
             <button className="btn" onClick={handleCreate} disabled={createLoading}>{createLoading ? 'Creating...' : 'Create'}</button>
           </div>
@@ -567,8 +554,8 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
       )}
 
       {createdOrgDetails && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div className="question-card" style={{ maxWidth: '500px', width: '100%', padding: '30px' }}>
+        <div className="modal-overlay">
+          <div className="question-card card-narrow" style={{ padding: '30px' }}>
             <h2 style={{ marginTop: 0, color: 'var(--accent)' }}>{createdOrgDetails.password === '******** (Hidden for security)' ? 'Organization Details' : 'Organization Created!'}</h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Please copy these details to share with the supervisor.</p>
 
@@ -580,7 +567,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
               <div><strong>Signup Link:</strong> {createdOrgDetails.signupLink}</div>
             </div>
 
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            <div className="respond-modal-actions" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button className="btn btn-secondary" onClick={() => setCreatedOrgDetails(null)}>Close</button>
               <button className="btn" onClick={() => {
                 navigator.clipboard.writeText(`Organization: ${createdOrgDetails.name}\nMax Participants: ${createdOrgDetails.maxParticipants}\nSupervisor Login Email: ${createdOrgDetails.email}\nSupervisor Password: ${createdOrgDetails.password}\nParticipant Signup Link: ${createdOrgDetails.signupLink}`);
@@ -602,19 +589,19 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
 
         return (
           <div key={org.id} style={{ marginBottom: '15px', border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--border-color)'}`, borderRadius: '8px', overflow: 'visible', transition: 'border-color 0.2s' }}>
-            <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }} onClick={() => toggleOrg(org.id, org.name)}>
-              <div>
+            <div className="org-card-header" onClick={() => toggleOrg(org.id, org.name)}>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <h3 style={{ margin: 0, color: '#fff' }}>{org.name}</h3>
-                <div style={{ display: 'flex', gap: '20px', marginTop: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                   <span>Total: <strong style={{ color: '#fff' }}>{orgTotal}</strong></span>
                   <span style={{ color: '#ffc800' }}>In Progress: <strong>{orgActive}</strong></span>
                   <span style={{ color: 'var(--accent)' }}>Completed: <strong>{orgCompleted}</strong></span>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); copyLink(org); }}>Copy Link</button>
-                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={(e) => handleViewAvg(e, org.name)}>View Average Report</button>
-                <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem', borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={(e) => {
+              <div className="org-card-actions">
+                <button className="btn btn-secondary" style={{ padding: '7px 12px', fontSize: '0.82rem' }} onClick={(e) => { e.stopPropagation(); copyLink(org); }}>Copy Link</button>
+                <button className="btn btn-secondary" style={{ padding: '7px 12px', fontSize: '0.82rem' }} onClick={(e) => handleViewAvg(e, org.name)}>Avg Report</button>
+                <button className="btn btn-secondary" style={{ padding: '7px 12px', fontSize: '0.82rem', borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={(e) => {
                   e.stopPropagation();
                   setEditingOrg(org.id);
                   setEditOrgData({
@@ -626,13 +613,13 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
                     maxParticipants: org.max_participants,
                     oldSupervisorId: org.supervisor_id
                   });
-                }}>Edit Settings</button>
-                <span style={{ fontSize: '1.2rem', userSelect: 'none', color: isSelected ? 'var(--accent)' : 'inherit' }}>{isOpen ? '▲' : '▼'}</span>
+                }}>Edit</button>
+                <span style={{ fontSize: '1.2rem', userSelect: 'none', color: isSelected ? 'var(--accent)' : 'inherit', flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</span>
               </div>
             </div>
 
             {editingOrg === org.id && (
-              <div style={{ padding: '20px', background: 'rgba(0,0,0,0.2)', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div className="flex-column-gap15" style={{ padding: '20px', background: 'rgba(0,0,0,0.2)', borderTop: '1px solid var(--border-color)' }}>
                 <h4 style={{ margin: 0, color: 'var(--accent)' }}>Edit Organization Settings</h4>
                 <input type="text" className="input-text" value={editOrgData.name} onChange={e => setEditOrgData({ ...editOrgData, name: e.target.value })} placeholder="Organization Name" />
                 <input type="text" className="input-text" value={editOrgData.supervisorName} onChange={e => setEditOrgData({ ...editOrgData, supervisorName: e.target.value })} placeholder="Supervisor Name" />
@@ -640,7 +627,7 @@ function OrganizationsTab({ onOrgSelect, selectedOrg, allEvaluations, allRespond
                 <input type="password" className="input-text" value={editOrgData.password} onChange={e => setEditOrgData({ ...editOrgData, password: e.target.value })} placeholder="New Supervisor Password (leave blank to keep current)" />
                 <input type="number" className="input-text" value={editOrgData.maxParticipants} onChange={e => setEditOrgData({ ...editOrgData, maxParticipants: e.target.value })} placeholder="Max Participants" />
 
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div className="modal-form-actions" style={{ marginTop: '0' }}>
                   <button className="btn btn-secondary" onClick={() => setEditingOrg(null)}>Cancel</button>
                   <button className="btn" onClick={handleEditSubmit} disabled={editLoading}>{editLoading ? 'Saving...' : 'Save Changes'}</button>
                 </div>
@@ -791,17 +778,17 @@ export default function AdminDashboard() {
       )}
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <h1 style={{ margin: 0, fontSize: '1.6rem' }}>Admin Dashboard</h1>
+      <div className="dashboard-header">
+        <div className="dashboard-header-left">
+          <h1 className="diag-title" style={{ textAlign: 'left', fontSize: '1.4rem' }}>Admin Dashboard</h1>
           <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '2px' }}>Welcome, {adminName}</div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 2 }}>
+        <div className="dashboard-header-center">
           <img src={logo} alt="Invictus Logo" className="main-logo" />
         </div>
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
-          <button className="btn btn-secondary" onClick={triggerRefresh} disabled={refreshing} style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FiRefreshCw className={refreshing ? 'spin-anim' : ''} /> Refresh Data
+        <div className="dashboard-header-right">
+          <button className="btn btn-secondary" onClick={triggerRefresh} disabled={refreshing} style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <FiRefreshCw className={refreshing ? 'spin-anim' : ''} /> Refresh
           </button>
           <button className="btn btn-secondary" onClick={handleLogout} style={{ borderColor: 'var(--error)', color: 'var(--error)' }}>Logout</button>
         </div>
@@ -813,27 +800,27 @@ export default function AdminDashboard() {
       `}</style>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-        <button className="btn" style={{ flex: 1, background: tab === 'all' ? 'var(--accent)' : 'transparent', color: tab === 'all' ? '#000' : 'var(--text-primary)', border: '1px solid var(--border-color)' }} onClick={() => { setTab('all'); setSelectedOrg(null); }}>All</button>
-        <button className="btn" style={{ flex: 1, background: tab === 'general' ? 'var(--accent)' : 'transparent', color: tab === 'general' ? '#000' : 'var(--text-primary)', border: '1px solid var(--border-color)' }} onClick={() => { setTab('general'); setSelectedOrg(null); }}>General</button>
-        <button className="btn" style={{ flex: 1, background: tab === 'organization' ? 'var(--accent)' : 'transparent', color: tab === 'organization' ? '#000' : 'var(--text-primary)', border: '1px solid var(--border-color)' }} onClick={() => { setTab('organization'); setSelectedOrg(null); }}>Organization</button>
+      <div className="tabs-row">
+        <button className={`btn ${tab === 'all' ? 'active-tab' : 'inactive-tab'}`} onClick={() => { setTab('all'); setSelectedOrg(null); }}>All</button>
+        <button className={`btn ${tab === 'general' ? 'active-tab' : 'inactive-tab'}`} onClick={() => { setTab('general'); setSelectedOrg(null); }}>General</button>
+        <button className={`btn ${tab === 'organization' ? 'active-tab' : 'inactive-tab'}`} onClick={() => { setTab('organization'); setSelectedOrg(null); }}>Organizations</button>
       </div>
 
       {/* Stats — dynamic based on active tab + selected org */}
-      <div style={{ display: 'flex', gap: '20px', marginBottom: '35px' }}>
-        <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px' }}>
-          <div style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stats.total}</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+      <div className="stats-row">
+        <div className="question-card stat-card">
+          <div className="stat-value">{stats.total}</div>
+          <div className="stat-label">
             {tab === 'organization' && selectedOrg ? `${selectedOrg} — Total` : 'Total Participants'}
           </div>
         </div>
-        <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px', borderColor: 'rgba(255,200,0,0.4)' }}>
-          <div style={{ fontSize: '2.5rem', fontWeight: 700, color: '#ffc800' }}>{stats.active}</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>In Progress</div>
+        <div className="question-card stat-card stat-progress">
+          <div className="stat-value" style={{ color: '#ffc800' }}>{stats.active}</div>
+          <div className="stat-label">In Progress</div>
         </div>
-        <div className="question-card" style={{ flex: 1, textAlign: 'center', padding: '20px', borderColor: 'rgba(0,230,118,0.4)' }}>
-          <div style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--accent)' }}>{stats.completed}</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Completed</div>
+        <div className="question-card stat-card stat-completed">
+          <div className="stat-value" style={{ color: 'var(--accent)' }}>{stats.completed}</div>
+          <div className="stat-label">Completed</div>
         </div>
       </div>
 

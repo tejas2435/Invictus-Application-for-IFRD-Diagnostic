@@ -172,10 +172,16 @@ export default function OrgAverageReportModal({ orgName, evaluations, onClose })
 
   const overall = scoreToBand(overallAvg);
 
+  // Export always renders at desktop width for consistent high-quality images
   const exportElement = async (elementRef, filename) => {
     if (!elementRef.current) return;
     try {
-      const canvas = await html2canvas(elementRef.current, { backgroundColor: '#0f0f0f' });
+      const canvas = await html2canvas(elementRef.current, {
+        backgroundColor: '#0f0f0f',
+        scale: 2,
+        windowWidth: 1200,
+        useCORS: true
+      });
       const link = document.createElement('a');
       link.download = filename;
       link.href = canvas.toDataURL('image/jpeg', 0.9);
@@ -187,15 +193,12 @@ export default function OrgAverageReportModal({ orgName, evaluations, onClose })
   };
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-      background: 'rgba(0,0,0,0.95)', display: 'flex', alignItems: 'flex-start',
-      justifyContent: 'center', zIndex: 2000, overflowY: 'auto', padding: '40px 20px'
-    }}>
-      <div style={{ maxWidth: '900px', width: '100%' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-          <div>
-            <h2 style={{ margin: 0, color: '#fff', fontSize: '1.5rem' }}>
+    <div className="modal-overlay" style={{ background: 'rgba(0,0,0,0.95)' }}>
+      <div className="modal-inner">
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px', gap: '12px' }}>
+          <div style={{ flex: 1 }}>
+            <h2 style={{ margin: 0, color: '#fff', fontSize: '1.4rem' }}>
               Organization Aggregate Report
             </h2>
             <div style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '0.9rem' }}>
@@ -204,18 +207,19 @@ export default function OrgAverageReportModal({ orgName, evaluations, onClose })
           </div>
           <button onClick={onClose} style={{
             background: 'none', border: '1px solid rgba(255,255,255,0.2)', color: '#fff',
-            fontSize: '1.5rem', cursor: 'pointer', borderRadius: '6px', width: '40px', height: '40px'
+            fontSize: '1.5rem', cursor: 'pointer', borderRadius: '6px',
+            width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
           }}>×</button>
         </div>
 
         {/* Dropdown filter */}
-        <div style={{ marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <label style={{ color: 'var(--text-secondary)' }}>View Data For:</label>
+        <div style={{ marginBottom: '24px' }}>
+          <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>View Data For:</label>
           <select 
             value={selectedUser} 
             onChange={e => setSelectedUser(e.target.value)}
             className="input-text"
-            style={{ maxWidth: '300px' }}
+            style={{ maxWidth: '100%' }}
           >
             <option value="ALL">All Participants (Average)</option>
             {completedEvals.map(ev => (
@@ -228,16 +232,14 @@ export default function OrgAverageReportModal({ orgName, evaluations, onClose })
 
         {/* TOP DIV - EXPORTABLE */}
         <div ref={topDivRef} style={{ background: '#0f0f0f', padding: '10px 0' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h3 style={{ color: '#fff', margin: 0 }}>Radar Graph & Overview</h3>
-            <button className="btn btn-secondary" onClick={() => exportElement(topDivRef, `${orgName}_Overview_Graph.jpg`)}>Export Graph to JPG</button>
+          <div className="modal-section-header" style={{ marginBottom: '15px' }}>
+            <h3 style={{ color: '#fff', margin: 0 }}>Radar Graph &amp; Overview</h3>
+            <button className="btn btn-secondary" onClick={() => exportElement(topDivRef, `${orgName}_Overview_Graph.jpg`)}>
+              Export Graph to JPG
+            </button>
           </div>
           
-          <div style={{
-            background: 'rgba(255,255,255,0.04)', border: `1px solid ${overall.color}40`,
-            borderLeft: `4px solid ${overall.color}`, borderRadius: '8px',
-            padding: '20px 25px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '30px'
-          }}>
+          <div className="score-banner" style={{ border: `1px solid ${overall.color}40`, borderLeft: `4px solid ${overall.color}`, marginBottom: '20px' }}>
             <div>
               <div style={{ fontSize: '3rem', fontWeight: 800, color: overall.color, lineHeight: 1 }}>
                 {isNaN(overallAvg) ? '—' : overallAvg}
@@ -254,7 +256,7 @@ export default function OrgAverageReportModal({ orgName, evaluations, onClose })
 
           <div style={{
             background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '12px', padding: '30px'
+            borderRadius: '12px', padding: '20px'
           }}>
             <canvas ref={chartRef} style={{ maxHeight: '480px' }} />
           </div>
@@ -262,14 +264,16 @@ export default function OrgAverageReportModal({ orgName, evaluations, onClose })
 
         {/* BOTTOM DIV - EXPORTABLE */}
         <div ref={breakdownDivRef} style={{ background: '#0f0f0f', padding: '10px 0', marginTop: '30px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+          <div className="modal-section-header" style={{ marginBottom: '15px' }}>
             <h3 style={{ color: '#fff', margin: 0 }}>Domain Breakdown</h3>
-            <button className="btn btn-secondary" onClick={() => exportElement(breakdownDivRef, `${orgName}_Domain_Breakdown.jpg`)}>Export Details to JPG</button>
+            <button className="btn btn-secondary" onClick={() => exportElement(breakdownDivRef, `${orgName}_Domain_Breakdown.jpg`)}>
+              Export Details to JPG
+            </button>
           </div>
           
           <div style={{
             background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '12px', padding: '25px', marginBottom: '30px'
+            borderRadius: '12px', padding: '20px', marginBottom: '24px'
           }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {selectedScores.map((d, i) => {
@@ -277,7 +281,7 @@ export default function OrgAverageReportModal({ orgName, evaluations, onClose })
                 const pct = isNaN(d.avg) ? 0 : (d.avg / 5) * 100;
                 return (
                   <div key={i}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                    <div className="domain-row-meta">
                       <div style={{ fontSize: '0.9rem', color: '#f0f0f0' }}>
                         <span style={{ color: 'var(--text-secondary)', marginRight: '8px', fontSize: '0.8rem' }}>D{i + 1}</span>
                         {d.name}
@@ -303,7 +307,7 @@ export default function OrgAverageReportModal({ orgName, evaluations, onClose })
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
+          <div className="score-legend" style={{ marginBottom: '20px' }}>
             {[
               { range: '4.5 – 5.0', label: 'Highly Ready', color: '#00e676' },
               { range: '3.5 – 4.4', label: 'Ready', color: '#69f0ae' },
@@ -320,6 +324,13 @@ export default function OrgAverageReportModal({ orgName, evaluations, onClose })
           </div>
         </div>
 
+        <button onClick={onClose} style={{
+          width: '100%', padding: '14px', background: 'transparent',
+          border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.5)',
+          borderRadius: '8px', cursor: 'pointer', fontSize: '0.95rem', marginTop: '10px'
+        }}>
+          Close Report
+        </button>
       </div>
     </div>
   );
